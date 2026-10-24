@@ -79,7 +79,7 @@ function InstitutionsContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
@@ -107,7 +107,7 @@ function InstitutionsContent() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -162,7 +162,7 @@ function InstitutionsContent() {
 
       {/* Loading state */}
       {loadState === 'loading' && (
-        <div className="py-16 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] shadow-xs">
+        <div className="py-16 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs font-semibold">Filtering institution directory records…</p>
         </div>
@@ -198,7 +198,7 @@ function InstitutionsContent() {
       {loadState === 'success' && (
         <div>
           {institutions.length === 0 ? (
-            <div className="p-14 text-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+            <div className="p-14 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
               <Building2 className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
               <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                 No institutions match the filter criteria

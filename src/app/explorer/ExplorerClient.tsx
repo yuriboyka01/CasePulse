@@ -455,7 +455,7 @@ export default function ExplorerClient() {
                   <svg
                     viewBox="0 0 900 640"
                     className="w-full h-auto min-w-[700px] select-none"
-                    style={{ background: 'radial-gradient(ellipse at center, #0f172a 0%, #020617 100%)' }}
+                    style={{ background: 'radial-gradient(ellipse at center, #191e1b 0%, #0c0f0e 100%)' }}
                   >
                     <defs>
                       {/* Subtle Grid pattern */}
@@ -485,7 +485,7 @@ export default function ExplorerClient() {
                       x="450"
                       y="320"
                       textAnchor="middle"
-                      fill="rgba(148, 163, 184, 0.08)"
+                      fill="rgba(152, 166, 154, 0.08)"
                       fontSize="28"
                       fontFamily="monospace"
                       fontWeight="bold"
@@ -500,7 +500,7 @@ export default function ExplorerClient() {
                       cy="320"
                       r="175"
                       fill="none"
-                      stroke="rgba(148, 163, 184, 0.12)"
+                      stroke="rgba(152, 166, 154, 0.12)"
                       strokeDasharray="4 4"
                     />
                     <circle
@@ -508,7 +508,7 @@ export default function ExplorerClient() {
                       cy="320"
                       r="280"
                       fill="none"
-                      stroke="rgba(148, 163, 184, 0.08)"
+                      stroke="rgba(152, 166, 154, 0.08)"
                       strokeDasharray="2 4"
                     />
 
@@ -520,11 +520,11 @@ export default function ExplorerClient() {
                           selectedItem.data.id === edge.overlap.id;
 
                         const strokeColor = edge.isConfirmed
-                          ? '#10b981' // emerald-500
+                          ? '#72b79a' // emerald-500
                           : edge.status === 'DISMISSED_FALSE_POSITIVE' ||
                             edge.status === 'REJECTED'
-                          ? '#64748b' // slate-500
-                          : '#f59e0b'; // amber-500
+                          ? '#6b776e' // slate-500
+                          : '#eba23d'; // amber-500
 
                         return (
                           <g
@@ -578,21 +578,21 @@ export default function ExplorerClient() {
                           >
                             <circle
                               r="28"
-                              fill="#0f172a"
-                              stroke={isSelected ? '#38bdf8' : '#334155'}
+                              fill="#191e1b"
+                              stroke={isSelected ? '#c5a46d' : '#3a443e'}
                               strokeWidth={isSelected ? '3' : '2'}
                               className="hover:stroke-blue-400"
                             />
                             <circle
                               r="24"
-                              fill="#1e293b"
-                              stroke="#475569"
+                              fill="#222925"
+                              stroke="#515c55"
                               strokeWidth="1"
                             />
                             <text
                               textAnchor="middle"
                               dy="-2"
-                              fill="#93c5fd"
+                              fill="#d9bc80"
                               fontSize="10"
                               fontWeight="bold"
                               fontFamily="monospace"
@@ -602,7 +602,7 @@ export default function ExplorerClient() {
                             <text
                               textAnchor="middle"
                               dy="11"
-                              fill="#64748b"
+                              fill="#6b776e"
                               fontSize="8"
                               fontWeight="600"
                             >
@@ -622,12 +622,12 @@ export default function ExplorerClient() {
 
                         const ringColor =
                           node.risk === 'CRITICAL'
-                            ? '#e11d48' // rose-600
+                            ? '#e57967' // rose-600
                             : node.risk === 'HIGH'
                             ? '#ea580c' // orange-600
                             : node.risk === 'MEDIUM'
-                            ? '#d97706' // amber-600
-                            : '#10b981'; // emerald-500
+                            ? '#eba23d' // amber-600
+                            : '#72b79a'; // emerald-500
 
                         return (
                           <g
@@ -643,7 +643,7 @@ export default function ExplorerClient() {
                               <circle
                                 r="28"
                                 fill="none"
-                                stroke="#e11d48"
+                                stroke="#e57967"
                                 strokeWidth="1.5"
                                 strokeOpacity="0.4"
                                 className="animate-ping"
@@ -652,13 +652,13 @@ export default function ExplorerClient() {
 
                             <circle
                               r="22"
-                              fill="#0f172a"
+                              fill="#191e1b"
                               stroke={isSelected ? '#ffffff' : ringColor}
                               strokeWidth={isSelected ? '3' : '2'}
                             />
                             <circle
                               r="18"
-                              fill="#1e1b4b"
+                              fill="#16222b"
                               stroke="rgba(255, 255, 255, 0.15)"
                               strokeWidth="1"
                             />
@@ -679,7 +679,7 @@ export default function ExplorerClient() {
                             <text
                               textAnchor="middle"
                               dy="34"
-                              fill="#cbd5e1"
+                              fill="#c9cbbf"
                               fontSize="9"
                               fontWeight="600"
                               className="pointer-events-none"

@@ -169,7 +169,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
   };
 
   return (
-    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
       {/* Header Bar */}
       <div className="p-4 sm:p-5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-wrap">
@@ -404,7 +404,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       )}
 
       {/* Authorized Officer's Decision Chamber */}
-      <div className="p-4 sm:p-5 bg-slate-50 dark:bg-[#0e1420] border-t border-slate-200 dark:border-white/10 space-y-4">
+      <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-white/10 space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
             <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />

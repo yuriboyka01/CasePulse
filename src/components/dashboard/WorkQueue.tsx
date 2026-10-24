@@ -19,7 +19,7 @@ export function WorkQueue({ cases, unresolvedRelationships, detectedRelationship
   return (
     <section className="grid grid-cols-1 xl:grid-cols-12 gap-5" aria-label="Operational priorities">
       {/* Left Column: Priority Work Queue */}
-      <div className="xl:col-span-7 2xl:col-span-8 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+      <div className="xl:col-span-7 2xl:col-span-8 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
         <div>
           <div className="flex items-start justify-between gap-4 mb-4">
             <div>
@@ -104,7 +104,7 @@ export function WorkQueue({ cases, unresolvedRelationships, detectedRelationship
       </div>
 
       {/* Right Column: Coordination Radar */}
-      <div className="xl:col-span-5 2xl:col-span-4 rounded-2xl border border-blue-200/80 dark:border-blue-900/40 bg-gradient-to-br from-blue-50/60 via-white to-slate-50 dark:from-[#0f172a] dark:via-[#111827] dark:to-[#0b0f17] p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
+      <div className="xl:col-span-5 2xl:col-span-4 rounded-2xl border border-blue-200/80 dark:border-blue-900/40 bg-gradient-to-br from-blue-50/60 via-white to-slate-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 p-5 sm:p-6 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between">
         <div>
           <div className="flex items-center justify-between gap-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 flex items-center gap-1.5">

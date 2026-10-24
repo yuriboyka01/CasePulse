@@ -44,7 +44,7 @@ function getNextActionSummary(status: CaseStatus, isOverdue: boolean): { action:
 export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500 shadow-xs">
         <Clock className="w-6 h-6 animate-spin mx-auto mb-2.5 text-blue-500" />
         <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Loading regulatory case records...</p>
       </div>
@@ -53,7 +53,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
 
   if (cases.length === 0) {
     return (
-      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-12 text-center shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-12 text-center shadow-xs">
         <FileText className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
         <h4 className="text-sm font-bold text-slate-900 dark:text-white">
           No matching complaints found
@@ -66,7 +66,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>

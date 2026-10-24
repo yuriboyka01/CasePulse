@@ -11,19 +11,19 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'light',
+  theme: 'dark',
   toggleTheme: () => {},
   setTheme: () => {},
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('light');
+  const [theme, setThemeState] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check localStorage, default to light
+    // Obsidian (dark) is the default; only an explicit 'light' choice opts out
     const stored = localStorage.getItem('casepulse-theme') as Theme | null;
-    const initialTheme = stored === 'dark' ? 'dark' : 'light';
+    const initialTheme = stored === 'light' ? 'light' : 'dark';
     setThemeState(initialTheme);
     if (initialTheme === 'dark') {
       document.documentElement.classList.add('dark');

@@ -13,7 +13,7 @@ interface InstitutionCardProps {
 
 export function InstitutionCard({ institution }: InstitutionCardProps) {
   return (
-    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
       <div>
         {/* Top Meta */}
         <div className="flex items-start justify-between gap-2">

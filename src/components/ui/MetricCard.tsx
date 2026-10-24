@@ -47,7 +47,7 @@ export function MetricCard({
       className={`relative p-5 rounded-xl border transition-all duration-200 ${
         isUrgent
           ? 'bg-rose-50/30 border-rose-200 dark:bg-rose-950/20 dark:border-rose-900/60 shadow-xs hover:border-rose-300'
-          : 'bg-white border-slate-200 hover:border-slate-300 dark:bg-[#111827] dark:border-white/10 dark:hover:border-white/20 shadow-xs hover:shadow-md'
+          : 'bg-white border-slate-200 hover:border-slate-300 dark:bg-slate-900 dark:border-white/10 dark:hover:border-white/20 shadow-xs hover:shadow-md'
       }`}
     >
       <div className="flex items-center justify-between gap-2">

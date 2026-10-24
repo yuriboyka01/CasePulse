@@ -22,7 +22,7 @@ interface CaseTimelineProps {
 export function CaseTimeline({ events }: CaseTimelineProps) {
   if (!events || events.length === 0) {
     return (
-      <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-[#111827]">
+      <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
         No administrative timeline events recorded for this docket yet.
       </div>
     );
@@ -84,12 +84,12 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
         return (
           <div key={evt.id} className="relative group">
             {/* Timeline node icon */}
-            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-white dark:bg-[#111827] border-2 border-slate-300 dark:border-white/20 flex items-center justify-center shadow-xs">
+            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-white/20 flex items-center justify-center shadow-xs">
               {getEventIcon(evt.type)}
             </div>
 
             {/* Event Content Card */}
-            <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-white/5 pb-2.5 mb-2.5">
                 <div className="flex items-center gap-2">
                   <span

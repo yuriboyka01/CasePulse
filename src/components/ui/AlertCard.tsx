@@ -55,7 +55,7 @@ export function AlertCard({
 
   return (
     <div
-      className={`p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] shadow-xs hover:shadow-md transition-all duration-200 ${style.border} flex flex-col justify-between`}
+      className={`p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md transition-all duration-200 ${style.border} flex flex-col justify-between`}
     >
       <div>
         <div className="flex items-start justify-between gap-3">

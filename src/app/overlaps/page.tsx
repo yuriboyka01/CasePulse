@@ -117,7 +117,7 @@ function OverlapsContent() {
   return (
     <div className="space-y-6 text-slate-900 dark:text-slate-100">
       {/* Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] p-5 sm:p-6 shadow-xs">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
@@ -151,7 +151,7 @@ function OverlapsContent() {
 
       {/* Summary KPI Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
             Total Overlaps Flagged
           </span>
@@ -189,7 +189,7 @@ function OverlapsContent() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -260,7 +260,7 @@ function OverlapsContent() {
           </div>
         </div>
       ) : isLoading ? (
-        <div className="p-16 text-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-16 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
             Querying authoritative cross-bureau overlap relationships...
@@ -268,7 +268,7 @@ function OverlapsContent() {
           <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Fetching PostgreSQL records</p>
         </div>
       ) : overlaps.length === 0 ? (
-        <div className="p-14 text-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-14 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
           <h3 className="text-sm font-bold text-slate-900 dark:text-white">
             No cross-bureau overlaps matching your filter criteria
