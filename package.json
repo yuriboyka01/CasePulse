@@ -6,21 +6,37 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --conditions=react-server --import tsx --test tests/unit/*.test.ts",
+    "test:db": "node --conditions=react-server --import tsx --test tests/integration/postgres.test.ts",
+    "db:migrate": "tsx scripts/db-migrate.ts",
+    "db:seed": "tsx scripts/db-seed.ts",
+    "db:provision": "tsx scripts/provision-officer.ts",
+    "db:dev:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-dev-postgres.ps1",
+    "db:dev:start": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-dev-start.ps1",
+    "db:dev:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/postgres-dev-stop.ps1"
   },
   "dependencies": {
+    "lucide-react": "^1.61.0",
     "next": "16.4.2",
+    "next-auth": "5.0.0-beta.32",
+    "pg": "^8.23.1",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1"
   },
   "devDependencies": {
-    "@tailwindcss/turbopack": "^4",
+    "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.2",
+    "postcss": "^8.5.31",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
