@@ -13,16 +13,16 @@ interface InstitutionCardProps {
 
 export function InstitutionCard({ institution }: InstitutionCardProps) {
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-2xs hover:border-slate-300 dark:hover:border-slate-700 transition-colors flex flex-col justify-between">
+    <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
       <div>
         {/* Top Meta */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-slate-100 dark:bg-slate-800 rounded text-slate-700 dark:text-slate-300">
+            <div className="p-2 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-xl">
               <Building2 className="w-4 h-4" />
             </div>
             <div>
-              <span className="font-mono text-[11px] font-semibold text-slate-500">
+              <span className="font-mono text-[11px] font-bold text-slate-700 dark:text-slate-300">
                 AISHE: {institution.aisheCode}
               </span>
               {institution.aictePermanentId && (
@@ -36,7 +36,7 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
         </div>
 
         {/* Institution Title */}
-        <h3 className="mt-3 text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-2">
+        <h3 className="mt-3.5 text-sm font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
           {institution.name}
         </h3>
 
@@ -48,17 +48,17 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
               {institution.district}, {institution.state} (PIN: {institution.pincode})
             </span>
           </div>
-          <div className="text-[11px] text-slate-500 truncate">
+          <div className="text-[11px] text-slate-400 truncate">
             Affiliation: {institution.affiliatedUniversity}
           </div>
         </div>
 
         {/* Bureau Involvement */}
-        <div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-            Cross-Bureau Involvement
+        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+            Coordinating Bureaus
           </div>
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-1.5">
             {institution.bureauInvolvement.length > 0 ? (
               institution.bureauInvolvement.map((b) => (
                 <BureauBadge key={b} bureauId={b} size="sm" />
@@ -71,17 +71,17 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
       </div>
 
       {/* Footer stats & action */}
-      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+      <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
         <div className="flex items-center gap-3 text-xs">
           <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">Active Cases</span>
-            <strong className="font-mono text-slate-900 dark:text-slate-100 text-sm">
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Active Cases</span>
+            <strong className="font-mono text-slate-900 dark:text-white text-sm font-extrabold">
               {institution.activeCasesCount}
             </strong>
           </div>
           <div className="border-l border-slate-200 dark:border-slate-800 pl-3">
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">Total History</span>
-            <span className="font-mono text-slate-600 dark:text-slate-300 text-sm">
+            <span className="text-slate-400 block text-[10px] uppercase font-bold">Total History</span>
+            <span className="font-mono text-slate-600 dark:text-slate-400 text-sm font-bold">
               {institution.totalCasesCount}
             </span>
           </div>
@@ -89,10 +89,10 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
 
         <Link
           href={`/institutions/${institution.id}`}
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition-colors"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-2xs"
         >
-          View Profile
-          <ChevronRight className="w-3.5 h-3.5" />
+          <span>Dossier</span>
+          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>
     </div>

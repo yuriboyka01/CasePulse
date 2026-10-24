@@ -34,7 +34,7 @@ function InstitutionsContent() {
       setInstitutions(res.data);
       setTotalCount(res.meta.totalCount);
 
-      // Extract unique states for the state filter dropdown (only on unfiltered full load)
+      // Extract unique states for the state filter dropdown
       if (!filters.state || filters.state === 'ALL') {
         const states = Array.from(new Set(res.data.map((i) => i.state))).sort();
         setAvailableStates(states);
@@ -79,105 +79,101 @@ function InstitutionsContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
               Institution Intelligence Directory
             </h1>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
               {displayCount} INSTITUTIONS
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Master database of regulated technical, university, and medical institutes mapped to national AISHE identifiers.
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-3xl leading-relaxed">
+            Master database of regulated technical, university, and medical institutes mapped to national AISHE and AICTE permanent identifiers.
           </p>
         </div>
 
         {loadState === 'success' && (
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-xs">
-              <span className="px-2.5 py-1 rounded bg-rose-50 text-rose-800 border border-rose-200 font-bold">
-                {criticalCount} Critical Risk
-              </span>
-              <span className="px-2.5 py-1 rounded bg-amber-50 text-amber-800 border border-amber-200 font-bold">
-                {repeatCount} Repeat Violators
-              </span>
-            </div>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-800 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800 font-bold text-xs">
+              {criticalCount} Critical Risk
+            </span>
+            <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-bold text-xs">
+              {repeatCount} Repeat Targets
+            </span>
           </div>
         )}
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-3.5 space-y-3">
-        <div className="flex flex-col sm:flex-row gap-2.5">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by Institution Name, AISHE Code, AICTE ID, or District..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
-            />
-          </div>
+      <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search by Institution Name, AISHE Code, AICTE ID, or District..."
+            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+          />
+        </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            <select
-              value={selectedRisk}
-              onChange={(e) => setSelectedRisk(e.target.value)}
-              className="text-xs py-1.5 px-2 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100"
+        <div className="flex items-center gap-3 flex-wrap">
+          <select
+            value={selectedRisk}
+            onChange={(e) => setSelectedRisk(e.target.value)}
+            className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="ALL">All Risk Ratings</option>
+            <option value="CRITICAL">Critical Risk</option>
+            <option value="HIGH">High Risk</option>
+            <option value="MEDIUM">Medium Risk</option>
+            <option value="LOW">Low Risk</option>
+          </select>
+
+          <select
+            value={selectedState}
+            onChange={(e) => setSelectedState(e.target.value)}
+            className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="ALL">All States</option>
+            {availableStates.map((st) => (
+              <option key={st} value={st}>
+                {st}
+              </option>
+            ))}
+          </select>
+
+          {(searchQuery || selectedRisk !== 'ALL' || selectedState !== 'ALL') && (
+            <button
+              onClick={() => {
+                setSearchQuery('');
+                setSelectedRisk('ALL');
+                setSelectedState('ALL');
+              }}
+              className="text-xs font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 underline px-2 py-1 cursor-pointer"
             >
-              <option value="ALL">All Risk Ratings</option>
-              <option value="CRITICAL">Critical Risk</option>
-              <option value="HIGH">High Risk</option>
-              <option value="MEDIUM">Medium Risk</option>
-              <option value="LOW">Low Risk</option>
-            </select>
-
-            <select
-              value={selectedState}
-              onChange={(e) => setSelectedState(e.target.value)}
-              className="text-xs py-1.5 px-2 rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100"
-            >
-              <option value="ALL">All States</option>
-              {availableStates.map((st) => (
-                <option key={st} value={st}>
-                  {st}
-                </option>
-              ))}
-            </select>
-
-            {(searchQuery || selectedRisk !== 'ALL' || selectedState !== 'ALL') && (
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setSelectedRisk('ALL');
-                  setSelectedState('ALL');
-                }}
-                className="text-xs text-slate-500 hover:text-slate-800 underline px-2 py-1 cursor-pointer"
-              >
-                Reset
-              </button>
-            )}
-          </div>
+              Reset
+            </button>
+          )}
         </div>
       </div>
 
       {/* Loading state */}
       {loadState === 'loading' && (
-        <div className="py-16 text-center text-slate-500">
-          <div className="w-7 h-7 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm">Loading institution directory…</p>
+        <div className="py-16 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111827] shadow-xs">
+          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-xs font-semibold">Filtering institution directory records…</p>
         </div>
       )}
 
       {/* Error state */}
       {loadState === 'error' && (
-        <div className="p-5 rounded-lg border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/30 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+        <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/30 flex items-start gap-3.5 shadow-xs">
+          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-rose-800 dark:text-rose-300">
+            <p className="text-sm font-bold text-rose-900 dark:text-rose-300">
               Unable to load institution directory
             </p>
             <p className="text-xs text-rose-700 dark:text-rose-400 mt-1">{error}</p>
@@ -190,7 +186,7 @@ function InstitutionsContent() {
                 state: selectedState,
               })
             }
-            className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 cursor-pointer"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 cursor-pointer shadow-2xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry
@@ -198,23 +194,25 @@ function InstitutionsContent() {
         </div>
       )}
 
-      {/* Grid of Institution Cards */}
+      {/* Directory Cards Grid */}
       {loadState === 'success' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
           {institutions.length === 0 ? (
-            <div className="col-span-full p-12 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-500">
-              <Building2 className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-2" />
-              <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                No institutions matched the search filters
+            <div className="p-14 text-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+              <Building2 className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                No institutions match the filter criteria
               </h3>
-              <p className="text-xs text-slate-400 mt-1">
-                Try adjusting your risk tier or state filters.
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Try clearing your search or expanding the state selection.
               </p>
             </div>
           ) : (
-            institutions.map((inst) => (
-              <InstitutionCard key={inst.id} institution={inst} />
-            ))
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {institutions.map((inst) => (
+                <InstitutionCard key={inst.id} institution={inst} />
+              ))}
+            </div>
           )}
         </div>
       )}

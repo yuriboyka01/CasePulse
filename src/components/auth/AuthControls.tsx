@@ -20,13 +20,7 @@ export interface AuthControlsProps {
 
 /**
  * Accessible authentication controls component for desktop and mobile navigation.
- *
- * Supported states:
- * - loading: Accessible pending status indicator.
- * - authenticated: Identity label + accessible Sign out action.
- * - unauthenticated + demo mode enabled: Clear "Development demo mode" indicator (no false auth claims).
- * - unauthenticated + OIDC configured: "Sign in" action invoking signIn('oidc').
- * - unauthenticated + OIDC unconfigured: Neutral "Sign-in not configured" indicator.
+ * High-contrast S-Tier design supporting both Light and Dark themes.
  */
 export function AuthControls({
   isOidcConfigured = false,
@@ -74,10 +68,10 @@ export function AuthControls({
       <div
         role="status"
         aria-live="polite"
-        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs text-slate-400 bg-slate-900 border border-slate-800 ${className}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 ${className}`}
       >
-        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-400" aria-hidden="true" />
-        <span className="text-[11px]">Checking session...</span>
+        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-500" aria-hidden="true" />
+        <span className="text-[11px] font-medium">Checking session...</span>
         <span className="sr-only">Checking authentication status</span>
       </div>
     );
@@ -98,13 +92,13 @@ export function AuthControls({
           <div
             role="alert"
             aria-live="assertive"
-            className="w-full text-[11px] text-red-300 bg-red-950/70 border border-red-800/80 px-2 py-1 rounded flex items-center justify-between gap-1"
+            className="w-full text-[11px] text-rose-700 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/70 border border-rose-200 dark:border-rose-800/80 px-2.5 py-1 rounded-md flex items-center justify-between gap-1"
           >
             <span>{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage(null)}
-              className="text-red-300 hover:text-white cursor-pointer ml-1 font-bold"
+              className="text-rose-700 dark:text-rose-300 hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
               ×
@@ -114,20 +108,20 @@ export function AuthControls({
 
         {isDemoMode && (
           <span
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/30"
-            title="Development demo mode is active alongside this session"
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+            title="Development demo mode: Synthetic officer access"
           >
-            <FlaskConical className="w-3 h-3 text-amber-400" aria-hidden="true" />
+            <FlaskConical className="w-3 h-3 text-amber-600 dark:text-amber-400" aria-hidden="true" />
             Demo Mode
           </span>
         )}
 
         <div
-          className="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-slate-900 border border-slate-800 text-xs text-slate-200"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-800 dark:text-slate-200"
           title={`Authenticated Identity: ${fullIdentity}`}
         >
-          <UserCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" aria-hidden="true" />
-          <span className="font-medium max-w-[130px] sm:max-w-[160px] truncate">
+          <UserCheck className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" aria-hidden="true" />
+          <span className="font-semibold max-w-[130px] sm:max-w-[160px] truncate">
             {userLabel}
           </span>
         </div>
@@ -137,12 +131,12 @@ export function AuthControls({
           onClick={handleSignOut}
           disabled={isPending}
           aria-label={`Sign out ${userLabel}`}
-          className="inline-flex items-center gap-1 px-2.5 py-1 rounded text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 transition-colors cursor-pointer border border-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer border border-slate-200 dark:border-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs"
         >
           {isPending ? (
             <Loader2 className="w-3 h-3 animate-spin text-slate-400" aria-hidden="true" />
           ) : (
-            <LogOut className="w-3 h-3 text-slate-400" aria-hidden="true" />
+            <LogOut className="w-3 h-3 text-slate-500 dark:text-slate-400" aria-hidden="true" />
           )}
           <span>{isPending ? 'Signing out...' : 'Sign out'}</span>
         </button>
@@ -157,11 +151,12 @@ export function AuthControls({
         <div
           role="status"
           aria-label="Development demo mode active. Synthetic officer access only, not real authentication."
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-amber-500/10 text-amber-300 border border-amber-500/30"
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60 shadow-2xs"
           title="Development demo mode: Synthetic officer access is active for local testing. This is not real authentication."
         >
-          <FlaskConical className="w-3.5 h-3.5 text-amber-400 shrink-0" aria-hidden="true" />
-          <span className="font-semibold">Development demo mode</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+          <FlaskConical className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
+          <span>Demo Mode (Active)</span>
         </div>
       </div>
     );
@@ -175,13 +170,13 @@ export function AuthControls({
           <div
             role="alert"
             aria-live="assertive"
-            className="w-full text-[11px] text-red-300 bg-red-950/70 border border-red-800/80 px-2 py-1 rounded flex items-center justify-between gap-1"
+            className="w-full text-[11px] text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/70 border border-red-200 dark:border-red-800/80 px-2 py-1 rounded flex items-center justify-between gap-1"
           >
             <span>{errorMessage}</span>
             <button
               type="button"
               onClick={() => setErrorMessage(null)}
-              className="text-red-300 hover:text-white cursor-pointer ml-1 font-bold"
+              className="text-red-600 dark:text-red-300 hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
               ×
@@ -212,7 +207,7 @@ export function AuthControls({
     <div
       role="status"
       aria-label="Authentication status: Sign-in not configured"
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium bg-slate-900 text-slate-400 border border-slate-800 ${className}`}
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:border-slate-700 ${className}`}
       title="OpenID Connect identity provider is not configured in this environment."
     >
       <ShieldAlert className="w-3.5 h-3.5 text-slate-500 shrink-0" aria-hidden="true" />

@@ -60,21 +60,21 @@ export function BureauBadge({ bureauId, size = 'md' }: BureauBadgeProps) {
   const config = BUREAU_CONFIG[bureauId] || {
     label: bureauId,
     short: bureauId,
-    bg: 'bg-slate-100',
-    text: 'text-slate-700',
-    border: 'border-slate-300',
+    bg: 'bg-slate-100 dark:bg-slate-800',
+    text: 'text-slate-700 dark:text-slate-300',
+    border: 'border-slate-200 dark:border-slate-700',
   };
 
   const sizeClasses =
     size === 'sm'
-      ? 'px-1.5 py-0.5 text-[10px]'
+      ? 'px-2 py-0.5 text-[10px]'
       : size === 'lg'
-      ? 'px-2.5 py-1 text-sm'
-      : 'px-2 py-0.5 text-xs';
+      ? 'px-3 py-1 text-sm'
+      : 'px-2.5 py-0.5 text-xs';
 
   return (
     <span
-      className={`inline-flex items-center font-medium rounded border ${config.bg} ${config.text} ${config.border} ${sizeClasses}`}
+      className={`inline-flex items-center font-bold tracking-tight rounded-md border shadow-2xs ${config.bg} ${config.text} ${config.border} ${sizeClasses}`}
       title={config.label}
     >
       {config.short}
