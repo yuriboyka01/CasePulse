@@ -1,462 +1,169 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  Activity,
   AlertCircle,
   AlertTriangle,
   ArrowRight,
-  BarChart2,
+  BarChart3,
   CheckCircle2,
-  Clock,
+  Clock3,
   Download,
   FileText,
-  History,
   Network,
-  RefreshCw,
-  Scale,
-  Shield,
-  ShieldAlert,
-  Sparkles,
 } from 'lucide-react';
 import { BUREAUS } from '@/data/synthetic-dataset';
-import { BureauCode, CaseComplaint, CaseOverlap } from '@/types';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { WorkQueue } from '@/components/dashboard/WorkQueue';
-import { AlertCard } from '@/components/ui/AlertCard';
 import { BureauBadge } from '@/components/ui/BureauBadge';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
-import { OverlapReviewPanel } from '@/components/overlaps/OverlapReviewPanel';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
-import { apiClient, ApiClientError, DashboardSummary } from '@/lib/api-client';
+import { apiClient, ApiClientError, type DashboardOverview } from '@/lib/api-client';
 
-type LoadState = 'idle' | 'loading' | 'success' | 'error';
+type LoadState = 'loading' | 'success' | 'error';
 
-interface DashboardData {
-  summary: DashboardSummary;
-  urgentCases: CaseComplaint[];
-  topOverlaps: CaseOverlap[];
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6" role="status" aria-label="Loading command dashboard">
+      <div className="flex animate-pulse flex-col justify-between gap-5 rounded-2xl border border-line bg-card p-5 sm:flex-row sm:items-center sm:p-6">
+        <div className="w-full space-y-3"><div className="h-7 w-3/5 rounded bg-muted" /><div className="h-3 w-4/5 rounded bg-muted" /><div className="h-3 w-2/3 rounded bg-muted" /></div>
+        <div className="flex gap-2"><div className="h-9 w-28 rounded-lg bg-muted" /><div className="h-9 w-28 rounded-lg bg-muted" /></div>
+      </div>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">{Array.from({ length: 5 }, (_, index) => <div key={index} className="h-36 animate-pulse rounded-xl border border-line bg-card p-5"><div className="h-3 w-2/3 rounded bg-muted" /><div className="mt-5 h-8 w-1/3 rounded bg-muted" /><div className="mt-4 h-3 w-full rounded bg-muted" /><div className="mt-2 h-3 w-4/5 rounded bg-muted" /></div>)}</div>
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-12"><div className="h-[390px] animate-pulse rounded-2xl border border-line bg-card xl:col-span-7" /><div className="h-[390px] animate-pulse rounded-2xl border border-line bg-card xl:col-span-5" /></div>
+      <div className="h-72 animate-pulse rounded-2xl border border-line bg-card" />
+      <span className="sr-only">Loading current records and metrics</span>
+    </div>
+  );
+}
+
+function DashboardReveal({ order, children }: { order: number; children: React.ReactNode }) {
+  return <div className="dashboard-reveal" data-order={order}>{children}</div>;
 }
 
 export default function OverviewDashboardPage() {
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<DashboardOverview | null>(null);
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const requestSequence = useRef(0);
 
   const fetchDashboard = useCallback(async () => {
-    setLoadState('loading');
-    setError(null);
+    const requestId = ++requestSequence.current;
     try {
-      const [summaryRes, casesRes, overlapsRes] = await Promise.all([
-        apiClient.getDashboardSummary(),
-        apiClient.getCases({ pageSize: 5, overdueOnly: false }),
-        apiClient.getOverlaps({ pageSize: 3 }),
-      ]);
-
-      // Urgent cases: overdue or critical severity, up to 5
-      const urgent = casesRes.data
-        .filter((c) => c.isOverdue || c.severity === 'CRITICAL')
-        .slice(0, 5);
-      const urgentCases =
-        urgent.length > 0 ? urgent : casesRes.data.slice(0, 5);
-
-      setData({
-        summary: summaryRes,
-        urgentCases,
-        topOverlaps: overlapsRes.data.slice(0, 3),
-      });
+      const overview = await apiClient.getDashboardOverview();
+      if (requestId !== requestSequence.current) return;
+      setData(overview);
       setLoadState('success');
     } catch (err) {
-      const msg =
-        err instanceof ApiClientError
-          ? err.userFriendlyMessage
-          : 'Failed to load dashboard data. Please retry.';
-      setError(msg);
+      if (requestId !== requestSequence.current) return;
+      setError(err instanceof ApiClientError ? err.userFriendlyMessage : 'Unable to load the command dashboard. Please retry.');
       setLoadState('error');
     }
   }, []);
 
   useEffect(() => {
-    let ignore = false;
-    async function load() {
-      try {
-        const [summaryRes, casesRes, overlapsRes] = await Promise.all([
-          apiClient.getDashboardSummary(),
-          apiClient.getCases({ pageSize: 5, overdueOnly: false }),
-          apiClient.getOverlaps({ pageSize: 3 }),
-        ]);
-        if (ignore) return;
+    const task = window.setTimeout(() => void fetchDashboard(), 0);
+    return () => window.clearTimeout(task);
+  }, [fetchDashboard]);
 
-        const urgent = casesRes.data
-          .filter((c) => c.isOverdue || c.severity === 'CRITICAL')
-          .slice(0, 5);
-        const urgentCases =
-          urgent.length > 0 ? urgent : casesRes.data.slice(0, 5);
+  const retryDashboard = () => {
+    setLoadState('loading');
+    setError(null);
+    void fetchDashboard();
+  };
 
-        setData({
-          summary: summaryRes,
-          urgentCases,
-          topOverlaps: overlapsRes.data.slice(0, 3),
-        });
-        setLoadState('success');
-      } catch (err) {
-        if (ignore) return;
-        const msg =
-          err instanceof ApiClientError
-            ? err.userFriendlyMessage
-            : 'Failed to load dashboard data. Please retry.';
-        setError(msg);
-        setLoadState('error');
-      }
-    }
-    void load();
-    return () => {
-      ignore = true;
-    };
-  }, []);
+  if (loadState === 'loading' || (loadState === 'success' && !data)) return <DashboardSkeleton />;
+  if (loadState === 'error' || !data) {
+    return (
+      <section className="mx-auto max-w-2xl rounded-2xl border border-danger/25 bg-card p-6 text-center shadow-[var(--shadow-card)]" role="alert">
+        <AlertCircle className="mx-auto h-8 w-8 text-danger" />
+        <h1 className="mt-3 text-lg font-bold text-ink">Dashboard unavailable</h1>
+        <p className="mt-1 text-sm text-ink-muted">{error ?? 'The current records could not be retrieved.'}</p>
+        <button type="button" onClick={retryDashboard} className="mt-4 inline-flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-[var(--primary-foreground)] transition-colors hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+          <AlertTriangle className="h-4 w-4" /> Retry
+        </button>
+      </section>
+    );
+  }
 
-  const bureaus = BUREAUS;
-  const summary = data?.summary;
-  const urgentCases = data?.urgentCases ?? [];
-  const topOverlaps = data?.topOverlaps ?? [];
-
-  // Derived metrics from API summary
-  const underProcessCount = summary ? summary.pendingCases : 0;
-  const disposedCount = summary
-    ? summary.totalCases - summary.pendingCases
-    : 0;
+  const { summary, priorityCases, pendingOverlaps, recentCases } = data;
 
   return (
-    <div className="space-y-7">
-      {/* Executive Command Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-5 transition-all">
-        <div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-              Inter-Bureau Operational Command
-            </h1>
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-              {summary ? (summary.syntheticDemoData ? 'LOCAL POSTGRESQL · SYNTHETIC DEMO' : 'LOCAL POSTGRESQL') : 'CONNECTING...'}
-            </span>
-          </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-3xl leading-relaxed">
-            Statutory multi-agency oversight across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum with explainable deterministic cross-bureau correlation.
-          </p>
-        </div>
-
-        {/* Operational Actions */}
-        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <button
-            onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
-            <span>Executive Dossier</span>
-          </button>
-          <Link
-            href="/explorer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-colors"
-          >
-            <Network className="w-3.5 h-3.5 text-blue-500" />
-            <span>Topology Graph</span>
-          </Link>
-          <Link
-            href="/overlaps"
-            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-lg bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-all cursor-pointer"
-          >
-            <AlertTriangle className="w-3.5 h-3.5" />
-            <span>Triage Overlaps ({summary?.unresolvedOverlapsCount ?? '…'})</span>
-          </Link>
-        </div>
-      </div>
-
-      {/* Loading / Error States */}
-      {loadState === 'loading' && (
-        <div className="py-14 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs">
-          <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm font-medium">Synchronizing inter-bureau telemetry & registry dockets…</p>
-        </div>
-      )}
-
-      {loadState === 'error' && (
-        <div className="p-5 rounded-2xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/30 flex items-start gap-3.5 shadow-xs">
-          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-bold text-rose-900 dark:text-rose-300">
-              Regulatory Dashboard Telemetry Unavailable
-            </p>
-            <p className="text-xs text-rose-700 dark:text-rose-400 mt-1">{error}</p>
-          </div>
-          <button
-            onClick={() => void fetchDashboard()}
-            className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 transition-colors cursor-pointer shadow-2xs"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Retry
-          </button>
-        </div>
-      )}
-
-      {loadState === 'success' && summary && (
-        <>
-          {/* Priority Work Queue & Correlation Radar */}
-          <WorkQueue
-            cases={urgentCases}
-            unresolvedRelationships={summary.unresolvedOverlapsCount}
-            detectedRelationships={summary.flaggedOverlapsCount}
-          />
-
-          {/* Primary Operational Metrics (5 Balanced KPI Cards Grid) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* 1. Total Cases Received */}
-            <MetricCard
-              label="Total Cases Received"
-              value={summary.totalCases}
-              description="Total grievance dockets registered across all six coordinating administrative bureaus."
-              icon={<FileText className="w-4 h-4 text-blue-500" />}
-              badge={{ text: 'Multi-Bureau', variant: 'neutral' }}
-              href="/cases"
-            />
-
-            {/* 2. Cases Under Process */}
-            <MetricCard
-              label="Under Process"
-              value={underProcessCount}
-              description="Active inquiries under investigation, hearing, or joint proceedings."
-              icon={<Clock className="w-4 h-4 text-indigo-500" />}
-              badge={{
-                text: `${summary.totalCases > 0 ? Math.round((underProcessCount / summary.totalCases) * 100) : 0}% Active`,
-                variant: 'info',
-              }}
-              href="/cases?status=UNDER_INVESTIGATION"
-            />
-
-            {/* 3. Overdue SLA Breaches */}
-            <MetricCard
-              label="Pending & Overdue"
-              value={summary.overdueCases}
-              description="Complaints exceeding statutory 30-day investigation SLA without closure."
-              icon={<AlertCircle className="w-4 h-4 text-rose-500" />}
-              badge={{ text: 'Action Required', variant: 'danger' }}
-              isUrgent={summary.overdueCases > 0}
-              href="/cases?overdueOnly=true"
-            />
-
-            {/* 4. Potential Cross-Bureau Overlaps */}
-            <MetricCard
-              label="Flagged Overlaps"
-              value={summary.flaggedOverlapsCount}
-              description="Deterministic multi-agency links detected across bureaus requiring joint triage."
-              icon={<AlertTriangle className="w-4 h-4 text-amber-500" />}
-              badge={{ text: `${summary.unresolvedOverlapsCount} Pending`, variant: 'warning' }}
-              isUrgent={summary.unresolvedOverlapsCount > 0}
-              href="/overlaps"
-            />
-
-            {/* 5. Cases Disposed */}
-            <MetricCard
-              label="Disposed / Closed"
-              value={disposedCount}
-              description="Complaints successfully concluded with formal orders, compliance or archive."
-              icon={<CheckCircle2 className="w-4 h-4 text-emerald-500" />}
-              badge={{ text: `${disposedCount} Resolved`, variant: 'success' }}
-              href="/cases?status=RESOLVED"
-            />
-          </div>
-
-          {/* Bureau-Level Workload & Jurisdictional Distribution */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-5 sm:p-6 shadow-xs">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-              <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <BarChart2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  Bureau-Level Caseload & Jurisdictional Distribution
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Workload share and active complaint density distributed across statutory higher education bodies.
-                </p>
-              </div>
-              <span className="text-xs font-mono font-semibold px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 self-start sm:self-auto">
-                {summary.totalCases} Active Workload Units
+    <div className="space-y-6">
+      <DashboardReveal order={0}>
+        <section className="flex flex-col justify-between gap-5 rounded-2xl border border-line bg-card p-5 shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:p-6">
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">Inter-Bureau Operational Command</h1>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card-muted px-2.5 py-1 text-[10px] font-semibold text-ink-soft">
+                <span className="h-1.5 w-1.5 rounded-full bg-success" />{summary.dataSource}
               </span>
+              {summary.syntheticRecordsPresent && <span className="rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-[10px] font-semibold text-warning">Synthetic records</span>}
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 pt-1">
-              {bureaus.map((bureau) => {
-                const count = (summary.bureauCounts as Record<string, number>)[bureau.id] || 0;
-                const percentage = Math.round((count / Math.max(summary.totalCases, 1)) * 100);
-
-                return (
-                  <Link
-                    key={bureau.id}
-                    href={`/cases?bureau=${bureau.id}`}
-                    className="group p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-slate-900/40 hover:bg-white dark:hover:bg-slate-900 hover:border-blue-400 dark:hover:border-blue-500/50 shadow-2xs hover:shadow-xs transition-all block"
-                  >
-                    <div className="flex items-start justify-between gap-2 mb-2.5">
-                      <div className="truncate">
-                        <BureauBadge bureauId={bureau.id} size="sm" />
-                        <h3 className="mt-1.5 text-xs font-bold text-slate-900 dark:text-white truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {bureau.shortName}
-                        </h3>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono text-base font-extrabold text-slate-900 dark:text-white">
-                          {count}
-                        </span>
-                        <span className="text-[10px] text-slate-400 block font-mono font-semibold">
-                          {percentage}% Share
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Progress bar */}
-                    <div className="w-full h-1.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-2.5">
-                      <div
-                        className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-500"
-                        style={{ width: `${Math.max(percentage, 5)}%` }}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-                      <span className="truncate max-w-[180px]">{bureau.contactOfficer.split('(')[0].trim()}</span>
-                      <span className="font-mono text-slate-400">{count} dockets</span>
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+            <p className="mt-1.5 max-w-3xl text-xs leading-relaxed text-ink-muted sm:text-sm">A clear view of statutory case priorities, unresolved relationships, and workloads across your authorized bureaus.</p>
           </div>
-
-          {/* Strategic Objective Banner */}
-          <div className="p-5 rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-start gap-3.5">
-              <div className="p-2.5 rounded-xl bg-blue-600/20 text-blue-400 border border-blue-500/30 shrink-0">
-                <Scale className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-white">
-                  SIH 2026 Problem Statement 26264: Breaking Inter-Bureau Regulatory Silos
-                </h3>
-                <p className="text-xs text-slate-300 mt-1 leading-relaxed max-w-3xl">
-                  CASEPULSE correlates complaints across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum into explainable dossiers with verified AISHE codes and temporal pattern synergy.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 shrink-0 self-end md:self-auto">
-              <Link
-                href="/explorer"
-                className="px-4 py-2 rounded-lg text-xs font-bold bg-white text-slate-900 hover:bg-slate-100 transition-colors inline-flex items-center gap-1.5 shadow-xs"
-              >
-                <span>Explore Topology</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+          <div className="flex shrink-0 flex-wrap items-center gap-2">
+            <button type="button" onClick={() => setIsExportOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-raised px-3.5 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Download className="h-3.5 w-3.5" />Executive dossier</button>
+            <Link href="/explorer" className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-raised px-3.5 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Network className="h-3.5 w-3.5" />Explore relationships</Link>
           </div>
+        </section>
+      </DashboardReveal>
 
-          {/* Priority Action Alerts Grid */}
-          <div>
-            <div className="flex items-center justify-between mb-3.5">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <ShieldAlert className="w-4 h-4 text-rose-500" />
-                Priority Operational Alerts (Urgent Attention)
-              </h2>
-              <span className="text-xs text-slate-500 dark:text-slate-400">Auto-prioritized by risk & SLA breach</span>
-            </div>
+      <DashboardReveal order={1}>
+        <section aria-label="Operational metrics" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <MetricCard label="Registered cases" value={summary.totalCases} description="All case records available within your authorized bureau scope." icon={<FileText className="h-4 w-4" />} badge={{ text: 'All records', variant: 'neutral' }} href="/cases" />
+          <MetricCard label="Open cases" value={summary.pendingCases} description="Cases that have not reached a resolved or closed status." icon={<Clock3 className="h-4 w-4" />} badge={{ text: `${summary.totalCases ? Math.round((summary.pendingCases / summary.totalCases) * 100) : 0}% active`, variant: 'info' }} href="/cases" />
+          <MetricCard label="Overdue cases" value={summary.overdueCases} description="Open cases past their recorded service-level due date." icon={<AlertCircle className="h-4 w-4" />} badge={{ text: 'Action needed', variant: 'danger' }} isUrgent={summary.overdueCases > 0} href="/cases?overdueOnly=true" />
+          <MetricCard label="Critical cases" value={summary.criticalCases} description="Cases marked critical by the source record severity." icon={<AlertTriangle className="h-4 w-4" />} badge={{ text: 'High severity', variant: 'warning' }} isUrgent={summary.criticalCases > 0} href="/cases" />
+          <MetricCard label="Unresolved links" value={summary.unresolvedOverlapsCount} description="Proposed or further-coordination relationships awaiting closure." icon={<Network className="h-4 w-4" />} badge={{ text: `${summary.flaggedOverlapsCount.toLocaleString('en-IN')} detected`, variant: 'warning' }} isUrgent={summary.unresolvedOverlapsCount > 0} href="/overlaps" />
+        </section>
+      </DashboardReveal>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <AlertCard
-                type="OVERDUE"
-                title="Apex Institute (Pune): Ghost Faculty Hearing Overdue"
-                subtitle="Investigation CP-2026-0104 has been open for 45 days. 19 faculty absences remain unexplained."
-                meta="AICTE · Breached 15 days ago"
-                href="/cases/CP-2026-0104"
-              />
-              <AlertCard
-                type="OVERLAP"
-                title="Confirmed Overlap: Kalinga Academy Anti-Ragging"
-                subtitle="Concurrent inquiries in NARC (CP-2026-0440) and UGC Vigilance (CP-2026-0491) for severe hostel assault."
-                meta="NARC & UGC · 100% ID Match"
-                href="/overlaps"
-                actionText="Coordinate Joint Inquiry"
-              />
-              <AlertCard
-                type="RISK"
-                title="St. Jude College: Multi-Bureau Unapproved Intake"
-                subtitle="Active de-recognition alert across Karnataka DTE and UGC for unapproved M.Pharm seats and degree retention."
-                meta="DTE-KA & UGC · High Severity"
-                href="/institutions/INST-002"
-                actionText="Inspect Institution Dossier"
-              />
+      <DashboardReveal order={2}>
+        <WorkQueue cases={priorityCases} pendingOverlaps={pendingOverlaps} unresolvedRelationships={summary.unresolvedOverlapsCount} detectedRelationships={summary.flaggedOverlapsCount} />
+      </DashboardReveal>
+
+      <DashboardReveal order={3}>
+        <section className="rounded-2xl border border-line bg-card p-5 shadow-[var(--shadow-card)] sm:p-6" aria-labelledby="bureau-workload-title">
+          <div className="mb-4 flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+            <div>
+              <h2 id="bureau-workload-title" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ink-soft"><BarChart3 className="h-4 w-4 text-brand" /> Bureau caseload distribution</h2>
+              <p className="mt-1 text-xs text-ink-muted">Case records by originating bureau in your current scope.</p>
             </div>
+            <span className="self-start rounded-md bg-card-muted px-2.5 py-1 font-mono text-xs font-semibold text-ink-soft sm:self-auto">{summary.totalCases.toLocaleString('en-IN')} total</span>
           </div>
-
-          {/* Top Unresolved Overlaps Highlight Section */}
-          {topOverlaps.length > 0 && (
-            <div className="space-y-3.5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                    <AlertTriangle className="w-4 h-4 text-amber-500" />
-                    High-Confidence Cross-Bureau Overlaps Requiring Triage
-                  </h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Correlated case pairs verified by deterministic institutional identifiers and temporal category synergy.
-                  </p>
-                </div>
-                <Link
-                  href="/overlaps"
-                  className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-1"
-                >
-                  <span>View All ({summary.flaggedOverlapsCount})</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            {BUREAUS.filter((bureau) => Object.hasOwn(summary.bureauCounts, bureau.id)).map((bureau) => {
+              const count = summary.bureauCounts[bureau.id] ?? 0;
+              const percentage = summary.totalCases > 0 ? Math.round((count / summary.totalCases) * 100) : 0;
+              return (
+                <Link key={bureau.id} href={`/cases?bureau=${bureau.id}`} className="group rounded-xl border border-line bg-card-muted/50 p-4 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-card)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0"><BureauBadge bureauId={bureau.id} size="sm" /><h3 className="mt-1.5 truncate text-xs font-bold text-ink group-hover:text-brand">{bureau.shortName}</h3></div>
+                    <div className="text-right"><span className="font-mono text-base font-extrabold text-ink">{count.toLocaleString('en-IN')}</span><span className="block font-mono text-[10px] text-ink-muted">{percentage}%</span></div>
+                  </div>
+                  <div className="my-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-brand transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
+                  <span className="flex items-center justify-between gap-2 text-[10px] text-ink-muted"><span className="truncate">{bureau.contactOfficer.split('(')[0].trim()}</span><span className="shrink-0">{count.toLocaleString('en-IN')} cases</span></span>
                 </Link>
-              </div>
-
-              <div className="space-y-3.5">
-                {topOverlaps.map((ovl) => (
-                  <OverlapReviewPanel
-                    key={ovl.id}
-                    overlap={ovl}
-                    onTriage={() => {
-                      // Write operations go through /overlaps dedicated page
-                    }}
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Recent Urgent Cases Table */}
-          <div className="space-y-3.5 pt-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                  <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  Active Priority Case Register (Recent Filings & Escalations)
-                </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  Showing top cases flagged for severity, overdue SLA, or multi-bureau ties.
-                </p>
-              </div>
-              <Link
-                href="/cases"
-                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-1"
-              >
-                <span>Explore Complete Register ({summary.totalCases})</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <ComplaintTable cases={urgentCases} />
+              );
+            })}
           </div>
-        </>
-      )}
+        </section>
+      </DashboardReveal>
 
-      {/* Export Dossier Modal */}
+      <DashboardReveal order={4}>
+        <section className="space-y-3.5" aria-labelledby="recent-cases-title">
+          <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-end">
+            <div><h2 id="recent-cases-title" className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ink-soft"><FileText className="h-4 w-4 text-brand" /> Recently filed cases</h2><p className="mt-1 text-xs text-ink-muted">Latest case records, separate from the priority queue above.</p></div>
+            <Link href="/cases" className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:text-brand-strong">Browse all {summary.totalCases.toLocaleString('en-IN')} cases <ArrowRight className="h-3.5 w-3.5" /></Link>
+          </div>
+          {recentCases.length > 0 ? <ComplaintTable cases={recentCases} /> : <div className="rounded-xl border border-dashed border-line bg-card px-4 py-10 text-center"><CheckCircle2 className="mx-auto h-7 w-7 text-success" /><p className="mt-2 text-sm font-semibold text-ink">No case records yet</p><p className="mt-1 text-xs text-ink-muted">New cases will appear here when they are available in your scope.</p></div>}
+        </section>
+      </DashboardReveal>
+
+      {summary.syntheticRecordsPresent && <p className="text-center text-[10px] text-ink-muted">Synthetic records are included · Source: {summary.dataSource}</p>}
       <ExportDossierModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );

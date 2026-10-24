@@ -49,3 +49,36 @@ test('missing institution and case records return null', async () => {
   assert.equal(await repo.getInstitution('missing', actor), null);
   assert.equal(await repo.getCase('missing', actor), null);
 });
+
+test('dashboard overview returns empty lists without widening the actor scope', async () => {
+  const calls: { text: string; values: unknown[] }[] = [];
+  const repo = new CasePulseRepository(async (text, values = []) => {
+    calls.push({ text, values });
+    if (text.includes('AS "allSynthetic"')) {
+      return { rows: [{ asOf: '2026-10-24T00:00:00Z', totalCases: 0, pendingCases: 0, overdueCases: 0, criticalCases: 0, repeatOffenderInstitutions: 0, flaggedOverlapsCount: 0, unresolvedOverlapsCount: 0, jointInquiriesActive: 0, activeInstitutions: 0, allSynthetic: false, hasSyntheticRecords: false, bureauCounts: { AICTE_APPROVAL: 0 } }], rowCount: 1 };
+    }
+    if (text.includes('count(*)::int AS total')) return { rows: [{ total: 0 }], rowCount: 1 };
+    return { rows: [], rowCount: 0 };
+  });
+
+  const result = await repo.dashboardOverview(actor);
+  assert.deepEqual(result.priorityCases, []);
+  assert.deepEqual(result.pendingOverlaps, []);
+  assert.deepEqual(result.recentCases, []);
+  assert.equal(result.summary.totalCases, 0);
+
+  const priorityQuery = calls.find(({ text }) => text.includes('c.severity = \'CRITICAL\''));
+  const pendingQuery = calls.find(({ text }) => text.includes("r.status IN ('PROPOSED', 'FURTHER_COORDINATION')"));
+  assert.ok(priorityQuery);
+  assert.ok(pendingQuery);
+  assert.match(priorityQuery.text, /c\.bureau_code = ANY\(\$1::text\[\]\)/);
+  assert.match(priorityQuery.text, /c\.status NOT IN \('RESOLVED', 'CLOSED'\)/);
+  assert.match(priorityQuery.text, /c\.sla_due_date < now\(\) THEN c\.sla_due_date END ASC/);
+  assert.match(priorityQuery.text, /LIMIT 5/);
+  assert.deepEqual(priorityQuery.values, [['AICTE_APPROVAL']]);
+  assert.match(pendingQuery.text, /source\.bureau_code = ANY\(\$1::text\[\]\)/);
+  assert.match(pendingQuery.text, /target\.bureau_code = ANY\(\$1::text\[\]\)/);
+  assert.match(pendingQuery.text, /WHEN 'PROPOSED' THEN 0 ELSE 1 END ASC, r\.flagged_at ASC, r\.id ASC/);
+  assert.match(pendingQuery.text, /LIMIT 3/);
+  assert.deepEqual(pendingQuery.values, [['AICTE_APPROVAL']]);
+});

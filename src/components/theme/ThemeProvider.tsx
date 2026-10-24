@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -17,35 +17,25 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>('dark');
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    // Obsidian (dark) is the default; only an explicit 'light' choice opts out
-    const stored = localStorage.getItem('casepulse-theme') as Theme | null;
-    const initialTheme = stored === 'light' ? 'light' : 'dark';
-    setThemeState(initialTheme);
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    setMounted(true);
-  }, []);
+  // The root layout's early theme script sets this class before hydration. Reading
+  // it here avoids a state-setting effect and keeps the selected theme in sync.
+  const [theme, setThemeState] = useState<Theme>(() =>
+    typeof document !== 'undefined' && !document.documentElement.classList.contains('dark')
+      ? 'light'
+      : 'dark',
+  );
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
-    localStorage.setItem('casepulse-theme', newTheme);
-    if (newTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    try {
+      localStorage.setItem('casepulse-theme', newTheme);
+    } catch {
+      // The in-memory theme still works when storage is unavailable.
     }
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
   };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+  const toggleTheme = () => setTheme(theme === 'dark' ? 'light' : 'dark');
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>

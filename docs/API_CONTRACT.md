@@ -155,6 +155,7 @@ Returns current scoped metrics and a small aggregate per bureau. Metrics use one
     "asOf": "2026-10-23T09:00:00Z",
     "dataSource": "POSTGRESQL",
     "syntheticDemoData": true,
+    "syntheticRecordsPresent": true,
     "totalCases": 120,
     "pendingCases": 74,
     "overdueCases": 18,
@@ -176,7 +177,24 @@ Returns current scoped metrics and a small aggregate per bureau. Metrics use one
 }
 ```
 
-Counts are illustrative. `pendingCases` excludes `RESOLVED` and `CLOSED`; unresolved overlaps are proposed relationships that have no final decision. Overdue is calculated from SLA due date and case status at request time, rather than trusted from a client-supplied flag.
+Counts are illustrative. `pendingCases` excludes `RESOLVED` and `CLOSED`; unresolved overlaps include `PROPOSED` and `FURTHER_COORDINATION`. `syntheticRecordsPresent` is true when at least one scoped case is marked synthetic; it allows user-facing record provenance to remain accurate in mixed datasets. Overdue is calculated from SLA due date and case status at request time, rather than trusted from a client-supplied flag.
+
+### `GET /api/dashboard/overview`
+
+Returns the dashboard summary plus three actor-scoped lists in one response: up to five priority cases, up to three unresolved relationships, and up to five recent cases. Priority cases exclude closed records and place overdue cases first, ordered by longest time overdue, followed by open critical cases ordered by earliest SLA date. Pending relationships include `PROPOSED` and `FURTHER_COORDINATION`; proposed items come first, then older flagged items. All list orderings use record IDs as stable tie-breakers.
+
+```json
+{
+  "data": {
+    "summary": { "totalCases": 120, "pendingCases": 74, "flaggedOverlapsCount": 26, "unresolvedOverlapsCount": 12 },
+    "priorityCases": [],
+    "pendingOverlaps": [],
+    "recentCases": []
+  }
+}
+```
+
+The arrays contain the same case and relationship projections described above. Empty arrays mean no matching records in the caller's authorized scope; service failures return the standard error shape and never an empty success response.
 
 ### `GET /api/institutions`
 

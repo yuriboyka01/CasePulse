@@ -123,6 +123,10 @@ function CasesContent() {
         </div>
       </div>
 
+      {cases.some((record) => record.isSynthetic) && (
+        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in this register.</p>
+      )}
+
       {/* Filter Toolbar */}
       <SearchFilterBar
         searchQuery={searchQuery}

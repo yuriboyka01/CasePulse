@@ -1,155 +1,105 @@
 'use client';
 
-import React, { Suspense, useState } from 'react';
+import React, { ViewTransition, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   AlertTriangle,
   Building2,
+  ChevronLeft,
+  ChevronRight,
   FileText,
   Layers,
   LineChart,
   Menu,
   Moon,
   Network,
-  RotateCcw,
-  Scale,
   Shield,
   Sun,
   X,
 } from 'lucide-react';
-import { DEMO_DATASET_LABEL } from '@/data/synthetic-dataset';
 import { AuthControls } from '@/components/auth/AuthControls';
 import { useTheme } from '@/components/theme/ThemeProvider';
+import { apiClient } from '@/lib/api-client';
 
 const NAV_ITEMS = [
-  { label: 'Overview', href: '/', icon: <Layers className="w-4 h-4" /> },
-  {
-    label: 'Cross-Bureau Overlaps',
-    href: '/overlaps',
-    icon: <AlertTriangle className="w-4 h-4" />,
-    badge: 'REVIEW',
-  },
-  { label: 'Case Register', href: '/cases', icon: <FileText className="w-4 h-4" /> },
-  { label: 'Institution Directory', href: '/institutions', icon: <Building2 className="w-4 h-4" /> },
-  { label: 'Intelligence & Reports', href: '/analytics', icon: <LineChart className="w-4 h-4" /> },
-  { label: 'Relationship Explorer', href: '/explorer', icon: <Network className="w-4 h-4" /> },
+  { label: 'Overview', href: '/', icon: <Layers className="h-4 w-4" /> },
+  { label: 'Cross-Bureau Overlaps', href: '/overlaps', icon: <AlertTriangle className="h-4 w-4" />, badge: 'REVIEW' },
+  { label: 'Case Register', href: '/cases', icon: <FileText className="h-4 w-4" /> },
+  { label: 'Institution Directory', href: '/institutions', icon: <Building2 className="h-4 w-4" /> },
+  { label: 'Intelligence & Reports', href: '/analytics', icon: <LineChart className="h-4 w-4" /> },
+  { label: 'Relationship Explorer', href: '/explorer', icon: <Network className="h-4 w-4" /> },
 ];
 
-function ThemeToggleButton() {
-  const { theme, toggleTheme } = useTheme();
+const PAGE_TITLES = NAV_ITEMS.map(({ label, href }) => ({ label, href }));
 
+function ThemeToggleButton() {
+  const { toggleTheme } = useTheme();
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      aria-label={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-      title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-      className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer shadow-2xs"
+      aria-label="Toggle color theme"
+      title="Toggle color theme"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
     >
-      {theme === 'dark' ? (
-        <Sun className="w-4 h-4 text-amber-400" />
-      ) : (
-        <Moon className="w-4 h-4 text-slate-600" />
-      )}
+      <Sun className="hidden h-4 w-4 dark:block" aria-hidden="true" />
+      <Moon className="h-4 w-4 dark:hidden" aria-hidden="true" />
     </button>
   );
 }
 
-function NavLinks() {
+function usePendingReviewCount() {
+  const [count, setCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      try {
+        const result = await apiClient.getOverlaps({ status: 'PROPOSED', page: 1, pageSize: 1 });
+        if (active) setCount(result.meta.totalCount);
+      } catch {
+        if (active) setCount(null);
+      }
+    };
+    void load();
+    return () => { active = false; };
+  }, []);
+
+  return count;
+}
+
+function NavigationItems({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const pathname = usePathname();
+  const pendingCount = usePendingReviewCount();
 
   return (
-    <nav className="hidden lg:flex items-center space-x-1" aria-label="Desktop navigation">
+    <nav aria-label="Primary navigation" className="space-y-1">
       {NAV_ITEMS.map((item) => {
-        const isActive =
-          item.href === '/'
-            ? pathname === '/'
-            : pathname === item.href || pathname?.startsWith(`${item.href}/`);
-
+        const active = item.href === '/' ? pathname === '/' : pathname === item.href || pathname?.startsWith(`${item.href}/`);
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
-              isActive
-                ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 font-semibold border border-blue-200/80 dark:border-blue-800/80 shadow-2xs'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100/80 dark:hover:bg-slate-800/60'
-            }`}
+            onClick={onNavigate}
+            title={collapsed ? item.label : undefined}
+            aria-current={active ? 'page' : undefined}
+            className={`group relative flex min-h-11 items-center gap-3 rounded-lg px-3 text-sm transition-colors ${collapsed ? 'justify-center' : ''} ${active ? 'bg-brand-soft font-semibold text-brand' : 'text-ink-muted hover:bg-raised hover:text-ink'}`}
           >
-            {item.icon}
-            <span>{item.label}</span>
-            {item.badge && (
-              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                {item.badge}
+            {active && <ViewTransition name="sidebar-active-indicator" default="none"><span aria-hidden="true" className="absolute inset-y-2 left-0 w-[3px] rounded-r-full bg-brand" /></ViewTransition>}
+            <span className="shrink-0">{item.icon}</span>
+            {!collapsed && <span className="min-w-0 flex-1 truncate">{item.label}</span>}
+            {item.badge && !collapsed && (
+              <span className="inline-flex min-w-6 items-center justify-center rounded-md border border-warning/30 bg-warning/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-warning">
+                {pendingCount === null ? 'REVIEW' : pendingCount}
               </span>
+            )}
+            {item.badge && collapsed && pendingCount !== null && pendingCount > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-warning" aria-label={`${pendingCount} pending reviews`} />
             )}
           </Link>
         );
       })}
-    </nav>
-  );
-}
-
-interface MobileNavLinksProps {
-  onClose: () => void;
-  isOidcConfigured?: boolean;
-  isDemoMode?: boolean;
-}
-
-function MobileNavLinks({
-  onClose,
-  isOidcConfigured,
-  isDemoMode,
-}: MobileNavLinksProps) {
-  const pathname = usePathname();
-
-  return (
-    <nav
-      className="lg:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-950/95 backdrop-blur-md"
-      aria-label="Mobile navigation"
-    >
-      <div className="px-4 py-2 space-y-1">
-        {NAV_ITEMS.map((item) => {
-          const isActive =
-            item.href === '/'
-              ? pathname === '/'
-              : pathname === item.href || pathname?.startsWith(`${item.href}/`);
-
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                isActive
-                  ? 'bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 font-semibold border border-blue-200/80 dark:border-blue-800/80'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60'
-              }`}
-            >
-              <div className="flex items-center gap-2.5">
-                {item.icon}
-                <span>{item.label}</span>
-              </div>
-              {item.badge && (
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Mobile AuthControls & Theme Toggle */}
-      <div className="border-t border-slate-200 dark:border-slate-800 px-4 py-3 bg-slate-50 dark:bg-slate-900 flex items-center justify-between gap-2">
-        <AuthControls
-          isOidcConfigured={isOidcConfigured}
-          isDemoMode={isDemoMode}
-          onActionComplete={onClose}
-        />
-        <ThemeToggleButton />
-      </div>
     </nav>
   );
 }
@@ -159,122 +109,69 @@ export interface NavbarProps {
   isDemoMode?: boolean;
 }
 
-export function Navbar({
-  isOidcConfigured = false,
-  isDemoMode = false,
-}: NavbarProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: NavbarProps) {
+  const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+  const pageTitle = PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
 
   return (
-    <header className="border-b border-slate-200 dark:border-white/10 bg-white/95 dark:bg-slate-950/95 text-slate-900 dark:text-slate-100 sticky top-0 z-40 backdrop-blur-md">
-      {/* Top Regulatory Identity Strip */}
-      <div className="bg-slate-100/80 dark:bg-slate-950 border-b border-slate-200/80 dark:border-white/10 px-4 py-1.5 flex flex-wrap items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1 font-semibold text-slate-800 dark:text-slate-200">
-            <Scale className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-            CASEPULSE
-          </span>
-          <span className="text-slate-300 dark:text-slate-700">|</span>
-          <span className="hidden sm:inline">SIH 2026 Problem Statement 26264: Inter-Bureau Complaint Correlation Platform</span>
-          <span className="sm:hidden">SIH 2026 PS 26264</span>
-        </div>
-
-        {/* Synthetic Demo Label */}
-        <div className="flex items-center gap-2.5">
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-            {DEMO_DATASET_LABEL}
-          </span>
-          <span
-            title="Data is persisted in PostgreSQL. In-browser reset is disabled; run npm run db:seed to reseed demo records."
-            className="hidden md:inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] text-slate-400 dark:text-slate-500 bg-slate-200/50 dark:bg-slate-800/50 border border-slate-300/50 dark:border-slate-700/50 cursor-not-allowed select-none font-medium"
-            aria-disabled="true"
-          >
-            <RotateCcw className="w-3 h-3 opacity-50" />
-            Reset: Seed script only
-          </span>
-        </div>
-      </div>
-
-      {/* Main Nav Bar */}
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex items-center justify-between min-h-16">
-        {/* Brand */}
-        <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
-              <Shield className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <span className="font-bold tracking-tight text-base text-slate-900 dark:text-white">
-                CASEPULSE
-              </span>
-              <span className="text-[10px] block text-slate-500 dark:text-slate-400 uppercase tracking-widest font-mono">
-                Regulatory Intelligence
-              </span>
-            </div>
+    <>
+      <aside className={`hidden shrink-0 flex-col border-r border-line bg-card transition-[width] duration-200 lg:flex ${collapsed ? 'w-[76px]' : 'w-[260px]'}`}>
+        <div className={`flex h-[72px] items-center border-b border-line px-4 ${collapsed ? 'justify-center' : 'justify-between'}`}>
+          <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="CASEPULSE overview">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand text-[var(--primary-foreground)] shadow-sm"><Shield className="h-4 w-4" /></span>
+            {!collapsed && <span className="min-w-0"><span className="block text-sm font-bold tracking-wide text-ink">CASEPULSE</span><span className="block truncate text-[9px] uppercase tracking-[0.16em] text-ink-muted">Regulatory intelligence</span></span>}
           </Link>
-
-          {/* Desktop Nav Links in Suspense */}
-          <Suspense fallback={<div className="hidden lg:flex h-8 w-64 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />}>
-            <NavLinks />
-          </Suspense>
         </div>
-
-        {/* Desktop Controls (Auth + Bureau Status + Theme Toggle) */}
-        <div className="hidden lg:flex items-center gap-3.5">
-          <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
-
-          <div className="h-5 w-px bg-slate-200 dark:bg-slate-800" aria-hidden="true" />
-
-          {/* Bureau Status Badge */}
-          <div className="flex items-center gap-2.5 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60">
-            <div
-              className="w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20"
-              title="6 Coordinating Bureaus Active"
-              aria-hidden="true"
-            />
-            <div className="flex flex-col text-left">
-              <span className="text-[11px] font-semibold text-slate-800 dark:text-slate-200 leading-tight">
-                Joint Desk
-              </span>
-              <span className="text-[9px] text-slate-500 dark:text-slate-400 font-mono">
-                6 Bureaus Active
-              </span>
-            </div>
+        <div className="flex-1 px-3 py-5">
+          {!collapsed && <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-muted">Workspace</p>}
+          <NavigationItems collapsed={collapsed} />
+        </div>
+        <div className="border-t border-line p-3">
+          {!collapsed && <div className="mb-3 rounded-lg border border-line bg-card-muted p-3 text-[10px] leading-relaxed text-ink-muted">Shared institution matches indicate jurisdictional overlap. Officers verify allegation independence before joint action.</div>}
+          <div className={`flex items-center gap-2 ${collapsed ? 'flex-col' : 'justify-between'}`}>
+            <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} className={collapsed ? 'hidden' : 'min-w-0'} />
+            <button type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-raised hover:text-ink">
+              {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+            </button>
           </div>
-
-          <ThemeToggleButton />
+          {collapsed && <div className="mt-2 flex justify-center"><ThemeToggleButton /></div>}
         </div>
+      </aside>
 
-        {/* Mobile Controls (Status dot + Hamburger toggle) */}
-        <div className="flex lg:hidden items-center gap-2">
-          <ThemeToggleButton />
-          <div
-            className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-500/20 mr-1"
-            title="6 Coordinating Bureaus Active"
-            aria-hidden="true"
-          />
-          <button
-            onClick={() => setMobileMenuOpen((prev) => !prev)}
-            className="p-1.5 rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            aria-expanded={mobileMenuOpen}
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </button>
+      <div className="lg:hidden">
+        <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-line bg-card/95 px-4 backdrop-blur">
+          <Link href="/" className="flex items-center gap-2 font-bold tracking-wide text-ink"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-[var(--primary-foreground)]"><Shield className="h-4 w-4" /></span>CASEPULSE</Link>
+          <div className="flex items-center gap-2"><ThemeToggleButton /><button type="button" onClick={() => setMobileOpen(true)} aria-label="Open navigation" className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink"><Menu className="h-4 w-4" /></button></div>
+        </header>
+        <div className="flex min-h-12 items-center justify-between gap-3 border-b border-line bg-background px-4 py-2">
+          <div className="min-w-0"><p className="truncate text-sm font-semibold text-ink">{pageTitle}</p><p className="text-[9px] text-ink-muted">Operational workspace</p></div>
         </div>
+        {mobileOpen && <div className="fixed inset-0 z-50 bg-black/45" onClick={() => setMobileOpen(false)}>
+          <aside className="flex h-full w-[min(88vw,320px)] flex-col border-r border-line bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
+            <div className="flex h-14 items-center justify-between border-b border-line px-4"><span className="font-bold tracking-wide text-ink">CASEPULSE</span><button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-raised"><X className="h-4 w-4" /></button></div>
+            <div className="flex-1 overflow-y-auto p-3"><NavigationItems onNavigate={() => setMobileOpen(false)} /></div>
+            <div className="border-t border-line p-4"><AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} /></div>
+          </aside>
+        </div>}
       </div>
+    </>
+  );
+}
 
-      {/* Mobile Dropdown Menu */}
-      {mobileMenuOpen && (
-        <Suspense fallback={<div className="lg:hidden h-10 bg-slate-100 dark:bg-slate-900" />}>
-          <MobileNavLinks
-            onClose={() => setMobileMenuOpen(false)}
-            isOidcConfigured={isOidcConfigured}
-            isDemoMode={isDemoMode}
-          />
-        </Suspense>
-      )}
+export function TopBar({ isOidcConfigured = false, isDemoMode = false }: NavbarProps) {
+  const pathname = usePathname();
+  const pageTitle = PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
+
+  return (
+    <header className="sticky top-0 z-30 hidden min-h-[72px] items-center justify-between gap-4 border-b border-line bg-background/90 px-6 backdrop-blur lg:flex">
+      <div className="min-w-0"><p className="truncate text-base font-semibold text-ink">{pageTitle}</p><p className="text-[10px] text-ink-muted">Operational workspace</p></div>
+      <div className="flex items-center gap-3">
+        <span className="inline-flex items-center gap-2 rounded-lg border border-line bg-card px-3 py-1.5"><span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_3px_color-mix(in_srgb,var(--success)_18%,transparent)]" /><span className="text-[11px] font-semibold text-ink">Joint Desk</span><span className="text-[10px] text-ink-muted">6 bureaus</span></span>
+        <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
+        <ThemeToggleButton />
+      </div>
     </header>
   );
 }

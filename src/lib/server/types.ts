@@ -7,6 +7,8 @@ export const BUREAU_CODES = [
   'CONSUMER_FORUM',
 ] as const;
 
+import type { CaseComplaint, CaseOverlap } from '@/types';
+
 export type BureauCode = (typeof BUREAU_CODES)[number];
 export type CaseStatus =
   | 'NEW'
@@ -49,6 +51,14 @@ export interface DashboardSummary {
   bureauCounts: Record<string, number>;
   dataSource: string;
   syntheticDemoData: boolean;
+  syntheticRecordsPresent: boolean;
+}
+
+export interface DashboardOverview {
+  summary: DashboardSummary;
+  priorityCases: Omit<CaseComplaint, 'timeline'>[];
+  pendingOverlaps: Omit<CaseOverlap, 'flaggedDate'>[];
+  recentCases: Omit<CaseComplaint, 'timeline'>[];
 }
 
 export interface Pagination {

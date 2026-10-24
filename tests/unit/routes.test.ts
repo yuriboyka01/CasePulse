@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import type { Pool } from 'pg';
 import { GET as dashboardSummary } from '../../src/app/api/dashboard/summary/route';
+import { GET as dashboardOverview } from '../../src/app/api/dashboard/overview/route';
 import { GET as listCases } from '../../src/app/api/cases/route';
 
 function setEnv(name: string, value: string | undefined) {
@@ -23,7 +24,28 @@ test('API endpoints reject requests without a server-resolved actor', async () =
     assert.equal(response.status, 401);
     assert.equal(body.error.code, 'UNAUTHENTICATED');
     assert.ok(body.error.requestId);
+    const overviewResponse = await dashboardOverview(new Request('http://local/api/dashboard/overview'));
+    const overviewBody = await overviewResponse.json();
+    assert.equal(overviewResponse.status, 401);
+    assert.equal(overviewBody.error.code, 'UNAUTHENTICATED');
   } finally {
+    restoreAuth();
+    restoreNodeEnv();
+  }
+});
+
+test('dashboard overview database failures remain visible and return no success payload', async () => {
+  const restoreNodeEnv = setEnv('NODE_ENV', 'development');
+  const restoreAuth = setEnv('CASEPULSE_AUTH_MODE', 'demo');
+  const restoreDatabase = setEnv('DATABASE_URL', undefined);
+  try {
+    const response = await dashboardOverview(new Request('http://local/api/dashboard/overview'));
+    const body = await response.json();
+    assert.equal(response.status, 503);
+    assert.equal(body.error.code, 'DATABASE_UNAVAILABLE');
+    assert.equal(body.data, undefined);
+  } finally {
+    restoreDatabase();
     restoreAuth();
     restoreNodeEnv();
   }

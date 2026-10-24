@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import {
-  FlaskConical,
   Loader2,
   LogIn,
   LogOut,
@@ -79,10 +78,13 @@ export function AuthControls({
 
   // State 2: Authenticated session
   if (status === 'authenticated') {
-    const userLabel =
-      session?.user?.name || session?.user?.email || 'Authenticated Officer';
+    const userLabel = isDemoMode
+      ? 'Local officer'
+      : session?.user?.name || session?.user?.email || 'Authenticated Officer';
     const fullIdentity =
-      session?.user?.name && session?.user?.email
+      isDemoMode
+        ? 'Local workspace officer'
+        : session?.user?.name && session?.user?.email
         ? `${session.user.name} (${session.user.email})`
         : userLabel;
 
@@ -104,16 +106,6 @@ export function AuthControls({
               ×
             </button>
           </div>
-        )}
-
-        {isDemoMode && (
-          <span
-            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
-            title="Development demo mode: Synthetic officer access"
-          >
-            <FlaskConical className="w-3 h-3 text-amber-600 dark:text-amber-400" aria-hidden="true" />
-            Demo Mode
-          </span>
         )}
 
         <div
@@ -144,19 +136,18 @@ export function AuthControls({
     );
   }
 
-  // State 3: Unauthenticated with Development Demo Mode enabled
+  // State 3: Unauthenticated with local workspace access enabled
   if (isDemoMode) {
     return (
       <div className={`flex flex-col gap-1 ${className}`}>
         <div
           role="status"
-          aria-label="Development demo mode active. Synthetic officer access only, not real authentication."
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/60 shadow-2xs"
-          title="Development demo mode: Synthetic officer access is active for local testing. This is not real authentication."
+          aria-label="Local workspace access is active."
+          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 shadow-2xs"
+          title="Local workspace access"
         >
-          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-          <FlaskConical className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" aria-hidden="true" />
-          <span>Demo Mode (Active)</span>
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+          <span>Local access</span>
         </div>
       </div>
     );
@@ -202,7 +193,7 @@ export function AuthControls({
     );
   }
 
-  // State 5: Unauthenticated with OIDC not configured and demo mode not enabled
+  // State 5: Unauthenticated with no configured identity provider or local access
   return (
     <div
       role="status"

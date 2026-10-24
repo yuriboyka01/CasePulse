@@ -149,6 +149,10 @@ function OverlapsContent() {
         </div>
       </div>
 
+      {overlaps.some((record) => record.isSynthetic) && (
+        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in these review results.</p>
+      )}
+
       {/* Summary KPI Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">

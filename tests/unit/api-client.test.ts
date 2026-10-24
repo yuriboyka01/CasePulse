@@ -302,6 +302,7 @@ test('apiClient.getDashboardSummary makes same-origin request and returns summar
             asOf: '2026-10-24T07:00:00Z',
             dataSource: 'POSTGRESQL',
             syntheticDemoData: true,
+            syntheticRecordsPresent: true,
             totalCases: 13,
             pendingCases: 9,
             overdueCases: 3,
@@ -325,6 +326,7 @@ test('apiClient.getDashboardSummary makes same-origin request and returns summar
     assert.equal(summary.pendingCases, 9);
     assert.equal(summary.dataSource, 'POSTGRESQL');
     assert.equal(summary.syntheticDemoData, true);
+    assert.equal(summary.syntheticRecordsPresent, true);
     assert.equal(summary.overdueCases, 3);
     assert.equal(summary.flaggedOverlapsCount, 7);
     assert.equal(summary.unresolvedOverlapsCount, 4);
@@ -358,6 +360,39 @@ test('apiClient.getDashboardSummary throws ApiClientError on server error', asyn
         return true;
       }
     );
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test('apiClient.getDashboardOverview returns the typed command dashboard response', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    let capturedUrl: string | null = null;
+    globalThis.fetch = async (input, init) => {
+      capturedUrl = String(input);
+      assert.equal(init?.credentials, 'same-origin');
+      return new Response(JSON.stringify({
+        data: {
+          summary: {
+            asOf: '2026-10-24T07:00:00Z', dataSource: 'POSTGRESQL', syntheticDemoData: true, syntheticRecordsPresent: true,
+            totalCases: 0, pendingCases: 0, overdueCases: 0, criticalCases: 0,
+            activeInstitutions: 0, repeatOffenderInstitutions: 0, flaggedOverlapsCount: 0,
+            unresolvedOverlapsCount: 0, jointInquiriesActive: 0, bureauCounts: {},
+          },
+          priorityCases: [],
+          pendingOverlaps: [],
+          recentCases: [],
+        },
+      }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    };
+
+    const overview = await apiClient.getDashboardOverview();
+    assert.equal(capturedUrl, '/api/dashboard/overview');
+    assert.equal(overview.summary.totalCases, 0);
+    assert.deepEqual(overview.priorityCases, []);
+    assert.deepEqual(overview.pendingOverlaps, []);
+    assert.deepEqual(overview.recentCases, []);
   } finally {
     globalThis.fetch = originalFetch;
   }

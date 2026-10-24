@@ -53,6 +53,7 @@ export interface Institution {
   activeCasesCount: number;
   totalCasesCount: number;
   bureauInvolvement: BureauCode[];
+  isSynthetic?: boolean;
 }
 
 export type ComplaintCategory =

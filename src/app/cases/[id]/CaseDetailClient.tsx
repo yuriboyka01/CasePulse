@@ -236,7 +236,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
 
   // Generate synthetic evidentiary documents tailored to the case
   const evidenceDocuments = useMemo<EvidenceDocument[]>(() => {
-    if (!caseData) return [];
+    if (!caseData || !caseData.isSynthetic) return [];
 
     const baseDate = caseData.filingDate ? caseData.filingDate.split('T')[0] : '2026-08-01';
     const docs: EvidenceDocument[] = [
@@ -484,7 +484,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5" />
-            Official Dossier
+            Export dossier
           </button>
           <button
             onClick={handleOpenActionModal}
@@ -503,6 +503,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
             <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
               {caseData.id}
             </span>
+            {caseData.isSynthetic && <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">Synthetic records</span>}
             <BureauBadge bureauId={caseData.bureauId} size="md" />
             <StatusBadge status={caseData.status} isOverdue={caseData.isOverdue} />
             <SeverityBadge severity={caseData.severity} />
@@ -634,7 +635,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
           <div>
             <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
               <FileCheck className="w-4 h-4 text-emerald-500" />
-              Supporting Evidentiary Documentation ({evidenceDocuments.length} Verified Files)
+              Supporting Evidentiary Documentation ({evidenceDocuments.length} records)
             </h2>
             <p className="text-[11px] text-slate-500 mt-0.5">
               Secure digital depository of notarized affidavits, biometric logs, and bank instruments.
@@ -646,6 +647,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
         </div>
 
         <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+          {evidenceDocuments.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">No evidence records are available for this case.</div>}
           {evidenceDocuments.map((doc) => (
             <div
               key={doc.id}
@@ -865,7 +867,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
               </div>
 
               <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded text-xs text-amber-900 dark:text-amber-200">
-                <strong>Regulatory Integrity Notice:</strong> Evidentiary files are synthetic demonstration records for SIH 2026 Problem Statement 26264 benchmark testing. Real institutional records are maintained in state high-security repositories.
+                <strong>Record provenance:</strong> Synthetic records are shown for this case. Verify the source documentation before using these materials outside the workspace.
               </div>
             </div>
 

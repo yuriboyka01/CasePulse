@@ -106,6 +106,10 @@ function InstitutionsContent() {
         )}
       </div>
 
+      {institutions.some((record) => record.isSynthetic) && (
+        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in this directory.</p>
+      )}
+
       {/* Filter and Search Bar */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">

@@ -303,6 +303,10 @@ export default function ExplorerClient() {
           </div>
         </div>
 
+        {(institutions.some((record) => record.isSynthetic) || overlaps.some((record) => record.isSynthetic)) && (
+          <p className="mt-3 text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in this relationship map.</p>
+        )}
+
         {/* Legend strip */}
         <div className="mt-4 p-3 bg-slate-900 border border-slate-800 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-4 flex-wrap">

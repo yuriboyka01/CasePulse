@@ -86,6 +86,14 @@ export interface DashboardSummary {
   unresolvedOverlapsCount: number;
   jointInquiriesActive: number;
   bureauCounts: Partial<Record<BureauCode, number>>;
+  syntheticRecordsPresent: boolean;
+}
+
+export interface DashboardOverview {
+  summary: DashboardSummary;
+  priorityCases: CaseComplaint[];
+  pendingOverlaps: CaseOverlap[];
+  recentCases: CaseComplaint[];
 }
 
 // ─── Cases list ─────────────────────────────────────────────────────────────
@@ -254,6 +262,20 @@ function normalizeOverlap(o: CaseOverlap): CaseOverlap {
 }
 
 export const apiClient = {
+  /**
+   * Retrieves the scoped overview payload used by the command dashboard.
+   * GET /api/dashboard/overview
+   */
+  async getDashboardOverview(): Promise<DashboardOverview> {
+    const res = await requestJson<{ data: DashboardOverview }>('/api/dashboard/overview');
+    return {
+      ...res.data,
+      priorityCases: res.data.priorityCases.map(normalizeCase),
+      pendingOverlaps: res.data.pendingOverlaps.map(normalizeOverlap),
+      recentCases: res.data.recentCases.map(normalizeCase),
+    };
+  },
+
   /**
    * Retrieves current scoped dashboard summary metrics.
    * GET /api/dashboard/summary

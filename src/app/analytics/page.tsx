@@ -127,7 +127,7 @@ export default function AnalyticsPage() {
               Regulatory Intelligence & Cross-Bureau Analytics
             </h1>
             <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-              {summary ? (summary.syntheticDemoData ? 'LOCAL POSTGRESQL · SYNTHETIC DEMO' : 'LOCAL POSTGRESQL') : 'CONNECTING...'}
+              {summary ? 'POSTGRESQL' : 'CONNECTING...'}
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
@@ -456,11 +456,7 @@ export default function AnalyticsPage() {
               CASEPULSE uses PostgreSQL as the authoritative data source via Next.js Route Handlers.
               Data source:{' '}
               <code className="text-blue-300">{summary.dataSource}</code>
-              {summary.syntheticDemoData && (
-                <span className="ml-2 text-amber-300 font-semibold">
-                  · Synthetic demo data active
-                </span>
-              )}
+              {summary.syntheticRecordsPresent && <span className="ml-2 font-semibold text-amber-300">· Synthetic records are included</span>}
             </p>
           </div>
         </>

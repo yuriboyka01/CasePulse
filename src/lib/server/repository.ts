@@ -6,6 +6,7 @@ import type {
   Actor,
   CaseFilters,
   CollectionResult,
+  DashboardOverview,
   DashboardSummary,
   InstitutionFilters,
   OverlapFilters,
@@ -275,11 +276,52 @@ export class CasePulseRepository {
         (SELECT count(*)::int FROM scoped_cases WHERE status = 'JOINT_INQUIRY') AS "jointInquiriesActive",
         (SELECT count(DISTINCT ib.institution_id)::int FROM institution_bureaus ib WHERE ib.bureau_code = ANY($1::text[])) AS "activeInstitutions",
         (SELECT COALESCE(bool_and(is_synthetic), false) FROM scoped_cases) AS "allSynthetic",
+        (SELECT COALESCE(bool_or(is_synthetic), false) FROM scoped_cases) AS "hasSyntheticRecords",
         COALESCE((SELECT jsonb_object_agg(code, COALESCE(bc.count, 0)) FROM bureaus b LEFT JOIN bureau_counts bc ON bc.bureau_code = b.code WHERE b.code = ANY($1::text[])), '{}'::jsonb) AS "bureauCounts"
     `, [bureaus]);
     const row = result.rows[0];
-    const { allSynthetic, ...metrics } = row;
-    return { ...metrics, dataSource: 'POSTGRESQL', syntheticDemoData: Boolean(allSynthetic) } as unknown as DashboardSummary;
+    const { allSynthetic, hasSyntheticRecords, ...metrics } = row;
+    return {
+      ...metrics,
+      dataSource: 'POSTGRESQL',
+      syntheticDemoData: Boolean(allSynthetic),
+      syntheticRecordsPresent: Boolean(hasSyntheticRecords),
+    } as unknown as DashboardSummary;
+  }
+
+  async dashboardOverview(actor: Actor): Promise<DashboardOverview> {
+    const bureaus = scopedBureaus(actor);
+    const [summary, priorityRows, pendingRows, recentCases] = await Promise.all([
+      this.dashboardSummary(actor),
+      this.sql(`
+        ${caseSelect(1)}
+        WHERE c.bureau_code = ANY($1::text[])
+          AND c.status NOT IN ('RESOLVED', 'CLOSED')
+          AND (c.sla_due_date < now() OR c.severity = 'CRITICAL')
+        ORDER BY
+          CASE WHEN c.sla_due_date < now() THEN 0 ELSE 1 END ASC,
+          CASE WHEN c.sla_due_date < now() THEN c.sla_due_date END ASC,
+          CASE WHEN c.sla_due_date >= now() AND c.severity = 'CRITICAL' THEN c.sla_due_date END ASC,
+          c.id ASC
+        LIMIT 5
+      `, [bureaus]),
+      this.sql(`
+        ${RELATIONSHIP_SELECT}
+        WHERE source.bureau_code = ANY($1::text[])
+          AND target.bureau_code = ANY($1::text[])
+          AND r.status IN ('PROPOSED', 'FURTHER_COORDINATION')
+        ORDER BY CASE r.status WHEN 'PROPOSED' THEN 0 ELSE 1 END ASC, r.flagged_at ASC, r.id ASC
+        LIMIT 3
+      `, [bureaus]),
+      this.listCases({ page: 1, pageSize: 5 }, actor),
+    ]);
+
+    return {
+      summary,
+      priorityCases: priorityRows.rows.map((row) => caseProjection(row)),
+      pendingOverlaps: pendingRows.rows.map((row) => relationshipProjection(row)),
+      recentCases: recentCases.data,
+    };
   }
 
   async listInstitutions(filters: InstitutionFilters, actor: Actor) {
