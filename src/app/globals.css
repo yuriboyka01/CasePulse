@@ -356,3 +356,14 @@ button, a { -webkit-tap-highlight-color: transparent; }
     animation-duration: 0s !important;
   }
 }
+
+.relationship-graph [data-graph-item]:focus-visible circle {
+  stroke: #fff;
+  stroke-width: 4px;
+}
+
+.relationship-graph [data-graph-item]:focus-visible line {
+  stroke: #fff;
+  stroke-width: 4px;
+  opacity: 1;
+}

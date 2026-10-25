@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
   AlertCircle,
@@ -9,10 +9,14 @@ import {
   ExternalLink,
   Eye,
   Info,
+  Maximize2,
+  Minus,
+  Move,
   Network,
   RefreshCw,
   RotateCcw,
   Search,
+  Plus,
   X,
 } from 'lucide-react';
 import { BureauBadge } from '@/components/ui/BureauBadge';
@@ -31,7 +35,7 @@ import {
   Institution,
   OverlapStatus,
 } from '@/types';
-import { apiClient, ApiClientError } from '@/lib/api-client';
+import { apiClient, ApiClientError, OverlapReviewRecord } from '@/lib/api-client';
 
 type SelectedItem =
   | { type: 'INSTITUTION'; data: Institution }
@@ -48,6 +52,10 @@ export default function ExplorerClient() {
 
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [overlaps, setOverlaps] = useState<CaseOverlap[]>([]);
+  const [institutionTotalCount, setInstitutionTotalCount] = useState(0);
+  const [overlapTotalCount, setOverlapTotalCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
 
   const [selectedBureau, setSelectedBureau] = useState<string>('ALL');
   const [selectedInstitution, setSelectedInstitution] = useState<string>('ALL');
@@ -55,58 +63,137 @@ export default function ExplorerClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<SelectedItem>(null);
   const [viewMode, setViewMode] = useState<'GRAPH' | 'MATRIX'>('GRAPH');
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [reviewHistory, setReviewHistory] = useState<{
+    overlapId: string;
+    state: 'loaded' | 'error';
+    records: OverlapReviewRecord[];
+  } | null>(null);
+  const panStart = useRef<{ pointerX: number; pointerY: number; x: number; y: number } | null>(null);
+  const pendingRequest = useRef<Promise<void> | null>(null);
 
   // Bureaus come from the static config (not an API call)
   const bureaus = BUREAUS;
 
   const fetchData = useCallback(async () => {
+    if (pendingRequest.current) return pendingRequest.current;
     setLoadState('loading');
     setLoadError(null);
-    try {
-      const [instRes, overlapsRes] = await Promise.all([
-        apiClient.getInstitutions({ pageSize: 100 }),
-        apiClient.getOverlaps({ pageSize: 100 }),
-      ]);
-      setInstitutions(instRes.data);
-      setOverlaps(overlapsRes.data);
-      setLoadState('success');
-    } catch (err) {
-      const msg =
-        err instanceof ApiClientError
-          ? err.userFriendlyMessage
-          : 'Failed to load topology data. Please retry.';
-      setLoadError(msg);
-      setLoadState('error');
-    }
-  }, []);
-
-  useEffect(() => {
-    let ignore = false;
-    async function load() {
+    const request = (async () => {
       try {
         const [instRes, overlapsRes] = await Promise.all([
           apiClient.getInstitutions({ pageSize: 100 }),
           apiClient.getOverlaps({ pageSize: 100 }),
         ]);
-        if (ignore) return;
         setInstitutions(instRes.data);
         setOverlaps(overlapsRes.data);
+        setInstitutionTotalCount(instRes.meta.totalCount);
+        setOverlapTotalCount(overlapsRes.meta.totalCount);
         setLoadState('success');
       } catch (err) {
-        if (ignore) return;
         const msg =
           err instanceof ApiClientError
             ? err.userFriendlyMessage
-            : 'Failed to load topology data. Please retry.';
+            : 'Failed to load relationship data. Please retry.';
         setLoadError(msg);
         setLoadState('error');
+      } finally {
+        pendingRequest.current = null;
       }
+    })();
+    pendingRequest.current = request;
+    return request;
+  }, []);
+
+  const canLoadMore = institutions.length < institutionTotalCount || overlaps.length < overlapTotalCount;
+
+  const loadMore = useCallback(async () => {
+    if (isLoadingMore || !canLoadMore) return;
+    setIsLoadingMore(true);
+    setLoadMoreError(null);
+    try {
+      const nextInstitutionPage = Math.floor(institutions.length / 100) + 1;
+      const nextOverlapPage = Math.floor(overlaps.length / 100) + 1;
+      const [institutionPage, overlapPage] = await Promise.all([
+        institutions.length < institutionTotalCount
+          ? apiClient.getInstitutions({ page: nextInstitutionPage, pageSize: 100 })
+          : Promise.resolve(null),
+        overlaps.length < overlapTotalCount
+          ? apiClient.getOverlaps({ page: nextOverlapPage, pageSize: 100 })
+          : Promise.resolve(null),
+      ]);
+      if (institutionPage) {
+        setInstitutions((current) => [...current, ...institutionPage.data]);
+        setInstitutionTotalCount(institutionPage.meta.totalCount);
+      }
+      if (overlapPage) {
+        setOverlaps((current) => [...current, ...overlapPage.data]);
+        setOverlapTotalCount(overlapPage.meta.totalCount);
+      }
+    } catch (err) {
+      setLoadMoreError(err instanceof ApiClientError ? err.userFriendlyMessage : 'Could not load more relationship records. Please retry.');
+    } finally {
+      setIsLoadingMore(false);
     }
-    void load();
+  }, [canLoadMore, institutionTotalCount, institutions, isLoadingMore, overlapTotalCount, overlaps]);
+
+  useEffect(() => {
+    void fetchData();
+  }, [fetchData]);
+
+  const selectedOverlapId = selectedItem?.type === 'OVERLAP' ? selectedItem.data.id : null;
+  const selectedReviewHistory = selectedOverlapId && reviewHistory?.overlapId === selectedOverlapId
+    ? reviewHistory
+    : null;
+
+  useEffect(() => {
+    if (!selectedOverlapId) return;
+    let ignore = false;
+    void apiClient.getOverlapReviews(selectedOverlapId, 1, 5).then(
+      (response) => {
+        if (ignore) return;
+        setReviewHistory({ overlapId: selectedOverlapId, state: 'loaded', records: response.data });
+      },
+      () => {
+        if (ignore) return;
+        setReviewHistory({ overlapId: selectedOverlapId, state: 'error', records: [] });
+      }
+    );
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [selectedOverlapId]);
+
+  const resetGraphView = () => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+  };
+
+  const handleGraphPointerDown = (event: React.PointerEvent<SVGSVGElement>) => {
+    if ((event.target as Element).closest('[data-graph-item]')) return;
+    panStart.current = { pointerX: event.clientX, pointerY: event.clientY, ...pan };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setIsPanning(true);
+  };
+
+  const handleGraphPointerMove = (event: React.PointerEvent<SVGSVGElement>) => {
+    if (!panStart.current) return;
+    const bounds = event.currentTarget.getBoundingClientRect();
+    setPan({
+      x: panStart.current.x + ((event.clientX - panStart.current.pointerX) * 900) / (bounds.width * zoom),
+      y: panStart.current.y + ((event.clientY - panStart.current.pointerY) * 640) / (bounds.height * zoom),
+    });
+  };
+
+  const handleGraphPointerUp = (event: React.PointerEvent<SVGSVGElement>) => {
+    panStart.current = null;
+    setIsPanning(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
 
   // Filtered dataset — map API statuses to legacy UI statuses for filter compatibility
   const filteredOverlaps = useMemo(() => {
@@ -132,7 +219,10 @@ export default function ExplorerClient() {
         const matchesName = o.institutionName.toLowerCase().includes(q);
         const matchesId = o.id.toLowerCase().includes(q);
         const matchesCase =
-          o.sourceCaseId.toLowerCase().includes(q) || o.targetCaseId.toLowerCase().includes(q);
+          o.sourceCaseId.toLowerCase().includes(q) ||
+          o.targetCaseId.toLowerCase().includes(q) ||
+          (o.sourceCaseTitle?.toLowerCase().includes(q) ?? false) ||
+          (o.targetCaseTitle?.toLowerCase().includes(q) ?? false);
         if (!matchesName && !matchesId && !matchesCase) return false;
       }
       return true;
@@ -150,11 +240,8 @@ export default function ExplorerClient() {
   }, [filteredOverlaps, selectedInstitution]);
 
   const activeInstitutions = useMemo(() => {
-    if (activeInstitutionIds.size === 0 && selectedInstitution === 'ALL') {
-      return institutions;
-    }
     return institutions.filter((i) => activeInstitutionIds.has(i.id));
-  }, [institutions, activeInstitutionIds, selectedInstitution]);
+  }, [institutions, activeInstitutionIds]);
 
   // Node positions computed deterministically in a ring/cluster layout
   // Center: (cx, cy) = (450, 320)
@@ -278,9 +365,10 @@ export default function ExplorerClient() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="inline-flex rounded-lg border border-slate-300 dark:border-slate-700 p-0.5 bg-slate-100 dark:bg-slate-900 text-xs font-semibold">
+            <div role="group" aria-label="Explorer view" className="hidden md:inline-flex rounded-lg border border-slate-300 dark:border-slate-700 p-0.5 bg-slate-100 dark:bg-slate-900 text-xs font-semibold">
               <button
                 onClick={() => setViewMode('GRAPH')}
+                aria-pressed={viewMode === 'GRAPH'}
                 className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
                   viewMode === 'GRAPH'
                     ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
@@ -291,6 +379,7 @@ export default function ExplorerClient() {
               </button>
               <button
                 onClick={() => setViewMode('MATRIX')}
+                aria-pressed={viewMode === 'MATRIX'}
                 className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
                   viewMode === 'MATRIX'
                     ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs'
@@ -329,10 +418,14 @@ export default function ExplorerClient() {
               <span className="w-4 h-0.5 border-t border-dashed border-amber-400 inline-block" />
               <span className="text-amber-300 font-medium">Potential Overlap (Pending Triage)</span>
             </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-4 h-0.5 bg-slate-500 inline-block" />
+              <span className="text-slate-400 font-medium">Rejected / Dismissed</span>
+            </div>
           </div>
 
           <div className="text-[11px] text-slate-400">
-            Click any node or link to inspect evidence and launch case details
+            Select a node or link to inspect evidence. Keyboard users can Tab through graph items.
           </div>
         </div>
       </div>
@@ -375,6 +468,7 @@ export default function ExplorerClient() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Search relationships by institution, case, or reference"
                   placeholder="Search by institution, case docket ID, or overlap reference..."
                   className="w-full pl-9 pr-3 py-1.5 text-xs rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
                 />
@@ -382,6 +476,8 @@ export default function ExplorerClient() {
 
               {searchQuery && (
                 <button
+                  type="button"
+                  aria-label="Clear relationship search"
                   onClick={() => setSearchQuery('')}
                   className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 cursor-pointer"
                 >
@@ -450,16 +546,101 @@ export default function ExplorerClient() {
             </div>
           </div>
 
-          {/* Main Workspace: Visual Graph Canvas or Matrix + Evidence Inspector Side Panel */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* Mobile relationship list keeps every connection readable without horizontal graph scrolling. */}
+          <section className="md:hidden space-y-3" aria-label="Relationship results">
+            <div className="flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Relationships</h2>
+              <span className="text-xs text-slate-500">{filteredOverlaps.length} shown</span>
+            </div>
+            {filteredOverlaps.length === 0 ? (
+              <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-6 text-center text-sm text-slate-500" role="status">
+                No relationships match these filters. Clear a filter or broaden your search.
+              </div>
+            ) : (
+              filteredOverlaps.map((overlap) => {
+                const selected = selectedItem?.type === 'OVERLAP' && selectedItem.data.id === overlap.id;
+                return (
+                  <React.Fragment key={overlap.id}>
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => setSelectedItem({ type: 'OVERLAP', data: overlap })}
+                      className={`w-full rounded-xl border p-4 text-left shadow-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 ${selected ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 dark:border-blue-400' : 'border-slate-200 bg-white hover:border-blue-300 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-blue-700'}`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="font-mono text-xs font-bold text-blue-700 dark:text-blue-300">{overlap.id}</span>
+                        <OverlapStatusBadge status={overlap.status} />
+                      </div>
+                      <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">{overlap.institutionName}</p>
+                      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                        <BureauBadge bureauId={overlap.sourceBureau} size="sm" />
+                        <span aria-hidden="true">→</span>
+                        <BureauBadge bureauId={overlap.targetBureau} size="sm" />
+                        <span className="ml-auto font-semibold">{overlap.confidenceScore}% match</span>
+                      </div>
+                      <p className="mt-2 text-xs text-slate-500">Cases {overlap.sourceCaseId} · {overlap.targetCaseId}</p>
+                    </button>
+                    {selected && (
+                      <div className="rounded-b-xl border border-t-0 border-blue-300 bg-white p-4 text-xs dark:border-blue-800 dark:bg-slate-900" aria-label={`Evidence for ${overlap.id}`}>
+                        {overlap.isSynthetic && <p role="note" className="mb-3 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-semibold text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">Synthetic records</p>}
+                        <h3 className="font-semibold text-slate-900 dark:text-slate-100">Why this relationship was flagged</h3>
+                        {overlap.reasons.length > 0 ? (
+                          <ul className="mt-1.5 list-disc space-y-1 pl-4 text-slate-600 dark:text-slate-300">{overlap.reasons.slice(0, 3).map((reason, index) => <li key={`${overlap.id}-reason-${index}`}>{reason}</li>)}</ul>
+                        ) : <p className="mt-1 text-slate-500">No reason details were returned.</p>}
+                        <div className="mt-3 space-y-2">
+                          {overlap.evidenceMatches.slice(0, 3).map((evidence, index) => (
+                            <div key={`${overlap.id}-evidence-${index}`} className="rounded-lg border border-slate-200 p-2.5 dark:border-slate-800">
+                              <p className="font-semibold text-slate-800 dark:text-slate-200">{evidence.label}{evidence.isMatch ? ' · Match' : ''}</p>
+                              <p className="mt-0.5 leading-relaxed text-slate-500">{evidence.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-3">
+                          <Link href={`/cases/${overlap.sourceCaseId}`} className="font-semibold text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Open {overlap.sourceCaseId}</Link>
+                          <Link href={`/cases/${overlap.targetCaseId}`} className="font-semibold text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Open {overlap.targetCaseId}</Link>
+                          <Link href={`/overlaps?search=${encodeURIComponent(overlap.id)}`} className="font-semibold text-blue-700 underline-offset-2 hover:underline dark:text-blue-300">Review history & triage</Link>
+                        </div>
+                        {reviewHistory?.overlapId === overlap.id && reviewHistory.state === 'loaded' && reviewHistory.records[0] && (
+                          <p className="mt-3 border-t border-slate-200 pt-3 text-slate-600 dark:border-slate-800 dark:text-slate-300">
+                            Latest decision: <strong>{reviewHistory.records[0].decision.replace(/_/g, ' ')}</strong> · {reviewHistory.records[0].reviewer.displayName}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })
+            )}
+          </section>
+
+          {/* Main Workspace: navigable relationship graph or matrix and evidence inspector */}
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
             {/* Graph/Matrix Area */}
-            <div className="lg:col-span-8 bg-slate-950 border border-slate-800 rounded-lg overflow-hidden shadow-md relative min-h-[560px] flex flex-col justify-between">
+            <div className="hidden md:flex md:col-span-12 lg:col-span-8 bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-md relative min-h-[560px] flex-col justify-between">
+              {viewMode === 'GRAPH' && (
+                <div className="flex items-center justify-between gap-3 border-b border-slate-800 px-4 py-2.5 text-xs text-slate-300">
+                  <div className="inline-flex items-center gap-2"><Move className="h-3.5 w-3.5 text-slate-400" /><span>Drag to pan · Use controls to zoom</span></div>
+                  <div className="inline-flex items-center gap-1">
+                    <button type="button" aria-label="Zoom out" title="Zoom out" onClick={() => setZoom((value) => Math.max(0.7, Math.round((value - 0.15) * 100) / 100))} className="rounded-lg border border-slate-700 p-2 text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-400"><Minus className="h-4 w-4" /></button>
+                    <span className="min-w-12 text-center font-mono" aria-live="polite">{Math.round(zoom * 100)}%</span>
+                    <button type="button" aria-label="Zoom in" title="Zoom in" onClick={() => setZoom((value) => Math.min(1.8, Math.round((value + 0.15) * 100) / 100))} className="rounded-lg border border-slate-700 p-2 text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-400"><Plus className="h-4 w-4" /></button>
+                    <button type="button" aria-label="Fit graph to view" title="Fit graph to view" onClick={resetGraphView} className="ml-1 rounded-lg border border-slate-700 p-2 text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-400"><Maximize2 className="h-4 w-4" /></button>
+                  </div>
+                </div>
+              )}
               {viewMode === 'GRAPH' ? (
-                <div className="w-full overflow-auto relative">
+                <div className="w-full relative">
                   <svg
-                    viewBox="0 0 900 640"
-                    className="w-full h-auto min-w-[700px] select-none"
-                    style={{ background: 'radial-gradient(ellipse at center, #191e1b 0%, #0c0f0e 100%)' }}
+                    viewBox={`${(900 - 900 / zoom) / 2 - pan.x} ${(640 - 640 / zoom) / 2 - pan.y} ${900 / zoom} ${640 / zoom}`}
+                    className={`relationship-graph w-full h-auto select-none touch-none ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
+                    style={{ background: 'radial-gradient(ellipse at center, #191e1b 0%, #0c0f0e 100%)', aspectRatio: '900 / 640' }}
+                    role="group"
+                    aria-label="Relationship network graph. Use Tab to select nodes and links. Drag the background to pan."
+                    aria-describedby="relationship-graph-description"
+                    onPointerDown={handleGraphPointerDown}
+                    onPointerMove={handleGraphPointerMove}
+                    onPointerUp={handleGraphPointerUp}
+                    onPointerCancel={handleGraphPointerUp}
                   >
                     <defs>
                       {/* Subtle Grid pattern */}
@@ -481,6 +662,9 @@ export default function ExplorerClient() {
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
                       </filter>
                     </defs>
+
+                    <title>Relationship network</title>
+                    <desc id="relationship-graph-description">Regulatory bureaus connect through institutions where an API-backed relationship has been recorded. Select a graph item to inspect its source records and evidence.</desc>
 
                     <rect width="900" height="640" fill="url(#grid)" />
 
@@ -522,6 +706,11 @@ export default function ExplorerClient() {
                         const isSelected =
                           selectedItem?.type === 'OVERLAP' &&
                           selectedItem.data.id === edge.overlap.id;
+                        const isRelatedToSelection =
+                          (selectedItem?.type === 'INSTITUTION' && selectedItem.data.id === edge.overlap.institutionId) ||
+                          (selectedItem?.type === 'BUREAU' &&
+                            (selectedItem.data.id === edge.overlap.sourceBureau || selectedItem.data.id === edge.overlap.targetBureau));
+                        const isDimmed = selectedItem !== null && !isSelected && !isRelatedToSelection;
 
                         const strokeColor = edge.isConfirmed
                           ? '#72b79a' // emerald-500
@@ -533,8 +722,19 @@ export default function ExplorerClient() {
                         return (
                           <g
                             key={edge.id}
-                            className="cursor-pointer transition-opacity group"
+                            data-graph-item
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${edge.overlap.sourceBureau} to ${edge.overlap.institutionName} relationship ${edge.overlap.id}, ${edge.status.replace(/_/g, ' ').toLowerCase()}`}
+                            aria-pressed={isSelected}
+                            className="cursor-pointer transition-opacity group focus:outline-hidden"
                             onClick={() => setSelectedItem({ type: 'OVERLAP', data: edge.overlap })}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                setSelectedItem({ type: 'OVERLAP', data: edge.overlap });
+                              }
+                            }}
                           >
                             {/* Hover trigger target */}
                             <line
@@ -554,7 +754,7 @@ export default function ExplorerClient() {
                               stroke={strokeColor}
                               strokeWidth={isSelected ? 3.5 : edge.isConfirmed ? 2.5 : 1.75}
                               strokeDasharray={edge.isConfirmed ? undefined : '5 4'}
-                              strokeOpacity={isSelected ? 1 : 0.65}
+                              strokeOpacity={isSelected || isRelatedToSelection ? 1 : isDimmed ? 0.12 : edge.isConfirmed ? 0.65 : 0.5}
                               filter={
                                 isSelected || edge.isConfirmed
                                   ? 'url(#glow-emerald)'
@@ -577,8 +777,19 @@ export default function ExplorerClient() {
                           <g
                             key={node.id}
                             transform={`translate(${node.x}, ${node.y})`}
-                            className="cursor-pointer transition-transform duration-200"
+                            data-graph-item
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${node.fullName} bureau`}
+                            aria-pressed={isSelected}
+                            className="graph-node group cursor-pointer transition-transform duration-200 focus:outline-hidden"
                             onClick={() => setSelectedItem({ type: 'BUREAU', data: node.data })}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                setSelectedItem({ type: 'BUREAU', data: node.data });
+                              }
+                            }}
                           >
                             <circle
                               r="28"
@@ -637,10 +848,21 @@ export default function ExplorerClient() {
                           <g
                             key={node.id}
                             transform={`translate(${node.x}, ${node.y})`}
-                            className="cursor-pointer transition-transform duration-200"
+                            data-graph-item
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`${node.label}, ${node.risk.toLowerCase()} risk institution, AISHE ${node.aishe}`}
+                            aria-pressed={isSelected}
+                            className="graph-node group cursor-pointer transition-transform duration-200 focus:outline-hidden"
                             onClick={() =>
                               setSelectedItem({ type: 'INSTITUTION', data: node.data })
                             }
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                setSelectedItem({ type: 'INSTITUTION', data: node.data });
+                              }
+                            }}
                           >
                             {/* Pulsing ring for critical risk */}
                             {node.risk === 'CRITICAL' && (
@@ -686,7 +908,7 @@ export default function ExplorerClient() {
                               fill="#c9cbbf"
                               fontSize="9"
                               fontWeight="600"
-                              className="pointer-events-none"
+                              className={`pointer-events-none transition-opacity ${graphNodes.instNodes.length > 12 && !isSelected ? 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100' : 'opacity-100'}`}
                             >
                               {node.label.length > 20
                                 ? `${node.label.slice(0, 18)}...`
@@ -697,6 +919,14 @@ export default function ExplorerClient() {
                       })}
                     </g>
                   </svg>
+                  {filteredOverlaps.length === 0 && (
+                    <div className="pointer-events-none absolute inset-0 flex items-center justify-center p-6">
+                      <div role="status" className="max-w-sm rounded-2xl border border-slate-700 bg-slate-950/95 p-5 text-center shadow-xl">
+                        <p className="text-sm font-semibold text-white">No relationships in this view</p>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-300">Broaden your search or reset the filters to see matching connections.</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* Matrix View */
@@ -713,6 +943,9 @@ export default function ExplorerClient() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-800/60 font-mono text-xs">
+                      {filteredOverlaps.length === 0 && (
+                        <tr><td colSpan={6} className="px-3 py-12 text-center font-sans text-slate-400">No relationships match these filters.</td></tr>
+                      )}
                       {filteredOverlaps.map((ovl) => {
                         const isSelected =
                           selectedItem?.type === 'OVERLAP' && selectedItem.data.id === ovl.id;
@@ -786,6 +1019,8 @@ export default function ExplorerClient() {
 
                 <div className="flex items-center gap-2">
                   <button
+                    type="button"
+                    aria-label="Clear relationship search"
                     onClick={() => {
                       setSelectedBureau('ALL');
                       setSelectedInstitution('ALL');
@@ -802,7 +1037,7 @@ export default function ExplorerClient() {
             </div>
 
             {/* Evidence & Details Inspector Side Panel */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-2xs space-y-4">
+            <div className="hidden md:block md:col-span-12 lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-xs space-y-4">
               <div className="border-b border-slate-200 dark:border-slate-800 pb-3 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Info className="w-4 h-4 text-blue-500" />
@@ -968,6 +1203,37 @@ export default function ExplorerClient() {
                     </p>
                   </div>
 
+                  {selectedItem.data.isSynthetic && (
+                    <p role="note" className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-medium text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-200">Synthetic records</p>
+                  )}
+
+                  <section className="rounded-xl border border-slate-200 dark:border-slate-800 p-3" aria-labelledby="relationship-history-heading">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <h3 id="relationship-history-heading" className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Review history</h3>
+                      <span className="text-[10px] text-slate-400">Latest 5 entries</span>
+                    </div>
+                    {!selectedReviewHistory ? (
+                      <p className="text-[11px] text-slate-500" role="status">Loading authoritative review history…</p>
+                    ) : selectedReviewHistory.state === 'error' ? (
+                      <p className="text-[11px] text-slate-500" role="status">Review history is temporarily unavailable.</p>
+                    ) : selectedReviewHistory.records.length === 0 ? (
+                      <p className="text-[11px] text-slate-500">No decisions have been recorded for this relationship.</p>
+                    ) : (
+                      <ol className="space-y-2.5">
+                        {selectedReviewHistory.records.map((review) => (
+                          <li key={review.id} className="border-l-2 border-blue-300 pl-2.5 dark:border-blue-800">
+                            <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5">
+                              <span className="font-semibold text-slate-800 dark:text-slate-200">{review.decision.replace(/_/g, ' ')}</span>
+                              <time className="text-[10px] text-slate-500" dateTime={review.reviewedAt}>{new Date(review.reviewedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</time>
+                            </div>
+                            <p className="mt-0.5 text-[10px] text-slate-500">{review.reviewer.displayName} · Version {review.newVersion}</p>
+                            <p className="mt-1 whitespace-pre-wrap break-words text-[11px] leading-relaxed text-slate-700 dark:text-slate-300">{review.notes}</p>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </section>
+
                   {/* Triage — redirect to /overlaps for authorized write action */}
                   <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
@@ -977,7 +1243,7 @@ export default function ExplorerClient() {
                       Triage decisions require officer authentication and are processed through the Overlap Review queue.
                     </p>
                     <Link
-                      href={`/overlaps`}
+                      href={`/overlaps?search=${encodeURIComponent(selectedItem.data.id)}`}
                       className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors"
                     >
                       Open Overlap Review Queue
@@ -1133,6 +1399,20 @@ export default function ExplorerClient() {
               ) : null}
             </div>
           </div>
+          {(canLoadMore || isLoadingMore || loadMoreError) && (
+            <div className="flex flex-col items-center gap-2 rounded-2xl border border-slate-200 bg-white p-4 text-center dark:border-slate-800 dark:bg-slate-900">
+              <p className="text-xs text-slate-500" role="status">
+                Showing {overlaps.length} of {overlapTotalCount} relationships and {institutions.length} of {institutionTotalCount} institutions. Search and filters apply to records loaded so far.
+              </p>
+              {loadMoreError && <p className="text-xs text-rose-600 dark:text-rose-300">{loadMoreError}</p>}
+              {canLoadMore && (
+                <button type="button" onClick={() => void loadMore()} disabled={isLoadingMore} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-slate-700 disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+                  {isLoadingMore ? <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Plus className="h-3.5 w-3.5" aria-hidden="true" />}
+                  {isLoadingMore ? 'Loading records…' : 'Load next 100 records'}
+                </button>
+              )}
+            </div>
+          )}
         </>
       )}
     </div>
