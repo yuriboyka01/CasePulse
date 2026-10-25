@@ -18,7 +18,6 @@ import {
   History,
   Link2,
   RotateCw,
-  Sparkles,
   UserCheck,
 } from 'lucide-react';
 import { apiClient, ApiClientError, OverlapReviewRecord } from '@/lib/api-client';

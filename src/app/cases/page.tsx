@@ -2,7 +2,7 @@
 
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { AlertCircle, Download, FileText, RefreshCw } from 'lucide-react';
+import { AlertCircle, Download, RefreshCw } from 'lucide-react';
 import { SearchFilterBar } from '@/components/common/SearchFilterBar';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';

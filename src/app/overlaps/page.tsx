@@ -4,13 +4,10 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   AlertCircle,
-  AlertTriangle,
   CheckCircle2,
-  GitPullRequest,
   Info,
   RotateCw,
   Search,
-  Sparkles,
 } from 'lucide-react';
 import { CaseOverlap, RelationshipStatus } from '@/types';
 import { apiClient, ApiClientError, OverlapFilters } from '@/lib/api-client';

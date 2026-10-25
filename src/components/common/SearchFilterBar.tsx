@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Search, X, Filter, AlertCircle, AlertTriangle } from 'lucide-react';
+import { Search, X, AlertCircle, AlertTriangle } from 'lucide-react';
 import { BUREAUS } from '@/data/synthetic-dataset';
 
 interface SearchFilterBarProps {
