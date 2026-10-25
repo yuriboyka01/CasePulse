@@ -139,14 +139,14 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
           {!collapsed && <p className="mb-2.5 px-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Workspace</p>}
           <NavigationItems collapsed={collapsed} />
         </div>
-        <div className="border-t border-[#DFDBD2] dark:border-line p-3 pb-8">
+        <div className="border-t border-[#DFDBD2] dark:border-line p-3 pb-14">
           {!collapsed && (
             <div className="mb-3 rounded-lg border border-[#DFDBD2] dark:border-line bg-white/70 dark:bg-card-muted/60 p-2.5 text-[9.5px] leading-relaxed text-ink-muted">
               <span className="font-semibold text-ink-soft block mb-0.5">Jurisdictional Notice</span>
               Shared matches indicate regulatory overlap. Verify independence before joint action.
             </div>
           )}
-          <div className={`flex items-center gap-2 ${collapsed ? 'flex-col' : 'justify-between'}`}>
+          <div className={`flex items-center gap-2 mb-2 ${collapsed ? 'flex-col' : 'justify-between'}`}>
             <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} className={collapsed ? 'hidden' : 'min-w-0'} />
             <button type="button" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'} className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-raised hover:text-ink">
               {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}

@@ -151,9 +151,9 @@ export default function OverviewDashboardPage() {
 
             <div className="relative hidden lg:block h-[190px] xl:h-[210px] w-[320px] xl:w-[380px] rounded-xl border border-line/60 bg-gradient-to-b from-[#F4F2EC]/60 to-[#EFECE6]/40 dark:from-card-muted/40 dark:to-card-muted/10 overflow-hidden shrink-0 shadow-inner">
               <BureauConstellation nodes={constellationNodes} className="absolute inset-0" />
-              <p className="pointer-events-none absolute bottom-2 left-0 right-3 text-right text-[9px] uppercase tracking-[0.16em] text-ink-muted">
-                3D Bureau Constellation · Joint Desk Core
-              </p>
+              <span className="pointer-events-none absolute top-2 right-2.5 rounded border border-line/50 bg-white/75 dark:bg-card/75 px-1.5 py-0.5 text-[8.5px] font-mono uppercase tracking-wider text-ink-muted backdrop-blur-xs">
+                3D Bureau Constellation
+              </span>
             </div>
           </div>
         </SpotlightCard>
