@@ -289,12 +289,12 @@ ${institutions
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col shadow-xl">
+      <div className="bg-card border border-line rounded-lg w-full max-w-3xl max-h-[85vh] flex flex-col shadow-xl">
         {/* Header */}
-        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="p-4 border-b border-line flex items-center justify-between">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-blue-600" />
-            <h3 className="font-bold text-sm text-slate-900 dark:text-slate-100">
+            <h3 className="font-bold text-sm text-ink">
               {caseId ? `Inter-Bureau Case Dossier: ${caseId}` : 'Regulatory Data & Schema Export'}
             </h3>
           </div>
@@ -307,12 +307,12 @@ ${institutions
         </div>
 
         {/* Tab Selector */}
-        <div className="px-4 pt-3 flex gap-2 border-b border-slate-200 dark:border-slate-800 text-xs">
+        <div className="px-4 pt-3 flex gap-2 border-b border-line text-xs">
           <button
             onClick={() => setTab('DOSSIER')}
             className={`pb-2 px-2 font-semibold border-b-2 transition-colors cursor-pointer ${
               tab === 'DOSSIER'
-                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                ? 'border-blue-600 text-brand'
                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
@@ -325,7 +325,7 @@ ${institutions
             onClick={() => setTab('POSTGRES_SCHEMA')}
             className={`pb-2 px-2 font-semibold border-b-2 transition-colors cursor-pointer ${
               tab === 'POSTGRES_SCHEMA'
-                ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                ? 'border-blue-600 text-brand'
                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
             }`}
           >
@@ -337,19 +337,19 @@ ${institutions
         </div>
 
         {/* Code/Text Viewer */}
-        <div className="p-4 flex-1 overflow-auto bg-slate-50 dark:bg-slate-950 font-mono text-xs text-slate-800 dark:text-slate-200 whitespace-pre">
+        <div className="p-4 flex-1 overflow-auto bg-background font-mono text-xs text-ink whitespace-pre">
           {contentToDisplay}
         </div>
 
         {/* Footer Actions */}
-        <div className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-between">
+        <div className="p-3 border-t border-line bg-card flex items-center justify-between">
           <span className="text-[11px] text-slate-500">
             Export ready for administrative record or Python backend handoff.
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft cursor-pointer"
             >
               <Copy className="w-3.5 h-3.5" />
               {copied ? 'Copied to Clipboard!' : 'Copy to Clipboard'}

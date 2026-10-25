@@ -79,17 +79,17 @@ function InstitutionsContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-line bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
               Institution Intelligence Directory
             </h1>
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
               {displayCount} INSTITUTIONS
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-3xl leading-relaxed">
             Master database of regulated technical, university, and medical institutes mapped to national AISHE and AICTE permanent identifiers.
           </p>
         </div>
@@ -107,11 +107,11 @@ function InstitutionsContent() {
       </div>
 
       {institutions.some((record) => record.isSynthetic) && (
-        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in this directory.</p>
+        <p className="text-xs text-ink-muted" role="note">Synthetic records are included in this directory.</p>
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+      <div className="bg-card border border-line rounded-2xl p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -119,7 +119,7 @@ function InstitutionsContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Institution Name, AISHE Code, AICTE ID, or District..."
-            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
           />
         </div>
 
@@ -127,7 +127,7 @@ function InstitutionsContent() {
           <select
             value={selectedRisk}
             onChange={(e) => setSelectedRisk(e.target.value)}
-            className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Risk Ratings</option>
             <option value="CRITICAL">Critical Risk</option>
@@ -139,7 +139,7 @@ function InstitutionsContent() {
           <select
             value={selectedState}
             onChange={(e) => setSelectedState(e.target.value)}
-            className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All States</option>
             {availableStates.map((st) => (
@@ -166,7 +166,7 @@ function InstitutionsContent() {
 
       {/* Loading state */}
       {loadState === 'loading' && (
-        <div className="py-16 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs">
+        <div className="py-16 text-center text-ink-muted rounded-2xl border border-line bg-card shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs font-semibold">Filtering institution directory records…</p>
         </div>
@@ -190,7 +190,7 @@ function InstitutionsContent() {
                 state: selectedState,
               })
             }
-            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 cursor-pointer shadow-2xs"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-card text-danger-ink hover:bg-rose-50 cursor-pointer shadow-2xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry
@@ -202,12 +202,12 @@ function InstitutionsContent() {
       {loadState === 'success' && (
         <div>
           {institutions.length === 0 ? (
-            <div className="p-14 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+            <div className="p-14 text-center bg-card border border-line rounded-2xl shadow-xs">
               <Building2 className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-              <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              <h3 className="text-sm font-bold text-ink">
                 No institutions match the filter criteria
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-ink-muted mt-1">
                 Try clearing your search or expanding the state selection.
               </p>
             </div>

@@ -44,7 +44,7 @@ export function SearchFilterBar({
     overlapOnly;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
+    <div className="bg-card border border-line rounded-2xl p-4 sm:p-5 space-y-4 shadow-xs">
       {/* Search Input Row */}
       <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
         <div className="relative flex-1">
@@ -54,14 +54,14 @@ export function SearchFilterBar({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search by Case ID, AISHE Code, Institution Name, or Allegation keywords..."
-            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
           />
         </div>
 
         {hasActiveFilters && (
           <button
             onClick={onReset}
-            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 text-xs font-bold text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border border-line transition-colors cursor-pointer shrink-0"
           >
             <X className="w-3.5 h-3.5" />
             <span>Reset Filters</span>
@@ -73,13 +73,13 @@ export function SearchFilterBar({
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 pt-1">
         {/* Bureau Select */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
             Originating Bureau
           </label>
           <select
             value={selectedBureau}
             onChange={(e) => onBureauChange(e.target.value)}
-            className="w-full text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Bureaus (Multi-Agency)</option>
             {BUREAUS.map((b) => (
@@ -92,13 +92,13 @@ export function SearchFilterBar({
 
         {/* Case Status */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
             Investigation Status
           </label>
           <select
             value={selectedStatus}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="w-full text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Statuses</option>
             <option value="NEW">New Intake</option>
@@ -113,13 +113,13 @@ export function SearchFilterBar({
 
         {/* Complaint Category */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
             Violation Category
           </label>
           <select
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="w-full text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="ALL">All Categories</option>
             <option value="CAPITATION_FEE">Capitation Fee / Extortion</option>
@@ -138,7 +138,7 @@ export function SearchFilterBar({
             className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all w-full select-none ${
               overdueOnly
                 ? 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800'
-                : 'bg-slate-50/60 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                : 'bg-slate-50/60 dark:bg-slate-900 text-ink-muted border-line hover:border-slate-300'
             }`}
           >
             <input
@@ -158,7 +158,7 @@ export function SearchFilterBar({
             className={`inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-bold cursor-pointer transition-all w-full select-none ${
               overlapOnly
                 ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800'
-                : 'bg-slate-50/60 dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                : 'bg-slate-50/60 dark:bg-slate-900 text-ink-muted border-line hover:border-slate-300'
             }`}
           >
             <input

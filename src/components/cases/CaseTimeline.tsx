@@ -22,7 +22,7 @@ interface CaseTimelineProps {
 export function CaseTimeline({ events }: CaseTimelineProps) {
   if (!events || events.length === 0) {
     return (
-      <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900">
+      <div className="p-8 text-center text-xs text-slate-500 border border-dashed border-line rounded-2xl bg-card">
         No administrative timeline events recorded for this docket yet.
       </div>
     );
@@ -31,7 +31,7 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
   const getEventIcon = (type: TimelineEvent['type']) => {
     switch (type) {
       case 'FILING':
-        return <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />;
+        return <FileText className="w-4 h-4 text-brand" />;
       case 'NOTICE_ISSUED':
         return <Send className="w-4 h-4 text-purple-600 dark:text-purple-400" />;
       case 'HEARING':
@@ -84,12 +84,12 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
         return (
           <div key={evt.id} className="relative group">
             {/* Timeline node icon */}
-            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-white/20 flex items-center justify-center shadow-xs">
+            <div className="absolute -left-[30px] top-1 w-6 h-6 rounded-full bg-card border-2 border-slate-300 dark:border-white/20 flex items-center justify-center shadow-xs">
               {getEventIcon(evt.type)}
             </div>
 
             {/* Event Content Card */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all">
+            <div className="bg-card border border-line rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md transition-all">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-white/5 pb-2.5 mb-2.5">
                 <div className="flex items-center gap-2">
                   <span
@@ -106,17 +106,17 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
                 </div>
               </div>
 
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+              <h4 className="text-xs font-bold text-ink">
                 {evt.action}
               </h4>
 
-              <div className="mt-1.5 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+              <div className="mt-1.5 text-xs text-ink-soft leading-relaxed">
                 {evt.notes}
               </div>
 
               <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-[11px] text-slate-400">
                 <span>
-                  Authorized Actor: <strong className="text-slate-700 dark:text-slate-200">{evt.actor}</strong>
+                  Authorized Actor: <strong className="text-ink-soft">{evt.actor}</strong>
                 </span>
                 <span className="font-mono text-[10px]">{evt.id}</span>
               </div>

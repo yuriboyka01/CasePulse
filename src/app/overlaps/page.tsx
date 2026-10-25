@@ -112,20 +112,20 @@ function OverlapsContent() {
   const furtherCoordCount = overlaps.filter((o) => o.status === 'FURTHER_COORDINATION').length;
 
   return (
-    <div className="space-y-6 text-slate-900 dark:text-slate-100">
+    <div className="space-y-6 text-ink">
       {/* Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs">
+      <div className="rounded-2xl border border-line bg-card p-5 sm:p-6 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
                 Cross-Bureau Overlap Review Workbench
               </h1>
               <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
                 {unreviewedCount} PENDING REVIEW
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-3xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-3xl leading-relaxed">
               Inspect multi-attribute deterministic correlation evidence, compare paired dockets across regulatory silos, and record traceable triage actions.
             </p>
           </div>
@@ -139,7 +139,7 @@ function OverlapsContent() {
 
         {/* Methodology explanation callout */}
         <div className="mt-4 p-4 bg-blue-50/80 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200 rounded-xl text-xs flex items-start gap-3 border border-blue-200/80 dark:border-blue-900/60">
-          <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+          <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" />
           <div className="leading-relaxed">
             <strong className="font-semibold text-blue-950 dark:text-blue-100">Verification Protocol:</strong> CASEPULSE surfaces matching identifiers (AISHE/Permanent ID), geospatial proximity, and predatory pattern co-occurrence. A shared institution code indicates jurisdictional synergy; officers must verify allegation independence before initiating joint inquiry or dismissal.
           </div>
@@ -147,16 +147,16 @@ function OverlapsContent() {
       </div>
 
       {overlaps.some((record) => record.isSynthetic) && (
-        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in these review results.</p>
+        <p className="text-xs text-ink-muted" role="note">Synthetic records are included in these review results.</p>
       )}
 
       {/* Summary KPI Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-4 bg-card border border-line rounded-2xl shadow-xs">
           <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
             Total Overlaps Flagged
           </span>
-          <span className="text-2xl font-extrabold font-mono text-slate-900 dark:text-white mt-1 block">
+          <span className="text-2xl font-extrabold font-mono text-ink mt-1 block">
             {totalOverlaps}
           </span>
         </div>
@@ -190,7 +190,7 @@ function OverlapsContent() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <div className="bg-card border border-line rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -198,7 +198,7 @@ function OverlapsContent() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search overlap by ID, Docket No, Institution name, or rationale..."
-            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
           />
         </div>
 
@@ -208,7 +208,7 @@ function OverlapsContent() {
             <select
               value={selectedMatchType}
               onChange={(e) => setSelectedMatchType(e.target.value)}
-              className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+              className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
             >
               <option value="ALL">All Match Types</option>
               <option value="CONFIRMED_ID">Confirmed ID (AISHE / AICTE ID)</option>
@@ -222,7 +222,7 @@ function OverlapsContent() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900 text-slate-900 dark:text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+              className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
             >
               <option value="ALL">All Statuses</option>
               <option value="PROPOSED">Pending Triage (PROPOSED)</option>
@@ -261,20 +261,20 @@ function OverlapsContent() {
           </div>
         </div>
       ) : isLoading ? (
-        <div className="p-16 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-16 text-center bg-card border border-line rounded-2xl shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-bold text-slate-800 dark:text-slate-200">
+          <p className="text-xs font-bold text-ink">
             Querying authoritative cross-bureau overlap relationships...
           </p>
           <p className="text-[11px] text-slate-400 mt-0.5 font-mono">Fetching PostgreSQL records</p>
         </div>
       ) : overlaps.length === 0 ? (
-        <div className="p-14 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl shadow-xs">
+        <div className="p-14 text-center bg-card border border-line rounded-2xl shadow-xs">
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
-          <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+          <h3 className="text-sm font-bold text-ink">
             No cross-bureau overlaps matching your filter criteria
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-ink-muted mt-1 max-w-sm mx-auto">
             Try adjusting the triage status or search query to inspect other flagged case correlations.
           </p>
         </div>

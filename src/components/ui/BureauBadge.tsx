@@ -16,7 +16,7 @@ const BUREAU_CONFIG: Record<
     label: 'AICTE Approval Bureau',
     short: 'AICTE',
     bg: 'bg-blue-50 dark:bg-blue-950/50',
-    text: 'text-blue-700 dark:text-blue-300',
+    text: 'text-brand-strong',
     border: 'border-blue-200 dark:border-blue-800',
   },
   UGC_VIGILANCE: {
@@ -37,21 +37,21 @@ const BUREAU_CONFIG: Record<
     label: 'State DTE Karnataka',
     short: 'DTE-KA',
     bg: 'bg-emerald-50 dark:bg-emerald-950/50',
-    text: 'text-emerald-700 dark:text-emerald-300',
+    text: 'text-success-ink',
     border: 'border-emerald-200 dark:border-emerald-800',
   },
   NARC_ANTI_RAGGING: {
     label: 'National Anti-Ragging Cell',
     short: 'NARC',
     bg: 'bg-rose-50 dark:bg-rose-950/50',
-    text: 'text-rose-700 dark:text-rose-300',
+    text: 'text-danger-ink',
     border: 'border-rose-200 dark:border-rose-800',
   },
   CONSUMER_FORUM: {
     label: 'Consumer Disputes Commission',
     short: 'CONSUMER',
     bg: 'bg-amber-50 dark:bg-amber-950/50',
-    text: 'text-amber-800 dark:text-amber-300',
+    text: 'text-warning-ink',
     border: 'border-amber-200 dark:border-amber-800',
   },
 };
@@ -60,9 +60,9 @@ export function BureauBadge({ bureauId, size = 'md' }: BureauBadgeProps) {
   const config = BUREAU_CONFIG[bureauId] || {
     label: bureauId,
     short: bureauId,
-    bg: 'bg-slate-100 dark:bg-slate-800',
-    text: 'text-slate-700 dark:text-slate-300',
-    border: 'border-slate-200 dark:border-slate-700',
+    bg: 'bg-muted',
+    text: 'text-ink-soft',
+    border: 'border-line',
   };
 
   const sizeClasses =
@@ -84,5 +84,5 @@ export function BureauBadge({ bureauId, size = 'md' }: BureauBadgeProps) {
 
 export function BureauFullName({ bureauId }: { bureauId: BureauCode }) {
   const config = BUREAU_CONFIG[bureauId];
-  return <span className="font-semibold text-slate-900 dark:text-slate-100">{config?.label || bureauId}</span>;
+  return <span className="font-semibold text-ink">{config?.label || bureauId}</span>;
 }

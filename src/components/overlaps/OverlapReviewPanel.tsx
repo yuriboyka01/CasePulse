@@ -168,16 +168,16 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
+    <div className="bg-card border border-line rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
       {/* Header Bar */}
-      <div className="p-4 sm:p-5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-slate-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-line flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-mono text-xs font-bold text-slate-800 dark:text-slate-200 bg-slate-200/80 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+          <span className="font-mono text-xs font-bold text-ink bg-slate-200/80 dark:bg-slate-800 px-2.5 py-1 rounded-md">
             {overlap.id}
           </span>
           <OverlapTypeBadge type={overlap.matchType} />
           {overlap.relationshipKind && (
-            <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-800/80 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300">
+            <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-800/80 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 text-xs font-semibold text-brand-strong">
               {overlap.relationshipKind === 'SAME_INSTITUTION'
                 ? 'Same institution'
                 : overlap.relationshipKind === 'RELATED_INCIDENT'
@@ -187,7 +187,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
           )}
           <OverlapStatusBadge status={currentStatus} />
           {hasValidVersion && (
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-muted text-ink-soft border border-line">
               v{currentVersion}
             </span>
           )}
@@ -195,7 +195,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-slate-500 dark:text-slate-400 font-medium">Confidence:</span>
+            <span className="text-ink-muted font-medium">Confidence:</span>
             <div className="flex items-center gap-1.5">
               <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
@@ -209,7 +209,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
                   style={{ width: `${overlap.confidenceScore}%` }}
                 />
               </div>
-              <span className="font-mono font-extrabold text-slate-900 dark:text-white">
+              <span className="font-mono font-extrabold text-ink">
                 {overlap.confidenceScore}
               </span>
             </div>
@@ -229,20 +229,20 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       {/* Cross-Bureau Connection Visualizer */}
       <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-11 gap-4 items-stretch">
         {/* Source Docket Card */}
-        <div className="md:col-span-5 p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
+        <div className="md:col-span-5 p-4 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <BureauBadge bureauId={overlap.sourceBureau} size="sm" />
-              <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+              <span className="font-mono text-xs font-bold text-brand">
                 <Link href={`/cases/${overlap.sourceCaseId}`} className="hover:underline">
                   {overlap.sourceCaseId}
                 </Link>
               </span>
             </div>
-            <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">
+            <p className="text-sm font-bold text-ink line-clamp-2">
               {overlap.sourceCaseTitle || 'Case title not supplied'}
             </p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-ink-muted">
               {overlap.sourceCaseCategory?.replaceAll('_', ' ') || 'Category unavailable'}
             </p>
           </div>
@@ -253,7 +253,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             </span>
             <Link
               href={`/cases/${overlap.sourceCaseId}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs inline-flex items-center gap-1"
+              className="text-brand hover:underline font-semibold text-xs inline-flex items-center gap-1"
             >
               Open File <ArrowRight className="w-3 h-3" />
             </Link>
@@ -262,7 +262,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
         {/* Central Correlation Link Symbol */}
         <div className="md:col-span-1 flex flex-row md:flex-col items-center justify-center gap-2 py-2 text-slate-500">
-          <div className="p-2.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-600 dark:text-blue-400 shadow-2xs">
+          <div className="p-2.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-brand shadow-2xs">
             <Link2 className="w-4 h-4" />
           </div>
           <span className="text-[10px] font-bold text-center leading-tight max-w-[80px]">
@@ -275,20 +275,20 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         </div>
 
         {/* Target Docket Card */}
-        <div className="md:col-span-5 p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
+        <div className="md:col-span-5 p-4 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
               <BureauBadge bureauId={overlap.targetBureau} size="sm" />
-              <span className="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
+              <span className="font-mono text-xs font-bold text-brand">
                 <Link href={`/cases/${overlap.targetCaseId}`} className="hover:underline">
                   {overlap.targetCaseId}
                 </Link>
               </span>
             </div>
-            <p className="text-sm font-bold text-slate-900 dark:text-white line-clamp-2">
+            <p className="text-sm font-bold text-ink line-clamp-2">
               {overlap.targetCaseTitle || 'Case title not supplied'}
             </p>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-ink-muted">
               {overlap.targetCaseCategory?.replaceAll('_', ' ') || 'Category unavailable'}
             </p>
           </div>
@@ -299,7 +299,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             </span>
             <Link
               href={`/cases/${overlap.targetCaseId}`}
-              className="text-blue-600 dark:text-blue-400 hover:underline font-semibold text-xs inline-flex items-center gap-1"
+              className="text-brand hover:underline font-semibold text-xs inline-flex items-center gap-1"
             >
               Open File <ArrowRight className="w-3 h-3" />
             </Link>
@@ -309,12 +309,12 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
       {/* Shared institution context */}
       <div className="px-4 sm:px-5 pb-4">
-        <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50/50 dark:bg-slate-900/40 px-4 py-3 flex items-start gap-3">
-          <Building2 className="w-4 h-4 text-slate-500 dark:text-slate-400 shrink-0 mt-0.5" />
+        <div className="rounded-xl border border-line bg-slate-50/50 dark:bg-slate-900/40 px-4 py-3 flex items-start gap-3">
+          <Building2 className="w-4 h-4 text-ink-muted shrink-0 mt-0.5" />
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Shared Regulated Institution</p>
-            <p className="mt-0.5 text-xs font-bold text-slate-900 dark:text-white">{overlap.institutionName}</p>
-            <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Shared Regulated Institution</p>
+            <p className="mt-0.5 text-xs font-bold text-ink">{overlap.institutionName}</p>
+            <p className="mt-0.5 text-[11px] text-ink-muted">
               Deterministic identifier match. Shared campus identity establishes jurisdictional overlap; allegations require joint review.
             </p>
           </div>
@@ -342,7 +342,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       {isExpanded && (
         <div className="px-4 sm:px-5 pb-5 space-y-4 border-t border-slate-100 dark:border-slate-800 pt-4">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
+            <h4 className="text-xs font-bold uppercase tracking-wider text-ink-muted mb-2">
               Deterministic Evidence Verification Matrix
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
@@ -351,16 +351,16 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
                   key={idx}
                   className={`p-3 rounded-xl border ${
                     ev.isMatch
-                      ? 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800'
-                      : 'bg-slate-50/40 border-slate-200 dark:border-slate-800 text-slate-400'
+                      ? 'bg-slate-50 dark:bg-slate-900/60 border-line'
+                      : 'bg-slate-50/40 border-line text-slate-400'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
+                    <span className="font-bold text-ink">
                       {ev.label}
                     </span>
                     {ev.isMatch ? (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-success-ink bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-2 py-0.5 rounded-full">
                         <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                         Exact match
                       </span>
@@ -368,19 +368,19 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
                       <span className="text-[10px] text-slate-400">Distinct values</span>
                     )}
                   </div>
-                  <div className="text-[11px] text-slate-600 dark:text-slate-400 leading-normal">
+                  <div className="text-[11px] text-ink-muted leading-normal">
                     {ev.description}
                   </div>
-                  <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] font-mono bg-white dark:bg-slate-950 p-2 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-[10px] font-mono bg-white dark:bg-slate-950 p-2 rounded-lg border border-line">
                     <div>
                       <span className="text-slate-400 block font-sans text-[9px] uppercase">Source value</span>
-                      <span className="text-slate-800 dark:text-slate-200 font-bold truncate block">
+                      <span className="text-ink font-bold truncate block">
                         {ev.sourceVal || ev.sourceValue || 'N/A'}
                       </span>
                     </div>
                     <div>
                       <span className="text-slate-400 block font-sans text-[9px] uppercase">Sister record</span>
-                      <span className="text-slate-800 dark:text-slate-200 font-bold truncate block">
+                      <span className="text-ink font-bold truncate block">
                         {ev.targetVal || ev.targetValue || 'N/A'}
                       </span>
                     </div>
@@ -392,7 +392,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
           {/* Recommended Administrative Action */}
           <div className="p-4 bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 rounded-xl text-xs">
-            <span className="font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wide text-[10px] block mb-1">
+            <span className="font-bold text-success-ink uppercase tracking-wide text-[10px] block mb-1">
               Recommended Coordination Protocol
             </span>
             <p className="text-emerald-950 dark:text-emerald-200/90 leading-relaxed">
@@ -403,10 +403,10 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       )}
 
       {/* Authorized Officer's Decision Chamber */}
-      <div className="p-4 sm:p-5 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-white/10 space-y-4">
+      <div className="p-4 sm:p-5 bg-card-muted border-t border-line space-y-4">
         <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-            <UserCheck className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-ink-soft">
+            <UserCheck className="w-4 h-4 text-brand" />
             <span>Authorized Officer Decision Chamber</span>
           </div>
 
@@ -414,7 +414,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             <span
               className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
                 hasValidVersion
-                  ? 'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                  ? 'bg-slate-200 dark:bg-slate-800 text-ink-soft'
                   : 'bg-rose-100 text-rose-800 border border-rose-300'
               }`}
             >
@@ -424,7 +424,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
               <span className="flex items-center gap-1 text-[11px]">
                 <Clock className="w-3.5 h-3.5 text-slate-400" />
                 <span>Last Updated: {new Date(latestDecision.reviewedAt).toLocaleDateString('en-IN')} by{' '}
-                  <strong className="text-slate-700 dark:text-slate-200">
+                  <strong className="text-ink-soft">
                     {latestDecision.reviewer.displayName}
                   </strong>
                 </span>
@@ -464,12 +464,12 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         {/* Form Controls */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
               Authorized Reviewer
             </label>
-            <div className="text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 flex items-center justify-between">
+            <div className="text-xs py-2 px-3 rounded-xl border border-line bg-card text-ink-soft flex items-center justify-between">
               <span className="font-medium">Server-Resolved Session Identity</span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-success-ink border border-emerald-200 dark:border-emerald-800">
                 Authenticated
               </span>
             </div>
@@ -479,14 +479,14 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
               Triage Decision Classification
             </label>
             <select
               value={decisionChoice}
               onChange={(e) => setDecisionChoice(e.target.value as ReviewDecision)}
               disabled={isSubmitting || !hasValidVersion}
-              className="w-full text-xs py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+              className="w-full text-xs py-2 px-3 rounded-xl border border-line bg-card text-ink font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             >
               <option value="CONFIRMED">Verified Inter-Bureau Correlation (CONFIRMED)</option>
               <option value="REJECTED">Reject / Dismiss as False Positive (REJECTED)</option>
@@ -496,7 +496,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         </div>
 
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">
+          <label className="block text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
             Official Regulatory Rationale & Coordination Directives
           </label>
           <textarea
@@ -505,15 +505,15 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             onChange={(e) => setNotes(e.target.value)}
             disabled={isSubmitting || !hasValidVersion}
             placeholder="Record formal justification, findings, communication with sister bureau directorate, or hearing instructions..."
-            className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+            className="w-full text-xs p-3 rounded-xl border border-line bg-card text-ink placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
           />
         </div>
 
         {/* Append-Only Review Audit History */}
         {reviewHistory.length > 0 && (
-          <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 bg-white dark:bg-slate-900 space-y-2.5">
+          <div className="border border-line rounded-xl p-3.5 bg-card space-y-2.5">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
                 <History className="w-3.5 h-3.5 text-blue-500" />
                 Immutable Review Audit Trail (Append-Only)
               </span>
@@ -548,12 +548,12 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
                     </span>
                   </div>
                   {rev.notes && (
-                    <p className="text-slate-600 dark:text-slate-300 text-[11px] leading-relaxed">
+                    <p className="text-ink-soft text-[11px] leading-relaxed">
                       {rev.notes}
                     </p>
                   )}
                   <div className="text-[10px] text-slate-400">
-                    Reviewer: <strong className="text-slate-700 dark:text-slate-300">{rev.reviewer?.displayName || 'Officer'}</strong> ({rev.reviewer?.bureauId})
+                    Reviewer: <strong className="text-ink-soft">{rev.reviewer?.displayName || 'Officer'}</strong> ({rev.reviewer?.bureauId})
                   </div>
                 </div>
               ))}
@@ -562,10 +562,10 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         )}
 
         {/* Operational Triage Action Buttons */}
-        <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-slate-200 dark:border-white/10">
+        <div className="pt-2 flex flex-wrap items-center justify-between gap-2 border-t border-line">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-xs text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 font-medium inline-flex items-center gap-1 cursor-pointer"
+            className="text-xs text-ink-muted hover:text-slate-900 dark:hover:text-slate-100 font-medium inline-flex items-center gap-1 cursor-pointer"
           >
             <span>{isExpanded ? 'Hide Evidence Matrix' : 'Inspect Full Evidence Matrix'}</span>
             {isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

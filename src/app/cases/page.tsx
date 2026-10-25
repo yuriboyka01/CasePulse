@@ -97,17 +97,17 @@ function CasesContent() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-line bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
               Inter-Bureau Complaint & Case Register
             </h1>
             <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
               {displayCount} DOCKETS
             </span>
           </div>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 max-w-3xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-3xl leading-relaxed">
             Authoritative multi-agency registry of grievances across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum.
           </p>
         </div>
@@ -115,16 +115,16 @@ function CasesContent() {
         <div className="flex items-center gap-2.5 shrink-0">
           <button
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-line bg-raised hover:bg-slate-50 dark:hover:bg-slate-700 text-ink-soft shadow-2xs transition-colors cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400" />
+            <Download className="w-3.5 h-3.5 text-ink-muted" />
             <span>Export Register Data</span>
           </button>
         </div>
       </div>
 
       {cases.some((record) => record.isSynthetic) && (
-        <p className="text-xs text-slate-500 dark:text-slate-400" role="note">Synthetic records are included in this register.</p>
+        <p className="text-xs text-ink-muted" role="note">Synthetic records are included in this register.</p>
       )}
 
       {/* Filter Toolbar */}
@@ -146,7 +146,7 @@ function CasesContent() {
 
       {/* Loading state */}
       {loadState === 'loading' && (
-        <div className="py-16 text-center text-slate-500 dark:text-slate-400 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs">
+        <div className="py-16 text-center text-ink-muted rounded-2xl border border-line bg-card shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
           <p className="text-xs font-semibold">Filtering complaint registry dockets…</p>
         </div>
@@ -173,7 +173,7 @@ function CasesContent() {
                 overlapOnly: overlapOnly || undefined,
               })
             }
-            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 cursor-pointer shadow-2xs"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-card text-danger-ink hover:bg-rose-50 cursor-pointer shadow-2xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry

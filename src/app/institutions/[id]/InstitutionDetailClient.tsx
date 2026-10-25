@@ -148,7 +148,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
     return (
       <div className="py-20 text-center">
         <Building2 className="w-10 h-10 text-slate-400 mx-auto mb-3" />
-        <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
+        <h2 className="text-base font-bold text-ink">
           Institution Unavailable
         </h2>
         <p className="text-xs text-slate-500 mt-1">
@@ -180,14 +180,14 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
     return (
       <div className="py-20 text-center">
         <AlertCircle className="w-10 h-10 text-rose-400 mx-auto mb-3" />
-        <h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
+        <h2 className="text-base font-bold text-ink">
           Unable to load institution profile
         </h2>
         <p className="text-xs text-slate-500 mt-1">{error}</p>
         <div className="mt-4 flex items-center justify-center gap-3">
           <button
             onClick={() => void fetchData()}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-line bg-raised text-ink-soft hover:bg-slate-50 cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry
@@ -209,17 +209,17 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
         <div className="flex items-center gap-2">
           <Link
             href="/institutions"
-            className="p-1.5 rounded text-slate-500 hover:text-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded text-slate-500 hover:text-slate-700 hover:bg-muted transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
           <span className="text-xs text-slate-500">Institution Directory</span>
           <span className="text-slate-400">/</span>
-          <span className="font-mono text-xs font-bold text-slate-900 dark:text-slate-100">
+          <span className="font-mono text-xs font-bold text-ink">
             {institution.aisheCode}
           </span>
         </div>
@@ -227,7 +227,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
         <div className="flex items-center gap-2">
           <Link
             href={`/explorer?search=${institution.aisheCode}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 text-slate-700 dark:text-slate-200 transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft transition-colors"
           >
             <Network className="w-3.5 h-3.5 text-blue-500" />
             View in Topology Explorer
@@ -236,18 +236,18 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
       </div>
 
       {/* Primary Institution Profile Header Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 shadow-2xs">
+      <div className="bg-card border border-line rounded-lg p-5 shadow-2xs">
         <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-muted text-ink-soft">
               AISHE: {institution.aisheCode}
             </span>
             {institution.aictePermanentId && (
-              <span className="font-mono text-xs px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500">
+              <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted text-slate-500">
                 AICTE ID: {institution.aictePermanentId}
               </span>
             )}
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900">
+            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-brand-strong border border-blue-200 dark:border-blue-900">
               {institution.category}
             </span>
             {institution.isSynthetic && <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">Synthetic records</span>}
@@ -256,7 +256,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
           <RiskBadge rating={institution.riskRating} />
         </div>
 
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+        <h1 className="text-xl font-bold text-ink">
           {institution.name}
         </h1>
 
@@ -274,7 +274,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
             <span className="text-[10px] uppercase font-bold text-slate-400 block">
               Affiliated University
             </span>
-            <span className="font-medium text-slate-800 dark:text-slate-200 truncate block">
+            <span className="font-medium text-ink truncate block">
               {institution.affiliatedUniversity}
             </span>
           </div>
@@ -282,7 +282,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
             <span className="text-[10px] uppercase font-bold text-slate-400 block">
               Sanctioned Intake
             </span>
-            <span className="font-mono font-semibold text-slate-800 dark:text-slate-200">
+            <span className="font-mono font-semibold text-ink">
               {institution.approvedIntake} Students / Yr
             </span>
           </div>
@@ -309,10 +309,10 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
 
       {/* Complaint History Across Bureaus Summary */}
       {Object.keys(bureauHistory).length > 0 && (
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+        <div className="bg-card border border-line rounded-lg p-5">
           <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
                 <Layers className="w-4 h-4 text-blue-500" />
                 Multi-Agency Complaint History Across Coordinating Bureaus
               </h2>
@@ -326,11 +326,11 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
             {Object.entries(bureauHistory).map(([bCode, stats]) => (
               <div
                 key={bCode}
-                className="p-3.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 text-xs space-y-2"
+                className="p-3.5 rounded-lg border border-line bg-slate-50/50 dark:bg-slate-950/20 text-xs space-y-2"
               >
                 <div className="flex items-center justify-between">
                   <BureauBadge bureauId={bCode as BureauCode} size="sm" />
-                  <span className="font-mono text-sm font-bold text-slate-900 dark:text-slate-100">
+                  <span className="font-mono text-sm font-bold text-ink">
                     {stats.total} Docket{stats.total > 1 ? 's' : ''}
                   </span>
                 </div>
@@ -349,10 +349,10 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
       )}
 
       {/* Current Pending Regulatory Actions */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+      <div className="bg-card border border-line rounded-lg p-5">
         <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
               <Clock className="w-4 h-4 text-amber-500" />
               Current Pending Actions & Compliance Deadlines ({pendingActions.length})
             </h2>
@@ -367,7 +367,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
             No active compliance deadlines or pending hearings currently registered for this entity.
           </div>
         ) : (
-          <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
+          <div className="divide-y divide-line text-xs">
             {pendingActions.map((item, idx) => (
               <div
                 key={idx}
@@ -376,15 +376,15 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <BureauBadge bureauId={item.bureau} size="sm" />
-                    <span className="font-mono font-bold text-blue-600 dark:text-blue-400">
+                    <span className="font-mono font-bold text-brand">
                       {item.caseId}
                     </span>
-                    <span className="text-[10px] font-bold px-1.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 uppercase">
+                    <span className="text-[10px] font-bold px-1.5 rounded bg-muted text-ink-muted uppercase">
                       {item.status.replace(/_/g, ' ')}
                     </span>
                   </div>
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100">{item.title}</h4>
-                  <div className="text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center gap-1">
+                  <h4 className="font-semibold text-ink">{item.title}</h4>
+                  <div className="text-[11px] text-warning-ink font-medium flex items-center gap-1">
                     <strong className="text-slate-500 font-normal">Next Action:</strong>{' '}
                     {item.nextAction}
                   </div>
@@ -398,7 +398,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
                     <span className="text-[10px] text-slate-400 block font-mono">SLA DEADLINE</span>
                     <span
                       className={`font-mono text-xs font-bold ${
-                        item.isOverdue ? 'text-rose-600' : 'text-slate-700 dark:text-slate-300'
+                        item.isOverdue ? 'text-rose-600' : 'text-ink-soft'
                       }`}
                     >
                       {item.slaDue} {item.isOverdue && '(BREACHED)'}
@@ -406,7 +406,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
                   </div>
                   <Link
                     href={`/cases/${item.caseId}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-100 dark:hover:bg-slate-700 text-ink-soft"
                   >
                     Open Docket <ArrowRight className="w-3 h-3" />
                   </Link>
@@ -450,7 +450,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
               <FileText className="w-4 h-4" />
               All Regulatory Dockets on Record ({cases.length})
             </h2>

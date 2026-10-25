@@ -44,21 +44,21 @@ function getNextActionSummary(status: CaseStatus, isOverdue: boolean): { action:
 export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
   if (isLoading) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-10 text-center text-slate-500 shadow-xs">
+      <div className="bg-card border border-line rounded-2xl p-10 text-center text-slate-500 shadow-xs">
         <Clock className="w-6 h-6 animate-spin mx-auto mb-2.5 text-blue-500" />
-        <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">Loading regulatory case records...</p>
+        <p className="text-xs font-semibold text-ink">Loading regulatory case records...</p>
       </div>
     );
   }
 
   if (cases.length === 0) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl p-12 text-center shadow-xs">
+      <div className="bg-card border border-line rounded-2xl p-12 text-center shadow-xs">
         <FileText className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-600 mb-3" />
-        <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+        <h4 className="text-sm font-bold text-ink">
           No matching complaints found
         </h4>
-        <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1">
+        <p className="text-xs text-ink-muted max-w-sm mx-auto mt-1">
           Adjust your search terms, bureau jurisdiction, or status filters to display case files.
         </p>
       </div>
@@ -66,11 +66,11 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
+    <div className="bg-card border border-line rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-white/10 bg-slate-50/90 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <tr className="border-b border-line bg-slate-50/90 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-ink-muted">
               <th className="py-3.5 px-4">Case Docket</th>
               <th className="py-3.5 px-3">Bureau</th>
               <th className="py-3.5 px-4">Target Institution</th>
@@ -104,10 +104,10 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group"
                 >
                   {/* Case Docket */}
-                  <td className="py-3.5 px-4 font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                  <td className="py-3.5 px-4 font-mono font-bold text-ink whitespace-nowrap">
                     <Link
                       href={`/cases/${c.id}`}
-                      className="hover:underline text-blue-600 dark:text-blue-400"
+                      className="hover:underline text-brand"
                     >
                       {c.id}
                     </Link>
@@ -125,7 +125,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   <td className="py-3.5 px-4 max-w-[200px]">
                     <Link
                       href={`/institutions/${c.institutionId}`}
-                      className="font-bold text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 block truncate transition-colors"
+                      className="font-bold text-ink hover:text-blue-600 dark:hover:text-blue-400 block truncate transition-colors"
                       title={c.institutionName}
                     >
                       {c.institutionName}
@@ -137,7 +137,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
 
                   {/* Allegation */}
                   <td className="py-3.5 px-4 max-w-[220px]">
-                    <div className="font-semibold text-slate-800 dark:text-slate-200 truncate" title={c.title}>
+                    <div className="font-semibold text-ink truncate" title={c.title}>
                       {c.title}
                     </div>
                     <div className="text-[11px] text-slate-400 truncate mt-0.5">
@@ -147,7 +147,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
 
                   {/* Assigned Officer */}
                   <td className="py-3.5 px-3 max-w-[170px]">
-                    <div className="font-semibold text-slate-900 dark:text-white truncate" title={c.assignedOfficer.name}>
+                    <div className="font-semibold text-ink truncate" title={c.assignedOfficer.name}>
                       {c.assignedOfficer.name}
                     </div>
                     <div className="text-[11px] text-slate-400 truncate" title={c.assignedOfficer.designation}>
@@ -159,7 +159,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   <td className="py-3.5 px-4 max-w-[200px]">
                     <div
                       className={`font-semibold truncate ${
-                        nextAction.urgency === 'high' ? 'text-amber-700 dark:text-amber-300' : 'text-slate-700 dark:text-slate-300'
+                        nextAction.urgency === 'high' ? 'text-warning-ink' : 'text-ink-soft'
                       }`}
                       title={nextAction.action}
                     >
@@ -203,7 +203,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   <td className="py-3.5 px-4 text-right whitespace-nowrap">
                     <Link
                       href={`/cases/${c.id}`}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all shadow-2xs"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg border border-line bg-raised text-ink-soft hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all shadow-2xs"
                     >
                       <span>Inspect</span>
                       <ArrowRight className="w-3 h-3" />
@@ -216,7 +216,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
         </table>
       </div>
 
-      <div className="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-slate-200 dark:border-white/10 text-xs text-slate-500 dark:text-slate-400 flex items-center justify-between">
+      <div className="p-4 bg-slate-50 dark:bg-slate-900/60 border-t border-line text-xs text-ink-muted flex items-center justify-between">
         <span className="font-medium">Showing {cases.length} case docket(s)</span>
         <span className="font-mono text-[11px]">CASEPULSE Benchmark Grid</span>
       </div>

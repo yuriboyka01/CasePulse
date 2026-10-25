@@ -55,7 +55,7 @@ export function AlertCard({
 
   return (
     <div
-      className={`p-4 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-900 shadow-xs hover:shadow-md transition-all duration-200 ${style.border} flex flex-col justify-between`}
+      className={`p-4 rounded-xl border border-line bg-card shadow-xs hover:shadow-md transition-all duration-200 ${style.border} flex flex-col justify-between`}
     >
       <div>
         <div className="flex items-start justify-between gap-3">
@@ -67,15 +67,15 @@ export function AlertCard({
               {style.badgeText}
             </span>
           </div>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono">
+          <span className="text-[11px] text-ink-muted font-mono">
             {meta}
           </span>
         </div>
 
-        <h4 className="mt-2.5 text-sm font-bold text-slate-900 dark:text-white line-clamp-1">
+        <h4 className="mt-2.5 text-sm font-bold text-ink line-clamp-1">
           {title}
         </h4>
-        <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed">
+        <p className="mt-1 text-xs text-ink-soft line-clamp-2 leading-relaxed">
           {subtitle}
         </p>
       </div>
