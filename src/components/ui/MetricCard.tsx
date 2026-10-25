@@ -17,41 +17,60 @@ interface MetricCardProps {
   };
   href?: string;
   isUrgent?: boolean;
+  accentVariant?: 'danger' | 'warning' | 'info' | 'success' | 'neutral';
 }
 
 const BADGE_STYLES: Record<NonNullable<MetricCardProps['badge']>['variant'], string> = {
-  danger: 'bg-danger/10 text-danger-ink border-danger/25',
-  warning: 'bg-warning/10 text-warning-ink border-warning/25',
-  success: 'bg-success/10 text-success-ink border-success/25',
+  danger: 'bg-[#FEF2F2] text-[#B91C1C] border-[#FECACA] dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800',
+  warning: 'bg-[#FFFBEB] text-[#B45309] border-[#FDE68A] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
+  success: 'bg-[#ECFDF5] text-[#047857] border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800',
   info: 'bg-brand-soft text-brand border-brand/25',
   neutral: 'bg-muted text-ink-soft border-line',
 };
 
-export function MetricCard({ label, value, description, icon, badge, href, isUrgent }: MetricCardProps) {
+const TOP_ACCENT_STYLES: Record<NonNullable<MetricCardProps['badge']>['variant'], string> = {
+  danger: 'border-t-2 border-t-[#DC2626]',
+  warning: 'border-t-2 border-t-[#B45309]',
+  success: 'border-t-2 border-t-[#047857]',
+  info: 'border-t-2 border-t-[#4A5535]',
+  neutral: 'border-t-2 border-t-[#C5BFA8]',
+};
+
+export function MetricCard({ label, value, description, icon, badge, href, isUrgent, accentVariant }: MetricCardProps) {
+  const variant = accentVariant ?? (isUrgent ? 'danger' : badge?.variant ?? 'neutral');
+  const topAccent = TOP_ACCENT_STYLES[variant] ?? 'border-t-2 border-t-[#DFDBD2]';
+
   const content = (
     <SpotlightCard
       tilt
-      className={`surface-edge group h-full rounded-xl border p-4 shadow-[var(--shadow-card)] transition-[border-color,box-shadow] duration-200 hover:shadow-[var(--shadow-lift)] sm:p-5 ${isUrgent ? 'border-danger/35 bg-danger/5' : 'border-line bg-card/85'}`}
+      className={`group flex h-full flex-col justify-between overflow-hidden rounded-xl border border-[#E2DEC9] bg-white p-4 shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all duration-200 hover:border-[#C5BFA8] hover:shadow-md dark:border-line dark:bg-card ${topAccent} ${
+        isUrgent ? 'bg-[#FEF2F2]/20 dark:bg-rose-950/10' : ''
+      }`}
     >
       <div className="relative z-[2]">
         <div className="flex items-center justify-between gap-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">{label}</span>
-          {icon && <span className="rounded-lg bg-raised p-1.5 text-brand ring-1 ring-line">{icon}</span>}
+          {icon && <span className="rounded-lg bg-[#F4F2EC] dark:bg-raised p-1.5 text-brand ring-1 ring-line/50">{icon}</span>}
         </div>
-        <div className="mt-3 flex min-h-12 items-end justify-between gap-2">
-          <span className="font-display text-[2.6rem] font-medium leading-none tracking-tight text-ink [font-variant-numeric:lining-nums_tabular-nums]" aria-live="off">
+        <div className="mt-2.5 flex items-baseline justify-between gap-2">
+          <span className="font-mono text-3xl font-semibold tabular-nums tracking-tight text-ink" aria-live="off">
             <AnimatedNumber value={value} />
           </span>
-          {badge && <span className={`mb-1 rounded-md border px-2 py-0.5 text-[10px] font-bold ${BADGE_STYLES[badge.variant]}`}>{badge.text}</span>}
+          {badge && (
+            <span className={`rounded-md border px-1.5 py-0.5 font-mono text-[9.5px] font-bold uppercase tracking-tight ${BADGE_STYLES[badge.variant]}`}>
+              {badge.text}
+            </span>
+          )}
         </div>
-        <p className="mt-2.5 line-clamp-2 text-xs leading-relaxed text-ink-muted">{description}</p>
-        {href && (
-          <div className="mt-3 flex items-center justify-end gap-1 border-t border-line pt-3 text-[11px] font-semibold text-brand">
-            <span>View records</span>
-            <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-          </div>
-        )}
+        <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-ink-muted">{description}</p>
       </div>
+
+      {href && (
+        <div className="relative z-[2] mt-3.5 -mx-4 -mb-4 flex items-center justify-between border-t border-line/60 bg-[#F4F2EC]/60 px-4 py-2 text-[11px] font-semibold text-ink-muted transition-colors group-hover:text-brand group-hover:bg-[#F4F2EC] dark:bg-card-muted/40 dark:group-hover:bg-card-muted">
+          <span>View records</span>
+          <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+        </div>
+      )}
     </SpotlightCard>
   );
 

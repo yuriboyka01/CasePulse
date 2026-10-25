@@ -168,16 +168,16 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
   };
 
   return (
-    <div className="bg-card border border-line rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all">
+    <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:shadow-md hover:border-[#C5BFA8] transition-all">
       {/* Header Bar */}
-      <div className="p-4 sm:p-5 bg-slate-50/80 dark:bg-slate-900/60 border-b border-line flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 bg-[#FAF9F5] dark:bg-slate-900/60 border-b border-[#E2DEC9] dark:border-line flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-wrap">
-          <span className="font-mono text-xs font-bold text-ink bg-slate-200/80 dark:bg-slate-800 px-2.5 py-1 rounded-md">
+          <span className="font-mono text-xs font-bold text-ink bg-stone-100 dark:bg-slate-800 border border-stone-200 dark:border-stone-700 px-2.5 py-1 rounded-md tabular-nums">
             {overlap.id}
           </span>
           <OverlapTypeBadge type={overlap.matchType} />
           {overlap.relationshipKind && (
-            <span className="inline-flex items-center rounded-full border border-blue-200 dark:border-blue-800/80 bg-blue-50 dark:bg-blue-950/40 px-2.5 py-0.5 text-xs font-semibold text-brand-strong">
+            <span className="inline-flex items-center rounded-full border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800 px-2.5 py-0.5 text-xs font-semibold text-stone-800 dark:text-stone-200">
               {overlap.relationshipKind === 'SAME_INSTITUTION'
                 ? 'Same institution'
                 : overlap.relationshipKind === 'RELATED_INCIDENT'
@@ -187,7 +187,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
           )}
           <OverlapStatusBadge status={currentStatus} />
           {hasValidVersion && (
-            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-muted text-ink-soft border border-line">
+            <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 dark:bg-stone-800 dark:text-stone-300 border border-stone-200 dark:border-stone-700 tabular-nums">
               v{currentVersion}
             </span>
           )}
@@ -195,30 +195,30 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-ink-muted font-medium">Confidence:</span>
+            <span className="text-stone-500 font-medium">Confidence:</span>
             <div className="flex items-center gap-1.5">
-              <div className="w-20 h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="w-20 h-2 bg-stone-200 dark:bg-slate-700 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full ${
                     overlap.confidenceScore >= 90
-                      ? 'bg-emerald-500'
+                      ? 'bg-emerald-600'
                       : overlap.confidenceScore >= 70
                       ? 'bg-amber-500'
-                      : 'bg-blue-500'
+                      : 'bg-[#4A5535]'
                   }`}
                   style={{ width: `${overlap.confidenceScore}%` }}
                 />
               </div>
-              <span className="font-mono font-extrabold text-ink">
+              <span className="font-mono font-extrabold text-ink tabular-nums">
                 {overlap.confidenceScore}
               </span>
             </div>
-            <span className="hidden sm:inline text-[10px] text-slate-400">Heuristic score</span>
+            <span className="hidden sm:inline text-[10px] text-stone-400">Heuristic score</span>
           </div>
 
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             title={isExpanded ? 'Collapse match breakdown' : 'Expand match breakdown'}
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
@@ -229,11 +229,11 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       {/* Cross-Bureau Connection Visualizer */}
       <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-11 gap-4 items-stretch">
         {/* Source Docket Card */}
-        <div className="md:col-span-5 p-4 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
+        <div className="md:col-span-5 p-4 rounded-xl border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900/40 flex flex-col justify-between shadow-2xs">
           <div>
             <div className="flex items-center justify-between mb-2">
               <BureauBadge bureauId={overlap.sourceBureau} size="sm" />
-              <span className="font-mono text-xs font-bold text-brand">
+              <span className="font-mono text-xs font-bold text-[#4A5535] dark:text-[#8FA367]">
                 <Link href={`/cases/${overlap.sourceCaseId}`} className="hover:underline">
                   {overlap.sourceCaseId}
                 </Link>
@@ -247,13 +247,13 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             </p>
           </div>
           
-          <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
-            <span className="text-slate-400 text-[11px]">
+          <div className="mt-4 pt-3 border-t border-[#E2DEC9]/60 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
+            <span className="text-stone-400 text-[11px] font-mono">
               {overlap.sourceFilingDate && `Filed ${new Date(overlap.sourceFilingDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`}
             </span>
             <Link
               href={`/cases/${overlap.sourceCaseId}`}
-              className="text-brand hover:underline font-semibold text-xs inline-flex items-center gap-1"
+              className="text-[#4A5535] dark:text-[#8FA367] hover:underline font-semibold text-xs inline-flex items-center gap-1"
             >
               Open File <ArrowRight className="w-3 h-3" />
             </Link>
@@ -261,8 +261,8 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         </div>
 
         {/* Central Correlation Link Symbol */}
-        <div className="md:col-span-1 flex flex-row md:flex-col items-center justify-center gap-2 py-2 text-slate-500">
-          <div className="p-2.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-brand shadow-2xs">
+        <div className="md:col-span-1 flex flex-row md:flex-col items-center justify-center gap-2 py-2 text-stone-500">
+          <div className="p-2.5 rounded-full bg-stone-100 dark:bg-slate-800 border border-stone-200 dark:border-stone-700 text-[#4A5535] shadow-2xs">
             <Link2 className="w-4 h-4" />
           </div>
           <span className="text-[10px] font-bold text-center leading-tight max-w-[80px]">
@@ -275,11 +275,11 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
         </div>
 
         {/* Target Docket Card */}
-        <div className="md:col-span-5 p-4 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900/40 flex flex-col justify-between">
+        <div className="md:col-span-5 p-4 rounded-xl border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900/40 flex flex-col justify-between shadow-2xs">
           <div>
             <div className="flex items-center justify-between mb-2">
               <BureauBadge bureauId={overlap.targetBureau} size="sm" />
-              <span className="font-mono text-xs font-bold text-brand">
+              <span className="font-mono text-xs font-bold text-[#4A5535] dark:text-[#8FA367]">
                 <Link href={`/cases/${overlap.targetCaseId}`} className="hover:underline">
                   {overlap.targetCaseId}
                 </Link>
@@ -293,13 +293,13 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             </p>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-200/60 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
-            <span className="text-slate-400 text-[11px]">
+          <div className="mt-4 pt-3 border-t border-[#E2DEC9]/60 dark:border-white/5 flex items-center justify-between gap-2 text-xs">
+            <span className="text-stone-400 text-[11px] font-mono">
               {overlap.targetFilingDate && `Filed ${new Date(overlap.targetFilingDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`}
             </span>
             <Link
               href={`/cases/${overlap.targetCaseId}`}
-              className="text-brand hover:underline font-semibold text-xs inline-flex items-center gap-1"
+              className="text-[#4A5535] dark:text-[#8FA367] hover:underline font-semibold text-xs inline-flex items-center gap-1"
             >
               Open File <ArrowRight className="w-3 h-3" />
             </Link>
@@ -309,12 +309,12 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
       {/* Shared institution context */}
       <div className="px-4 sm:px-5 pb-4">
-        <div className="rounded-xl border border-line bg-slate-50/50 dark:bg-slate-900/40 px-4 py-3 flex items-start gap-3">
-          <Building2 className="w-4 h-4 text-ink-muted shrink-0 mt-0.5" />
+        <div className="rounded-xl border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900/40 px-4 py-3 flex items-start gap-3">
+          <Building2 className="w-4 h-4 text-[#4A5535] shrink-0 mt-0.5" />
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-ink-muted">Shared Regulated Institution</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-stone-500">Shared Regulated Institution</p>
             <p className="mt-0.5 text-xs font-bold text-ink">{overlap.institutionName}</p>
-            <p className="mt-0.5 text-[11px] text-ink-muted">
+            <p className="mt-0.5 text-[11px] text-stone-500 leading-relaxed">
               Deterministic identifier match. Shared campus identity establishes jurisdictional overlap; allegations require joint review.
             </p>
           </div>
@@ -323,7 +323,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
       {/* Why System Flagged This Overlap */}
       <div className="px-4 sm:px-5 pb-5">
-        <div className="p-4 bg-amber-50/80 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-800/60 rounded-xl">
+        <div className="p-4 bg-[#FFFBEB] dark:bg-amber-950/30 border border-[#FDE68A] dark:border-amber-800/60 rounded-xl">
           <div className="flex items-center gap-1.5 text-xs font-bold text-amber-900 dark:text-amber-200 uppercase tracking-wider mb-2">
             <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
             Explainable Detection Findings ({overlap.reasons.length} factors)
@@ -511,13 +511,13 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
 
         {/* Append-Only Review Audit History */}
         {reviewHistory.length > 0 && (
-          <div className="border border-line rounded-xl p-3.5 bg-card space-y-2.5">
+          <div className="border border-[#E2DEC9] dark:border-line rounded-xl p-3.5 bg-white dark:bg-card space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
-                <History className="w-3.5 h-3.5 text-blue-500" />
+                <History className="w-3.5 h-3.5 text-[#4A5535]" />
                 Immutable Review Audit Trail (Append-Only)
               </span>
-              <span className="text-[10px] text-slate-400 font-mono">
+              <span className="text-[10px] text-stone-400 font-mono">
                 {reviewHistory.length} {reviewHistory.length === 1 ? 'entry' : 'entries'} on file
               </span>
             </div>
@@ -526,16 +526,16 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
               {reviewHistory.map((rev) => (
                 <div
                   key={rev.id}
-                  className="p-2.5 rounded-lg border border-slate-100 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/40 text-xs space-y-1"
+                  className="p-2.5 rounded-lg border border-[#E2DEC9]/60 dark:border-slate-800 bg-[#FAF9F5] dark:bg-slate-950/40 text-xs space-y-1"
                 >
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2">
                       <OverlapStatusBadge status={rev.decision} />
-                      <span className="text-[10px] font-mono text-slate-500">
+                      <span className="text-[10px] font-mono text-stone-500">
                         v{rev.previousVersion} → v{rev.newVersion}
                       </span>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-400">
+                    <span className="text-[10px] font-mono text-stone-400">
                       {new Date(rev.reviewedAt).toLocaleDateString('en-IN', {
                         day: '2-digit',
                         month: 'short',

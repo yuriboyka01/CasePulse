@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Institution } from '@/types';
 import { RiskBadge } from '@/components/ui/StatusBadge';
 import { BureauBadge } from '@/components/ui/BureauBadge';
+import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { Building2, ChevronRight, MapPin } from 'lucide-react';
 
 interface InstitutionCardProps {
@@ -13,30 +14,27 @@ interface InstitutionCardProps {
 
 export function InstitutionCard({ institution }: InstitutionCardProps) {
   return (
-    <div className="bg-card border border-line rounded-2xl p-5 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+    <SpotlightCard
+      tilt
+      className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-4 shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full group"
+    >
       <div>
-        {/* Top Meta */}
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="p-2 bg-blue-50 dark:bg-blue-950/60 text-brand rounded-xl">
-              <Building2 className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-mono text-[11px] font-bold text-ink-soft">
-                AISHE: {institution.aisheCode}
-              </span>
-              {institution.aictePermanentId && (
-                <span className="text-[10px] text-slate-400 ml-2 font-mono">
-                  AICTE: {institution.aictePermanentId}
-                </span>
-              )}
-            </div>
+        {/* Top Meta: Monospace ID Pill on left, Semantic Risk Badge on right */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-[#F4F2EC] dark:bg-slate-800/80 px-2.5 py-1 font-mono text-[10.5px] font-semibold text-ink-soft">
+            <span>AISHE: {institution.aisheCode}</span>
+            {institution.aictePermanentId && (
+              <>
+                <span className="text-slate-400">·</span>
+                <span>AICTE: {institution.aictePermanentId}</span>
+              </>
+            )}
           </div>
           <RiskBadge rating={institution.riskRating} />
         </div>
 
         {/* Institution Title */}
-        <h3 className="mt-3.5 text-sm font-bold text-ink line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+        <h3 className="mt-3 text-sm font-bold text-ink line-clamp-2 leading-snug group-hover:text-[#4A5535] dark:group-hover:text-emerald-400 transition-colors">
           {institution.name}
         </h3>
 
@@ -45,7 +43,7 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
           <div className="flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 shrink-0 text-slate-400" />
             <span className="truncate">
-              {institution.district}, {institution.state} (PIN: {institution.pincode})
+              {institution.district}, {institution.state} (PIN: <span className="font-mono">{institution.pincode}</span>)
             </span>
           </div>
           <div className="text-[11px] text-slate-400 truncate">
@@ -54,8 +52,8 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
         </div>
 
         {/* Bureau Involvement */}
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/5">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+        <div className="mt-3 pt-2.5 border-t border-stone-100 dark:border-stone-800">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-ink-muted mb-1.5">
             Coordinating Bureaus
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -70,18 +68,18 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
         </div>
       </div>
 
-      {/* Footer stats & action */}
-      <div className="mt-5 pt-3.5 border-t border-slate-100 dark:border-white/5 flex items-center justify-between">
+      {/* Footer stats & high-contrast command action */}
+      <div className="mt-4 pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
         <div className="flex items-center gap-3 text-xs">
           <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-bold">Active Cases</span>
-            <strong className="font-mono text-ink text-sm font-extrabold">
+            <span className="text-ink-muted block text-[10px] uppercase font-bold tracking-tight">Active Cases</span>
+            <strong className="font-mono text-ink text-sm font-bold tabular-nums">
               {institution.activeCasesCount}
             </strong>
           </div>
           <div className="border-l border-line pl-3">
-            <span className="text-slate-400 block text-[10px] uppercase font-bold">Total History</span>
-            <span className="font-mono text-ink-muted text-sm font-bold">
+            <span className="text-ink-muted block text-[10px] uppercase font-bold tracking-tight">Total History</span>
+            <span className="font-mono text-ink-muted text-sm font-bold tabular-nums">
               {institution.totalCasesCount}
             </span>
           </div>
@@ -89,12 +87,12 @@ export function InstitutionCard({ institution }: InstitutionCardProps) {
 
         <Link
           href={`/institutions/${institution.id}`}
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg border border-line bg-raised hover:bg-slate-50 dark:hover:bg-slate-700 text-ink-soft hover:text-blue-600 dark:hover:text-blue-400 transition-colors shadow-2xs"
+          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#DFDBD2] dark:border-line bg-stone-50 dark:bg-slate-800 text-ink-soft transition-all duration-200 group-hover:bg-[#4A5535] group-hover:border-[#4A5535] group-hover:text-white shadow-2xs"
         >
           <span>Dossier</span>
-          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+          <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </div>
-    </div>
+    </SpotlightCard>
   );
 }

@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -18,42 +18,42 @@
  */
 :root {
   color-scheme: light;
-  --background: #f6f3ea;
-  --foreground: #1a201d;
-  --card: #fffdf8;
-  --card-foreground: #1a201d;
-  --card-muted: #f1eee4;
+  --background: #f4f2ec;
+  --foreground: #191e1b;
+  --card: #ffffff;
+  --card-foreground: #191e1b;
+  --card-muted: #efece6;
   --raised: #ffffff;
-  --muted: #ece9de;
-  --muted-foreground: #5e6a62;
-  --border: #ddd9cb;
-  --line: #ddd9cb;
-  --surface: #fffdf8;
-  --surface-muted: #f1eee4;
-  --ink: #1a201d;
-  --ink-soft: #3a443e;
-  --ink-muted: #5e6a62;
-  --primary: #876a28;
+  --muted: #e8e5dc;
+  --muted-foreground: #5a645d;
+  --border: #e2dec9;
+  --line: #dfdbd2;
+  --surface: #ffffff;
+  --surface-muted: #efece6;
+  --ink: #191e1b;
+  --ink-soft: #38433d;
+  --ink-muted: #5e6861;
+  --primary: #4a5535;
   --primary-foreground: #ffffff;
-  --secondary: #ece9de;
-  --secondary-foreground: #1a201d;
-  --brand: #876a28;
-  --brand-strong: #6f561f;
-  --brand-soft: #f7efd9;
-  --danger: #b84a39;
-  --warning: #bc6f17;
-  --success: #3f8666;
-  /* Readable text on tinted status surfaces (use with bg-danger/10 border-danger/30 etc.) */
-  --danger-ink: #963d30;
-  --warning-ink: #7a470f;
-  --success-ink: #2a5644;
-  --shadow-card: 0 1px 2px rgba(26, 32, 29, 0.06), 0 8px 24px -12px rgba(26, 32, 29, 0.12);
-  --shadow-lift: 0 2px 4px rgba(26, 32, 29, 0.08), 0 16px 32px -14px rgba(26, 32, 29, 0.2);
+  --secondary: #efece6;
+  --secondary-foreground: #191e1b;
+  --brand: #4a5535;
+  --brand-strong: #384227;
+  --brand-soft: #eef1e8;
+  --danger: #dc2626;
+  --warning: #b45309;
+  --success: #047857;
+  /* Readable text on tinted status surfaces */
+  --danger-ink: #b91c1c;
+  --warning-ink: #b45309;
+  --success-ink: #047857;
+  --shadow-card: 0 1px 2px rgba(20, 20, 18, 0.04);
+  --shadow-lift: 0 4px 12px -2px rgba(20, 20, 18, 0.08);
 }
 
 .dark {
   color-scheme: dark;
-  --background: #101312;
+  --background: #111413;
   --foreground: #eae7de;
   --card: #191e1b;
   --card-foreground: #eae7de;
@@ -61,26 +61,26 @@
   --raised: #222925;
   --muted: #222925;
   --muted-foreground: #98a69a;
-  --border: rgba(234, 231, 222, 0.1);
+  --border: rgba(234, 231, 222, 0.12);
   --line: rgba(234, 231, 222, 0.1);
   --surface: #191e1b;
   --surface-muted: #222925;
   --ink: #eae7de;
   --ink-soft: #c9cbbf;
   --ink-muted: #98a69a;
-  --primary: #c5a46d;
+  --primary: #94a872;
   --primary-foreground: #101312;
   --secondary: #222925;
   --secondary-foreground: #eae7de;
-  --brand: #c5a46d;
-  --brand-strong: #d9bc80;
-  --brand-soft: rgba(197, 164, 109, 0.12);
-  --danger: #e57967;
-  --warning: #eba23d;
-  --success: #72b79a;
-  --danger-ink: #ef9a89;
-  --warning-ink: #f2b95f;
-  --success-ink: #8fc8ae;
+  --brand: #94a872;
+  --brand-strong: #a9bd87;
+  --brand-soft: rgba(148, 168, 114, 0.14);
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --success: #10b981;
+  --danger-ink: #fca5a5;
+  --warning-ink: #fcd34d;
+  --success-ink: #6ee7b7;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.24), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.28), 0 16px 32px -14px rgba(0, 0, 0, 0.62);
 }
@@ -99,65 +99,65 @@
   --color-slate-900: #191e1b;
   --color-slate-950: #101312;
 
-  --color-blue-50: #faf5e9;
-  --color-blue-100: #f3e8cb;
-  --color-blue-200: #e7d3a4;
-  --color-blue-300: #d9bc80;
-  --color-blue-400: #c5a46d;
-  --color-blue-500: #b08e50;
-  --color-blue-600: #876a28;
-  --color-blue-700: #6f561f;
-  --color-blue-800: #5a461a;
-  --color-blue-900: #463616;
-  --color-blue-950: #2b210d;
+  --color-blue-50: #eef1e8;
+  --color-blue-100: #dfe5d5;
+  --color-blue-200: #c5d1b4;
+  --color-blue-300: #a3b58c;
+  --color-blue-400: #7a8e5f;
+  --color-blue-500: #5c6c44;
+  --color-blue-600: #4a5535;
+  --color-blue-700: #384227;
+  --color-blue-800: #29311c;
+  --color-blue-900: #1b2113;
+  --color-blue-950: #0e120a;
 
-  --color-rose-50: #fdf1ee;
-  --color-rose-100: #fadfd9;
-  --color-rose-200: #f5c3b8;
-  --color-rose-300: #ef9a89;
-  --color-rose-400: #e57967;
-  --color-rose-500: #d55f4c;
-  --color-rose-600: #b84a39;
-  --color-rose-700: #963d30;
-  --color-rose-800: #7a3329;
-  --color-rose-900: #5f2a22;
-  --color-rose-950: #3a1914;
+  --color-rose-50: #fef2f2;
+  --color-rose-100: #fee2e2;
+  --color-rose-200: #fecaca;
+  --color-rose-300: #fca5a5;
+  --color-rose-400: #f87171;
+  --color-rose-500: #ef4444;
+  --color-rose-600: #dc2626;
+  --color-rose-700: #b91c1c;
+  --color-rose-800: #991b1b;
+  --color-rose-900: #7f1d1d;
+  --color-rose-950: #450a0a;
 
-  --color-red-50: #fdf1ee;
-  --color-red-100: #fadfd9;
-  --color-red-200: #f5c3b8;
-  --color-red-300: #ef9a89;
-  --color-red-400: #e57967;
-  --color-red-500: #d55f4c;
-  --color-red-600: #b84a39;
-  --color-red-700: #963d30;
-  --color-red-800: #7a3329;
-  --color-red-900: #5f2a22;
-  --color-red-950: #3a1914;
+  --color-red-50: #fef2f2;
+  --color-red-100: #fee2e2;
+  --color-red-200: #fecaca;
+  --color-red-300: #fca5a5;
+  --color-red-400: #f87171;
+  --color-red-500: #ef4444;
+  --color-red-600: #dc2626;
+  --color-red-700: #b91c1c;
+  --color-red-800: #991b1b;
+  --color-red-900: #7f1d1d;
+  --color-red-950: #450a0a;
 
-  --color-emerald-50: #edf6f1;
-  --color-emerald-100: #d5ebdf;
-  --color-emerald-200: #afd8c3;
-  --color-emerald-300: #8fc8ae;
-  --color-emerald-400: #72b79a;
-  --color-emerald-500: #55a07f;
-  --color-emerald-600: #3f8666;
-  --color-emerald-700: #336b53;
-  --color-emerald-800: #2a5644;
-  --color-emerald-900: #224537;
-  --color-emerald-950: #11261d;
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064e3b;
+  --color-emerald-950: #022c22;
 
-  --color-amber-50: #fef6e7;
-  --color-amber-100: #fce8c2;
-  --color-amber-200: #f8d18f;
-  --color-amber-300: #f2b95f;
-  --color-amber-400: #eba23d;
-  --color-amber-500: #dd8a22;
-  --color-amber-600: #bc6f17;
-  --color-amber-700: #96570f;
-  --color-amber-800: #7a470f;
-  --color-amber-900: #5e380f;
-  --color-amber-950: #331d07;
+  --color-amber-50: #fffbeb;
+  --color-amber-100: #fef3c7;
+  --color-amber-200: #fde68a;
+  --color-amber-300: #fcd34d;
+  --color-amber-400: #fbbf24;
+  --color-amber-500: #f59e0b;
+  --color-amber-600: #d97706;
+  --color-amber-700: #b45309;
+  --color-amber-800: #92400e;
+  --color-amber-900: #78350f;
+  --color-amber-950: #451a03;
 
   --color-indigo-50: #eef3f6;
   --color-indigo-100: #dce7ee;
@@ -388,20 +388,24 @@ button, a { -webkit-tap-highlight-color: transparent; }
   position: absolute;
   inset: 0;
   background:
-    radial-gradient(52rem 30rem at 88% -8%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 70%),
-    radial-gradient(44rem 28rem at -8% 18%, color-mix(in srgb, var(--success) 8%, transparent), transparent 72%),
-    radial-gradient(60rem 30rem at 50% 118%, color-mix(in srgb, var(--brand) 9%, transparent), transparent 70%);
+    radial-gradient(52rem 30rem at 88% -8%, color-mix(in srgb, var(--brand) 10%, transparent), transparent 70%),
+    radial-gradient(44rem 28rem at -8% 18%, color-mix(in srgb, var(--success) 5%, transparent), transparent 72%),
+    radial-gradient(60rem 30rem at 50% 118%, color-mix(in srgb, var(--brand) 6%, transparent), transparent 70%);
 }
 
 .atmosphere::after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.55;
-  background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1.2px);
+  opacity: 0.28;
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.2px);
   background-size: 26px 26px;
   -webkit-mask-image: radial-gradient(ellipse 70% 55% at 62% 0%, #000 0%, transparent 72%);
   mask-image: radial-gradient(ellipse 70% 55% at 62% 0%, #000 0%, transparent 72%);
+}
+
+.dark .atmosphere::after {
+  opacity: 0.45;
 }
 
 /* ================================================================

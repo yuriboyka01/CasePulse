@@ -73,8 +73,8 @@ export function StatusBadge({ status, isOverdue }: StatusBadgeProps) {
         {config.label}
       </span>
       {isOverdue && (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-300 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800 animate-pulse">
-          <span className="w-1 h-1 rounded-full bg-rose-500" />
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
           OVERDUE
         </span>
       )}
@@ -86,19 +86,21 @@ export function SeverityBadge({ severity }: { severity: CaseSeverity }) {
   switch (severity) {
     case 'CRITICAL':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800/80">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">
+          <span className="w-1 h-1 rounded-full bg-[#DC2626]" />
           CRITICAL
         </span>
       );
     case 'HIGH':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-orange-50 text-orange-800 border border-orange-200 dark:bg-orange-950/60 dark:text-orange-300 dark:border-orange-800/80">
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
+          <span className="w-1 h-1 rounded-full bg-[#B45309]" />
           HIGH
         </span>
       );
     case 'ELEVATED':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/80">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
           ELEVATED
         </span>
       );
@@ -116,26 +118,30 @@ export function RiskBadge({ rating }: { rating: RiskRating }) {
   switch (rating) {
     case 'CRITICAL':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-600 text-white shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide bg-[#FEF2F2] border border-[#FECACA] text-[#B91C1C] dark:bg-rose-950/60 dark:border-rose-800 dark:text-rose-300 shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
           CRITICAL RISK
         </span>
       );
     case 'HIGH':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold bg-orange-600 text-white shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide bg-[#FFFBEB] border border-[#FDE68A] text-[#B45309] dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-300 shadow-2xs">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#B45309]" />
           HIGH RISK
         </span>
       );
     case 'MEDIUM':
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-amber-500 text-white shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-[#FFFBEB] border border-[#FDE68A] text-[#B45309] dark:bg-amber-950/50 dark:border-amber-800 dark:text-amber-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
           MEDIUM RISK
         </span>
       );
     case 'LOW':
     default:
       return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium bg-emerald-600 text-white shadow-2xs">
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide bg-[#ECFDF5] border border-emerald-200 text-[#047857] dark:bg-emerald-950/50 dark:border-emerald-800 dark:text-emerald-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#047857]" />
           LOW RISK
         </span>
       );

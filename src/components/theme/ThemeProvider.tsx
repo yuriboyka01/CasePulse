@@ -11,7 +11,7 @@ interface ThemeContextType {
 }
 
 const ThemeContext = createContext<ThemeContextType>({
-  theme: 'dark',
+  theme: 'light',
   toggleTheme: () => {},
   setTheme: () => {},
 });
@@ -20,9 +20,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // The root layout's early theme script sets this class before hydration. Reading
   // it here avoids a state-setting effect and keeps the selected theme in sync.
   const [theme, setThemeState] = useState<Theme>(() =>
-    typeof document !== 'undefined' && !document.documentElement.classList.contains('dark')
-      ? 'light'
-      : 'dark',
+    typeof document !== 'undefined' && document.documentElement.classList.contains('dark')
+      ? 'dark'
+      : 'light',
   );
 
   const setTheme = (newTheme: Theme) => {

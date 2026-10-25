@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+﻿import React, { Suspense } from 'react';
 import { CASES } from '@/data/synthetic-dataset';
 import CaseDetailClient from './CaseDetailClient';
 

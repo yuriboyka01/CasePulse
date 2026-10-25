@@ -20,6 +20,7 @@ import { RiskBadge } from '@/components/ui/StatusBadge';
 import { BureauBadge } from '@/components/ui/BureauBadge';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
 import { OverlapReviewPanel } from '@/components/overlaps/OverlapReviewPanel';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { apiClient, ApiClientError } from '@/lib/api-client';
 
 interface InstitutionDetailClientProps {
@@ -207,116 +208,115 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
   if (!institution) return null;
 
   return (
-    <div className="space-y-6">
-      {/* Breadcrumb */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/institutions"
-            className="p-1.5 rounded text-slate-500 hover:text-slate-700 hover:bg-muted transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <span className="text-xs text-slate-500">Institution Directory</span>
-          <span className="text-slate-400">/</span>
-          <span className="font-mono text-xs font-bold text-ink">
-            {institution.aisheCode}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/explorer?search=${institution.aisheCode}`}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft transition-colors"
-          >
-            <Network className="w-3.5 h-3.5 text-blue-500" />
-            View in Topology Explorer
-          </Link>
+    <div className="space-y-4">
+      {/* Top Breadcrumb */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/institutions"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Institution Directory</span>
+        </Link>
+        <div className="flex items-center gap-2 font-mono text-xs text-stone-400">
+          <span>AISHE</span>
+          <span>/</span>
+          <span className="font-bold text-ink">{institution.aisheCode}</span>
         </div>
       </div>
 
-      {/* Primary Institution Profile Header Card */}
-      <div className="bg-card border border-line rounded-lg p-5 shadow-2xs">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-2">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-muted text-ink-soft">
+      {/* Primary Institution Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-ink tabular-nums">
               AISHE: {institution.aisheCode}
             </span>
             {institution.aictePermanentId && (
-              <span className="font-mono text-xs px-2 py-0.5 rounded bg-muted text-slate-500">
-                AICTE ID: {institution.aictePermanentId}
+              <span className="font-mono text-xs font-medium px-2 py-0.5 rounded bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 text-stone-600 dark:text-stone-400 tabular-nums">
+                AICTE: {institution.aictePermanentId}
               </span>
             )}
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-50 dark:bg-blue-950 text-brand-strong border border-blue-200 dark:border-blue-900">
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded bg-stone-100 text-stone-800 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700">
               {institution.category}
             </span>
-            {institution.isSynthetic && <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">Synthetic records</span>}
+            {institution.isSynthetic && (
+              <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800" role="note">
+                SYNTHETIC RECORD
+              </span>
+            )}
+          </>
+        }
+        title={institution.name}
+        subtitle={`${institution.address}, ${institution.district}, ${institution.state} - ${institution.pincode} · Affiliated with ${institution.affiliatedUniversity}`}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <RiskBadge rating={institution.riskRating} />
+            <Link
+              href={`/explorer?search=${institution.aisheCode}`}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#FAF9F5] text-ink transition-colors shadow-2xs"
+            >
+              <Network className="w-3.5 h-3.5 text-[#4A5535]" />
+              Topology Explorer
+            </Link>
           </div>
+        }
+      />
 
-          <RiskBadge rating={institution.riskRating} />
-        </div>
-
-        <h1 className="text-xl font-bold text-ink">
-          {institution.name}
-        </h1>
-
-        <div className="mt-2 text-xs text-slate-500 flex items-center gap-1.5">
-          <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-          <span>
-            {institution.address}, {institution.district}, {institution.state} -{' '}
-            {institution.pincode}
+      {/* Operational Parameters Strip */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+            Sanctioned Intake
+          </span>
+          <span className="text-xl font-bold font-mono tabular-nums text-ink mt-1 block">
+            {institution.approvedIntake}{' '}
+            <span className="text-xs font-sans text-stone-400 font-normal">Students / Yr</span>
           </span>
         </div>
 
-        {/* Multi-Bureau Involvement & Operational Parameters */}
-        <div className="mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">
-              Affiliated University
-            </span>
-            <span className="font-medium text-ink truncate block">
-              {institution.affiliatedUniversity}
-            </span>
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">
-              Sanctioned Intake
-            </span>
-            <span className="font-mono font-semibold text-ink">
-              {institution.approvedIntake} Students / Yr
-            </span>
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">
-              Active Investigations
-            </span>
-            <span className="font-mono font-bold text-rose-600 text-sm">
-              {institution.activeCasesCount} Active ({institution.totalCasesCount} Historical)
-            </span>
-          </div>
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">
-              Bureaus Involved
-            </span>
-            <div className="flex flex-wrap gap-1 mt-1">
-              {institution.bureauInvolvement.map((b) => (
-                <BureauBadge key={b} bureauId={b} size="sm" />
-              ))}
-            </div>
+        <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+            Active Investigations
+          </span>
+          <span className="text-xl font-bold font-mono tabular-nums text-rose-600 mt-1 block">
+            {institution.activeCasesCount}{' '}
+            <span className="text-xs font-sans text-stone-400 font-normal">Active Inquiries</span>
+          </span>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+            Total Historical Cases
+          </span>
+          <span className="text-xl font-bold font-mono tabular-nums text-ink mt-1 block">
+            {institution.totalCasesCount}{' '}
+            <span className="text-xs font-sans text-stone-400 font-normal">Dockets on Record</span>
+          </span>
+        </div>
+
+        <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 block mb-1">
+            Bureaus Involved ({institution.bureauInvolvement.length})
+          </span>
+          <div className="flex flex-wrap gap-1 mt-1">
+            {institution.bureauInvolvement.map((b) => (
+              <BureauBadge key={b} bureauId={b} size="sm" />
+            ))}
           </div>
         </div>
       </div>
 
       {/* Complaint History Across Bureaus Summary */}
       {Object.keys(bureauHistory).length > 0 && (
-        <div className="bg-card border border-line rounded-lg p-5">
-          <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <div className="flex items-center justify-between mb-3 border-b border-stone-100 dark:border-slate-800 pb-3">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
-                <Layers className="w-4 h-4 text-blue-500" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-[#4A5535]" />
                 Multi-Agency Complaint History Across Coordinating Bureaus
               </h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-[11px] text-stone-500 mt-0.5">
                 Distribution of regulatory grievances registered against this institution broken down by statutory agency.
               </p>
             </div>
@@ -326,7 +326,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
             {Object.entries(bureauHistory).map(([bCode, stats]) => (
               <div
                 key={bCode}
-                className="p-3.5 rounded-lg border border-line bg-slate-50/50 dark:bg-slate-950/20 text-xs space-y-2"
+                className="p-3.5 rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900/40 text-xs space-y-2 hover:border-[#C5BFA8] transition-colors"
               >
                 <div className="flex items-center justify-between">
                   <BureauBadge bureauId={bCode as BureauCode} size="sm" />
@@ -334,10 +334,10 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
                     {stats.total} Docket{stats.total > 1 ? 's' : ''}
                   </span>
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between text-[11px] text-stone-500 pt-1.5 border-t border-[#E2DEC9]/60 dark:border-slate-800">
                   <span className="text-rose-600 font-semibold">{stats.active} Active Inquiries</span>
                   {stats.overdue > 0 && (
-                    <span className="text-rose-600 font-bold flex items-center gap-0.5">
+                    <span className="text-rose-600 font-bold flex items-center gap-0.5 font-mono">
                       <AlertCircle className="w-3 h-3" /> {stats.overdue} SLA Breached
                     </span>
                   )}
@@ -349,56 +349,56 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
       )}
 
       {/* Current Pending Regulatory Actions */}
-      <div className="bg-card border border-line rounded-lg p-5">
-        <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+        <div className="flex items-center justify-between mb-3 border-b border-stone-100 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
-              <Clock className="w-4 h-4 text-amber-500" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-amber-600" />
               Current Pending Actions & Compliance Deadlines ({pendingActions.length})
             </h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-stone-500 mt-0.5">
               Upcoming statutory hearings, show-cause deadlines, and expert inspections awaiting resolution.
             </p>
           </div>
         </div>
 
         {pendingActions.length === 0 ? (
-          <div className="p-6 text-center text-xs text-slate-500 border border-dashed rounded-lg">
+          <div className="p-6 text-center text-xs text-stone-500 border border-dashed border-stone-200 dark:border-stone-800 rounded-lg">
             No active compliance deadlines or pending hearings currently registered for this entity.
           </div>
         ) : (
-          <div className="divide-y divide-line text-xs">
+          <div className="divide-y divide-[#E2DEC9]/60 dark:divide-line text-xs">
             {pendingActions.map((item, idx) => (
               <div
                 key={idx}
-                className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 px-2 rounded transition-colors"
+                className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF9F5] dark:hover:bg-slate-800/30 px-3 rounded-lg transition-colors"
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <BureauBadge bureauId={item.bureau} size="sm" />
-                    <span className="font-mono font-bold text-brand">
+                    <span className="font-mono font-bold text-[#4A5535] dark:text-[#8FA367]">
                       {item.caseId}
                     </span>
-                    <span className="text-[10px] font-bold px-1.5 rounded bg-muted text-ink-muted uppercase">
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 uppercase">
                       {item.status.replace(/_/g, ' ')}
                     </span>
                   </div>
                   <h4 className="font-semibold text-ink">{item.title}</h4>
-                  <div className="text-[11px] text-warning-ink font-medium flex items-center gap-1">
-                    <strong className="text-slate-500 font-normal">Next Action:</strong>{' '}
+                  <div className="text-[11px] text-amber-700 dark:text-amber-400 font-medium flex items-center gap-1">
+                    <strong className="text-stone-500 font-normal">Next Action:</strong>{' '}
                     {item.nextAction}
                   </div>
-                  <div className="text-[10px] text-slate-400">
+                  <div className="text-[10px] text-stone-400">
                     Assigned Officer: {item.officer}
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
                   <div className="text-right">
-                    <span className="text-[10px] text-slate-400 block font-mono">SLA DEADLINE</span>
+                    <span className="text-[10px] text-stone-400 block font-mono">SLA DEADLINE</span>
                     <span
                       className={`font-mono text-xs font-bold ${
-                        item.isOverdue ? 'text-rose-600' : 'text-ink-soft'
+                        item.isOverdue ? 'text-rose-600' : 'text-stone-700 dark:text-stone-300'
                       }`}
                     >
                       {item.slaDue} {item.isOverdue && '(BREACHED)'}
@@ -406,7 +406,7 @@ export default function InstitutionDetailClient({ instId }: InstitutionDetailCli
                   </div>
                   <Link
                     href={`/cases/${item.caseId}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-100 dark:hover:bg-slate-700 text-ink-soft"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#FAF9F5] text-ink transition-colors shadow-2xs"
                   >
                     Open Docket <ArrowRight className="w-3 h-3" />
                   </Link>

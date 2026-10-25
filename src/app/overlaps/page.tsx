@@ -12,6 +12,7 @@ import {
 import { CaseOverlap, RelationshipStatus } from '@/types';
 import { apiClient, ApiClientError, OverlapFilters } from '@/lib/api-client';
 import { OverlapReviewPanel } from '@/components/overlaps/OverlapReviewPanel';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 
 function OverlapsContent() {
   const searchParams = useSearchParams();
@@ -112,103 +113,103 @@ function OverlapsContent() {
   const furtherCoordCount = overlaps.filter((o) => o.status === 'FURTHER_COORDINATION').length;
 
   return (
-    <div className="space-y-6 text-ink">
-      {/* Header */}
-      <div className="rounded-2xl border border-line bg-card p-5 sm:p-6 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
-                Cross-Bureau Overlap Review Workbench
-              </h1>
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
-                {unreviewedCount} PENDING REVIEW
+    <div className="space-y-4 text-ink">
+      {/* Workspace Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A5535] dark:text-[#8FA367]">
+              Correlation Engine
+            </span>
+            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700 tabular-nums">
+              DETERMINISTIC V2.0
+            </span>
+            {overlaps.some((record) => record.isSynthetic) && (
+              <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800" role="note">
+                SYNTHETIC INCLUDED
               </span>
-            </div>
-            <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-3xl leading-relaxed">
-              Inspect multi-attribute deterministic correlation evidence, compare paired dockets across regulatory silos, and record traceable triage actions.
-            </p>
-          </div>
-
+            )}
+          </>
+        }
+        title="Cross-Bureau Overlap Review Workbench"
+        subtitle="Inspect multi-attribute deterministic correlation evidence, compare paired dockets across regulatory silos, and record traceable triage actions."
+        actions={
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-mono">
-              Deterministic v2.0 Engine
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-900 font-mono text-xs font-semibold tabular-nums shadow-xs">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D97706] animate-pulse" />
+              {unreviewedCount} Pending Review
             </span>
           </div>
-        </div>
+        }
+      />
 
-        {/* Methodology explanation callout */}
-        <div className="mt-4 p-4 bg-blue-50/80 dark:bg-blue-950/30 text-blue-900 dark:text-blue-200 rounded-xl text-xs flex items-start gap-3 border border-blue-200/80 dark:border-blue-900/60">
-          <Info className="w-4 h-4 text-brand shrink-0 mt-0.5" />
-          <div className="leading-relaxed">
-            <strong className="font-semibold text-blue-950 dark:text-blue-100">Verification Protocol:</strong> CASEPULSE surfaces matching identifiers (AISHE/Permanent ID), geospatial proximity, and predatory pattern co-occurrence. A shared institution code indicates jurisdictional synergy; officers must verify allegation independence before initiating joint inquiry or dismissal.
-          </div>
+      {/* Verification Protocol Callout */}
+      <div className="p-3.5 bg-white dark:bg-card text-stone-700 dark:text-stone-300 rounded-xl text-xs flex items-start gap-2.5 border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+        <Info className="w-4 h-4 text-[#4A5535] shrink-0 mt-0.5" />
+        <div className="leading-relaxed">
+          <strong className="font-semibold text-ink">Verification Protocol:</strong> CASEPULSE surfaces matching identifiers (AISHE/Permanent ID), geospatial proximity, and predatory pattern co-occurrence. A shared institution code indicates jurisdictional synergy; officers must verify allegation independence before initiating joint inquiry or dismissal.
         </div>
       </div>
 
-      {overlaps.some((record) => record.isSynthetic) && (
-        <p className="text-xs text-ink-muted" role="note">Synthetic records are included in these review results.</p>
-      )}
-
       {/* Summary KPI Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-card border border-line rounded-2xl shadow-xs">
-          <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">
+        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
             Total Overlaps Flagged
           </span>
-          <span className="text-2xl font-extrabold font-mono text-ink mt-1 block">
+          <span className="text-2xl font-bold font-mono tabular-nums text-ink mt-1 block">
             {totalOverlaps}
           </span>
         </div>
 
-        <div className="p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/50 rounded-2xl shadow-xs">
+        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] border-t-2 border-t-[#D97706] dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
           <span className="text-[10px] font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider block">
             Pending Triage (PROPOSED)
           </span>
-          <span className="text-2xl font-extrabold font-mono text-amber-900 dark:text-amber-200 mt-1 block">
+          <span className="text-2xl font-bold font-mono tabular-nums text-amber-900 dark:text-amber-200 mt-1 block">
             {unreviewedCount}
           </span>
         </div>
 
-        <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/80 dark:border-emerald-900/50 rounded-2xl shadow-xs">
+        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] border-t-2 border-t-emerald-600 dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
           <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-400 uppercase tracking-wider block">
             Confirmed Matches
           </span>
-          <span className="text-2xl font-extrabold font-mono text-emerald-900 dark:text-emerald-200 mt-1 block">
+          <span className="text-2xl font-bold font-mono tabular-nums text-emerald-900 dark:text-emerald-200 mt-1 block">
             {confirmedCount}
           </span>
         </div>
 
-        <div className="p-4 bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-200/80 dark:border-indigo-900/50 rounded-2xl shadow-xs">
+        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] border-t-2 border-t-indigo-600 dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
           <span className="text-[10px] font-bold text-indigo-800 dark:text-indigo-400 uppercase tracking-wider block">
             Further Coordination
           </span>
-          <span className="text-2xl font-extrabold font-mono text-indigo-900 dark:text-indigo-200 mt-1 block">
+          <span className="text-2xl font-bold font-mono tabular-nums text-indigo-900 dark:text-indigo-200 mt-1 block">
             {furtherCoordCount}
           </span>
         </div>
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-card border border-line rounded-2xl p-4 shadow-xs flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+      <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-3 shadow-[0_1px_2px_rgba(20,20,18,0.04)] flex flex-col md:flex-row gap-2.5 items-stretch md:items-center justify-between">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search overlap by ID, Docket No, Institution name, or rationale..."
-            className="w-full pl-10 pr-3.5 py-2.5 text-xs rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
           />
         </div>
 
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs font-semibold text-slate-500 shrink-0">Match Type:</span>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full md:w-auto shrink-0">
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <span className="text-xs font-semibold text-stone-500 shrink-0">Match Type:</span>
             <select
               value={selectedMatchType}
               onChange={(e) => setSelectedMatchType(e.target.value)}
-              className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+              className="text-xs py-2 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] w-full sm:w-auto cursor-pointer"
             >
               <option value="ALL">All Match Types</option>
               <option value="CONFIRMED_ID">Confirmed ID (AISHE / AICTE ID)</option>
@@ -217,12 +218,12 @@ function OverlapsContent() {
             </select>
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
-            <span className="text-xs font-semibold text-slate-500 shrink-0">Status:</span>
+          <div className="flex items-center gap-1.5 w-full sm:w-auto">
+            <span className="text-xs font-semibold text-stone-500 shrink-0">Status:</span>
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="text-xs py-2 px-3 rounded-xl border border-line bg-slate-50/60 dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-auto"
+              className="text-xs py-2 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] w-full sm:w-auto cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="PROPOSED">Pending Triage (PROPOSED)</option>

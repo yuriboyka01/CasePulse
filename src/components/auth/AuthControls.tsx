@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useSession, signIn, signOut } from 'next-auth/react';
@@ -103,7 +103,7 @@ export function AuthControls({
               className="text-danger-ink hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
-              ×
+              Ã—
             </button>
           </div>
         )}
@@ -170,7 +170,7 @@ export function AuthControls({
               className="text-red-600 dark:text-red-300 hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
-              ×
+              Ã—
             </button>
           </div>
         )}

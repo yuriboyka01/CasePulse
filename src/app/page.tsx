@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -96,34 +96,64 @@ export default function OverviewDashboardPage() {
   return (
     <div className="space-y-6">
       <DashboardReveal order={0}>
-        <SpotlightCard as="section" className="surface-edge overflow-hidden rounded-3xl border border-line bg-card/80 shadow-[var(--shadow-card)] backdrop-blur-sm">
-          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-brand to-transparent opacity-70" aria-hidden="true" />
-          <div className="relative z-[2] grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]">
-            <div className="flex min-w-0 flex-col justify-between gap-6 p-6 sm:p-8">
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand">Command overview</span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card-muted px-2.5 py-1 text-[10px] font-semibold text-ink-soft">
-                    <span className="h-1.5 w-1.5 rounded-full bg-success" />{summary.dataSource}
+        <SpotlightCard as="section" className="surface-edge relative overflow-hidden rounded-2xl border border-[#E2DEC9] dark:border-line bg-white/95 dark:bg-card/90 p-5 sm:p-6 shadow-[var(--shadow-card)] backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[1.5px] bg-gradient-to-r from-transparent via-[#4A5535] to-transparent opacity-80" aria-hidden="true" />
+          <div className="relative z-[2] flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-center gap-2 mb-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A5535]">
+                  Command overview
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-[#EFECE6] dark:bg-card-muted px-2.5 py-0.5 text-[10px] font-semibold text-ink-soft">
+                  <span className="h-1.5 w-1.5 rounded-full bg-success" />
+                  {summary.dataSource}
+                </span>
+                {summary.syntheticRecordsPresent && (
+                  <span className="rounded-full border border-warning/30 bg-[#FFFBEB] dark:bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-[#B45309]">
+                    Synthetic records
                   </span>
-                  {summary.syntheticRecordsPresent && <span className="rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-[10px] font-semibold text-warning-ink">Synthetic records</span>}
-                </div>
-                <h1 className="mt-3 text-4xl leading-[1.05] text-ink sm:text-5xl">Inter-Bureau <span className="text-brass">Operational Command</span></h1>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-[15px]">A clear view of statutory case priorities, unresolved relationships, and workloads across your authorized bureaus.</p>
+                )}
               </div>
-              <div className="flex flex-wrap items-center gap-2.5">
+              <h1 className="font-display text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight text-ink leading-tight">
+                Inter-Bureau <span className="text-brass">Operational Command</span>
+              </h1>
+              <p className="mt-1.5 text-xs sm:text-sm text-ink-muted leading-relaxed line-clamp-2 max-w-2xl">
+                Statutory case priorities, cross-bureau correlation radar, and workloads across authorized bureaus in real-time coordination.
+              </p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2.5">
                 {summary.unresolvedOverlapsCount > 0 && (
-                  <Link href="/overlaps" className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-xs font-bold text-[var(--primary-foreground)] shadow-[0_10px_28px_-10px_color-mix(in_srgb,var(--brand)_80%,transparent)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
-                    <AlertTriangle className="h-3.5 w-3.5" />Review {summary.unresolvedOverlapsCount.toLocaleString('en-IN')} unresolved links
+                  <Link
+                    href="/overlaps"
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#4A5535] hover:bg-[#384227] px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition-colors"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5" />
+                    Review {summary.unresolvedOverlapsCount.toLocaleString('en-IN')} unresolved links
                   </Link>
                 )}
-                <button type="button" onClick={() => setIsExportOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-raised/80 px-3.5 py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Download className="h-3.5 w-3.5" />Executive dossier</button>
-                <Link href="/explorer" className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-raised/80 px-3.5 py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Network className="h-3.5 w-3.5" />Explore relationships</Link>
+                <button
+                  type="button"
+                  onClick={() => setIsExportOpen(true)}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted px-3.5 py-2 text-xs font-semibold text-ink-soft shadow-2xs transition-colors cursor-pointer"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  Executive dossier
+                </button>
+                <Link
+                  href="/explorer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted px-3.5 py-2 text-xs font-semibold text-ink-soft shadow-2xs transition-colors"
+                >
+                  <Network className="h-3.5 w-3.5" />
+                  Explore relationships
+                </Link>
               </div>
             </div>
-            <div className="relative hidden min-h-[280px] lg:block">
+
+            <div className="relative hidden lg:block h-[190px] xl:h-[210px] w-[320px] xl:w-[380px] rounded-xl border border-line/60 bg-gradient-to-b from-[#F4F2EC]/60 to-[#EFECE6]/40 dark:from-card-muted/40 dark:to-card-muted/10 overflow-hidden shrink-0 shadow-inner">
               <BureauConstellation nodes={constellationNodes} className="absolute inset-0" />
-              <p className="pointer-events-none absolute bottom-3 left-0 right-4 text-right text-[9px] uppercase tracking-[0.16em] text-ink-muted">Orbit size reflects case volume Â· spokes show bureau â†’ joint desk only</p>
+              <p className="pointer-events-none absolute bottom-2 left-0 right-3 text-right text-[9px] uppercase tracking-[0.16em] text-ink-muted">
+                3D Bureau Constellation · Joint Desk Core
+              </p>
             </div>
           </div>
         </SpotlightCard>
@@ -157,13 +187,13 @@ export default function OverviewDashboardPage() {
               const count = summary.bureauCounts[bureau.id] ?? 0;
               const percentage = summary.totalCases > 0 ? Math.round((count / summary.totalCases) * 100) : 0;
               return (
-                <SpotlightCard as={Link} key={bureau.id} href={`/cases?bureau=${bureau.id}`} className="group block rounded-xl border border-line bg-card-muted/50 p-4 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-card)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+                <SpotlightCard as={Link} key={bureau.id} href={`/cases?bureau=${bureau.id}`} className="group block rounded-xl border border-[#E2DEC9] dark:border-line bg-white dark:bg-card p-4 shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#C5BFA8] hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0"><BureauBadge bureauId={bureau.id} size="sm" /><h3 className="mt-1.5 truncate text-xs font-bold text-ink group-hover:text-brand">{bureau.shortName}</h3></div>
                     <div className="text-right"><span className="font-mono text-base font-extrabold text-ink">{count.toLocaleString('en-IN')}</span><span className="block font-mono text-[10px] text-ink-muted">{percentage}%</span></div>
                   </div>
                   <div className="my-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-gradient-to-r from-brand to-brand-strong transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
-                  <span className="flex items-center justify-between gap-2 text-[10px] text-ink-muted"><span className="truncate">{bureau.contactOfficer.split('(')[0].trim()}</span><span className="shrink-0">{count.toLocaleString('en-IN')} cases</span></span>
+                  <span className="flex items-center justify-between gap-2 text-[10px] text-ink-muted"><span className="truncate">{bureau.contactOfficer.split('(')[0].trim()}</span><span className="shrink-0 font-mono">{count.toLocaleString('en-IN')} cases</span></span>
                 </SpotlightCard>
               );
             })}
@@ -181,7 +211,7 @@ export default function OverviewDashboardPage() {
         </section>
       </DashboardReveal>
 
-      {summary.syntheticRecordsPresent && <p className="text-center text-[10px] text-ink-muted">Synthetic records are included Â· Source: {summary.dataSource}</p>}
+      {summary.syntheticRecordsPresent && <p className="text-center text-[10px] text-ink-muted">Synthetic records are included · Source: {summary.dataSource}</p>}
       <ExportDossierModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );

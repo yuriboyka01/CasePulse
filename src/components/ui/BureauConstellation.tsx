@@ -33,10 +33,10 @@ function readPalette(): Palette {
   const styles = getComputedStyle(document.documentElement);
   const read = (name: string, fallback: string) => styles.getPropertyValue(name).trim() || fallback;
   return {
-    brand: read('--brand', '#c5a46d'),
-    brandStrong: read('--brand-strong', '#d9bc80'),
-    ink: read('--ink', '#eae7de'),
-    muted: read('--ink-muted', '#98a69a'),
+    brand: read('--brand', '#4A5535'),
+    brandStrong: read('--brand-strong', '#384227'),
+    ink: read('--ink', '#191E1B'),
+    muted: read('--ink-muted', '#4A5535'),
   };
 }
 
@@ -51,7 +51,7 @@ const DUST = Array.from({ length: 42 }, (_, i) => ({
 /**
  * Perspective-projected orbit of bureau nodes around the Joint Desk core.
  * Node size reflects real case volume. The spokes only connect each bureau to the
- * shared desk — no line between bureaus is ever drawn, so no relationship between
+ * shared desk â€” no line between bureaus is ever drawn, so no relationship between
  * complaints is implied. Motion is ambient and stops for reduced-motion users.
  */
 export function BureauConstellation({ nodes, coreLabel = 'JOINT DESK', className = '' }: BureauConstellationProps) {
@@ -211,9 +211,9 @@ export function BureauConstellation({ nodes, coreLabel = 'JOINT DESK', className
           ctx.stroke();
         }
 
-        ctx.globalAlpha = hovered ? 1 : depthAlpha * 0.85;
-        ctx.fillStyle = hovered ? palette.ink : palette.muted;
-        ctx.font = `${hovered ? 700 : 600} 10px ${MONO}`;
+        ctx.globalAlpha = hovered ? 1 : Math.max(depthAlpha, 0.75);
+        ctx.fillStyle = palette.ink;
+        ctx.font = `${hovered ? 700 : 600} 10.5px ${MONO}`;
         ctx.textAlign = 'center';
         const text = hovered ? `${node.label} · ${node.count.toLocaleString('en-IN')} cases` : node.label;
         ctx.fillText(text, p.x, p.y - radius - 7);

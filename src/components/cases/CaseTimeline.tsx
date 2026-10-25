@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { TimelineEvent } from '@/types';
@@ -102,7 +102,7 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
                   <BureauBadge bureauId={evt.bureau} size="sm" />
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono">
-                  {formattedDate} · {formattedTime} IST
+                  {formattedDate} Â· {formattedTime} IST
                 </div>
               </div>
 

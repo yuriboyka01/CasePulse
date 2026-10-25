@@ -28,6 +28,7 @@ import { SeverityBadge, StatusBadge } from '@/components/ui/StatusBadge';
 import { CaseTimeline } from '@/components/cases/CaseTimeline';
 import { OverlapReviewPanel } from '@/components/overlaps/OverlapReviewPanel';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { apiClient, ApiClientError, CaseActionPayload, CaseActionType } from '@/lib/api-client';
 
 interface CaseDetailClientProps {
@@ -461,155 +462,121 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
         </div>
       )}
 
-      {/* Top Breadcrumb & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-3">
-        <div className="flex items-center gap-2">
-          <Link
-            href="/cases"
-            className="p-1.5 rounded text-slate-500 hover:text-slate-700 hover:bg-muted transition-colors"
-            title="Return to case register"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <span className="text-xs text-slate-500">Case Docket</span>
-          <span className="text-slate-400">/</span>
-          <span className="font-mono text-xs font-bold text-ink">
-            {caseData.id}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Export dossier
-          </button>
-          <button
-            onClick={handleOpenActionModal}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-2xs cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            Record Action / Update Status
-          </button>
+      {/* Top Breadcrumb */}
+      <div className="flex items-center justify-between">
+        <Link
+          href="/cases"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-stone-900 dark:hover:text-stone-200 transition-colors"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Back to Case Register</span>
+        </Link>
+        <div className="flex items-center gap-2 font-mono text-xs text-stone-400">
+          <span>DOCKET</span>
+          <span>/</span>
+          <span className="font-bold text-ink">{caseData.id}</span>
         </div>
       </div>
 
-      {/* Primary Docket Header Card */}
-      <div className="bg-card border border-line rounded-lg p-5 shadow-2xs">
-        <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="font-mono text-sm font-bold text-ink bg-muted px-2 py-0.5 rounded">
+      {/* Workspace Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-xs font-bold text-ink bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-700 px-2 py-0.5 rounded tabular-nums">
               {caseData.id}
             </span>
-            {caseData.isSynthetic && <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-200">Synthetic records</span>}
-            <BureauBadge bureauId={caseData.bureauId} size="md" />
+            <BureauBadge bureauId={caseData.bureauId} size="sm" />
             <StatusBadge status={caseData.status} isOverdue={caseData.isOverdue} />
             <SeverityBadge severity={caseData.severity} />
-          </div>
-
-          <div className="text-right text-xs">
-            <span className="text-slate-400 block text-[10px] uppercase font-bold">Investigation SLA</span>
-            <span
-              className={`font-mono font-semibold ${
-                caseData.isOverdue ? 'text-rose-600 font-bold' : 'text-ink-soft'
+            {caseData.isSynthetic && (
+              <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800" role="note">
+                SYNTHETIC RECORD
+              </span>
+            )}
+          </>
+        }
+        title={caseData.title}
+        subtitle={`Filed on ${filingDateFormatted} · Complainant: ${caseData.complainantType} · ${caseData.daysOpen} days in process · ${caseData.evidenceFilesCount} verified artifacts`}
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <div
+              className={`px-3 py-1.5 rounded-lg border text-xs font-mono tabular-nums text-right shadow-2xs ${
+                caseData.isOverdue
+                  ? 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
+                  : 'bg-white dark:bg-card border-[#E2DEC9] dark:border-line text-ink'
               }`}
             >
-              Due: {slaDueDateFormatted} {caseData.isOverdue && '(BREACHED)'}
-            </span>
+              <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">Investigation SLA</span>
+              <span className="font-semibold">
+                Due: {slaDueDateFormatted} {caseData.isOverdue && '(BREACHED)'}
+              </span>
+            </div>
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#F9F8F3] text-ink transition-colors shadow-2xs cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-[#4A5535]" />
+              Export Dossier
+            </button>
+            <button
+              onClick={handleOpenActionModal}
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-bold rounded-lg bg-[#4A5535] hover:bg-[#384227] text-white transition-colors shadow-2xs cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              Record Action
+            </button>
           </div>
-        </div>
-
-        <h1 className="text-lg font-bold text-ink leading-snug">
-          {caseData.title}
-        </h1>
-
-        {/* Quick Meta Row */}
-        <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-              Filing Date
-            </span>
-            <span className="font-mono font-medium text-ink">
-              {filingDateFormatted}
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-              Complainant Type
-            </span>
-            <span className="font-medium text-ink">
-              {caseData.complainantType}
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-              Days In Process
-            </span>
-            <span className="font-mono font-semibold text-ink">
-              {caseData.daysOpen} days
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400 block text-[10px] uppercase font-semibold">
-              Evidence Attachments
-            </span>
-            <span className="font-mono font-medium text-ink">
-              {caseData.evidenceFilesCount} Verified Artifacts
-            </span>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Target Institution and Assigned Officer Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Target Institution */}
-        <div className="md:col-span-2 bg-card border border-line rounded-lg p-4">
+        <div className="md:col-span-2 bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5" />
               Target Higher Education Institution
             </span>
             <Link
               href={`/institutions/${caseData.institutionId}`}
-              className="text-xs font-semibold text-brand hover:underline inline-flex items-center gap-1"
+              className="text-xs font-semibold text-[#4A5535] dark:text-[#8FA367] hover:underline inline-flex items-center gap-1"
             >
               View Institution Dossier <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
 
-          <h3 className="text-sm font-bold text-ink">
+          <h3 className="text-base font-bold text-ink">
             {caseData.institutionName}
           </h3>
 
-          <div className="mt-2 grid grid-cols-2 gap-2 text-xs font-mono text-ink-soft">
-            <div>
-              <span className="text-slate-400 block text-[10px]">AISHE CODE</span>
-              <strong>{caseData.aisheCode}</strong>
+          <div className="mt-3 grid grid-cols-2 gap-3 text-xs font-mono text-ink-soft">
+            <div className="p-2.5 rounded-lg bg-[#FAF9F5] dark:bg-slate-900 border border-[#E2DEC9]/60 dark:border-line">
+              <span className="text-stone-400 block text-[10px] font-sans">AISHE CODE</span>
+              <strong className="text-ink">{caseData.aisheCode}</strong>
             </div>
-            <div>
-              <span className="text-slate-400 block text-[10px]">DATABASE REF</span>
-              <span>{caseData.institutionId}</span>
+            <div className="p-2.5 rounded-lg bg-[#FAF9F5] dark:bg-slate-900 border border-[#E2DEC9]/60 dark:border-line">
+              <span className="text-stone-400 block text-[10px] font-sans">DATABASE REF</span>
+              <span className="text-ink">{caseData.institutionId}</span>
             </div>
           </div>
         </div>
 
         {/* Assigned Inspection Officer */}
-        <div className="bg-card border border-line rounded-lg p-4">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-2 flex items-center gap-1.5">
+        <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-2 flex items-center gap-1.5">
             <User className="w-3.5 h-3.5" />
             Assigned Case Officer
           </span>
           <div className="text-xs">
-            <div className="font-bold text-ink">
+            <div className="font-bold text-ink text-sm">
               {caseData.assignedOfficer.name}
             </div>
-            <div className="text-slate-500 mt-0.5">
+            <div className="text-stone-500 mt-0.5">
               {caseData.assignedOfficer.designation}
             </div>
             {caseData.assignedOfficer.email && (
-              <div className="mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 text-[11px] font-mono text-brand flex items-center gap-1">
+              <div className="mt-3 pt-2.5 border-t border-[#E2DEC9]/60 dark:border-line text-[11px] font-mono text-[#4A5535] dark:text-[#8FA367] flex items-center gap-1">
                 <Mail className="w-3 h-3" />
                 {caseData.assignedOfficer.email}
               </div>
@@ -619,42 +586,46 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
       </div>
 
       {/* Main Narrative Allegation Section */}
-      <div className="bg-card border border-line rounded-lg p-5">
-        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 flex items-center gap-1.5">
-          <FileText className="w-4 h-4" />
+      <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+        <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-300 mb-3 flex items-center gap-1.5">
+          <FileText className="w-4 h-4 text-[#4A5535]" />
           Factual Allegations & Investigation Scope
         </h2>
-        <div className="text-xs text-ink leading-relaxed bg-background p-4 rounded border border-line">
+        <div className="text-xs text-ink leading-relaxed bg-[#FAF9F5] dark:bg-slate-900/60 p-4 rounded-lg border border-[#E2DEC9]/60 dark:border-line">
           {caseData.description}
         </div>
       </div>
 
       {/* Supporting Documents & Evidentiary Artifacts */}
-      <div className="bg-card border border-line rounded-lg p-5 space-y-3">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)] space-y-3">
+        <div className="flex items-center justify-between border-b border-stone-100 dark:border-slate-800 pb-3">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
-              <FileCheck className="w-4 h-4 text-emerald-500" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+              <FileCheck className="w-4 h-4 text-emerald-600" />
               Supporting Evidentiary Documentation ({evidenceDocuments.length} records)
             </h2>
-            <p className="text-[11px] text-slate-500 mt-0.5">
+            <p className="text-[11px] text-stone-500 mt-0.5">
               Secure digital depository of notarized affidavits, biometric logs, and bank instruments.
             </p>
           </div>
-          <span className="text-[10px] font-mono text-slate-400">
+          <span className="text-[10px] font-mono text-stone-400">
             Chain of Custody: SHA-256 Validated
           </span>
         </div>
 
-        <div className="divide-y divide-line text-xs">
-          {evidenceDocuments.length === 0 && <div className="rounded-lg border border-dashed border-slate-200 p-5 text-center text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">No evidence records are available for this case.</div>}
+        <div className="divide-y divide-[#E2DEC9]/60 dark:divide-line text-xs">
+          {evidenceDocuments.length === 0 && (
+            <div className="rounded-lg border border-dashed border-stone-200 p-5 text-center text-xs text-stone-500 dark:border-slate-800 dark:text-slate-400">
+              No evidence records are available for this case.
+            </div>
+          )}
           {evidenceDocuments.map((doc) => (
             <div
               key={doc.id}
-              className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-50/50 dark:hover:bg-slate-800/30 px-2 rounded transition-colors"
+              className="py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-[#FAF9F5] dark:hover:bg-slate-800/30 px-3 rounded-lg transition-colors"
             >
               <div className="flex items-start gap-3 min-w-0 flex-1">
-                <div className="p-2 rounded bg-muted text-brand mt-0.5 shrink-0">
+                <div className="p-2 rounded-lg bg-[#FAF9F5] dark:bg-slate-800 text-[#4A5535] border border-[#E2DEC9]/60 mt-0.5 shrink-0">
                   {doc.type.includes('excel') || doc.type.includes('csv') ? (
                     <FileSpreadsheet className="w-4 h-4" />
                   ) : (
@@ -666,18 +637,18 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
                     <span className="font-semibold text-ink break-all">
                       {doc.name}
                     </span>
-                    <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-300">
                       {doc.verificationStatus}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center gap-2 flex-wrap text-[11px] text-slate-500 font-mono">
+                  <div className="mt-1 flex items-center gap-2 flex-wrap text-[11px] text-stone-500 font-mono">
                     <span>Size: {doc.size}</span>
                     <span>•</span>
                     <span>Timestamp: {doc.uploadedAt}</span>
                     <span>•</span>
-                    <span className="font-sans text-slate-400">{doc.source}</span>
+                    <span className="font-sans text-stone-400">{doc.source}</span>
                   </div>
-                  <div className="mt-1 text-[10px] font-mono text-slate-400 break-all">
+                  <div className="mt-1 text-[10px] font-mono text-stone-400 break-all">
                     SHA-256: {doc.sha256}
                   </div>
                 </div>
@@ -686,9 +657,9 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
               <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
                 <button
                   onClick={() => setSelectedDocPreview(doc)}
-                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-100 dark:hover:bg-slate-700 text-ink-soft cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#FAF9F5] text-ink cursor-pointer transition-colors shadow-2xs"
                 >
-                  <Eye className="w-3 h-3" /> Inspect
+                  <Eye className="w-3 h-3 text-[#4A5535]" /> Inspect
                 </button>
               </div>
             </div>
@@ -727,18 +698,18 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
 
       {/* Related-Case Recommendations & Correlation Explanations */}
       {relatedRecommendations.length > 0 && (
-        <div className="bg-card border border-line rounded-lg p-5 space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)] space-y-3">
+          <div className="flex items-center justify-between border-b border-stone-100 dark:border-slate-800 pb-3">
             <div>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-ink-muted flex items-center gap-1.5">
-                <Sparkles className="w-4 h-4 text-purple-500" />
+              <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-[#4A5535]" />
                 Related-Case Correlation Recommendations ({relatedRecommendations.length})
               </h2>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-[11px] text-stone-500 mt-0.5">
                 Multi-factor cross-match analysis identifying correlated proceedings and institutional trends.
               </p>
             </div>
-            <span className="text-[10px] font-mono text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 px-2 py-0.5 rounded border border-purple-200 dark:border-purple-800">
+            <span className="text-[10px] font-mono font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-2.5 py-0.5 rounded border border-stone-200 dark:border-stone-700">
               Deterministic Matrix Match
             </span>
           </div>
@@ -747,11 +718,11 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
             {relatedRecommendations.map((rel, idx) => (
               <div
                 key={idx}
-                className="p-3.5 rounded-lg border border-line bg-slate-50/50 dark:bg-slate-950/20 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+                className="p-3.5 rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-950/20 flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
               >
                 <div className="space-y-1.5 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono font-bold text-brand">
+                    <span className="font-mono font-bold text-[#4A5535] dark:text-[#8FA367]">
                       {rel.caseItem.id}
                     </span>
                     <BureauBadge bureauId={rel.caseItem.bureauId} size="sm" />
@@ -761,8 +732,8 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
                   <h4 className="font-bold text-ink">
                     {rel.caseItem.title}
                   </h4>
-                  <div className="p-2 rounded bg-purple-50/60 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/50 text-ink-soft">
-                    <strong className="text-purple-900 dark:text-purple-300 block text-[10px] uppercase font-bold mb-0.5">
+                  <div className="p-2.5 rounded-lg bg-white dark:bg-slate-900 border border-[#E2DEC9]/60 dark:border-line text-ink-soft">
+                    <strong className="text-stone-700 dark:text-stone-300 block text-[10px] uppercase font-bold mb-0.5">
                       Correlation Explanation:
                     </strong>
                     {rel.reason}
@@ -772,7 +743,7 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
                 <div className="shrink-0 self-end md:self-center">
                   <Link
                     href={`/cases/${rel.caseItem.id}`}
-                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded bg-raised border border-line hover:bg-slate-100 dark:hover:bg-slate-700 text-ink transition-colors"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-white dark:bg-card border border-[#E2DEC9] dark:border-line hover:bg-[#FAF9F5] text-ink transition-colors shadow-2xs"
                   >
                     Inspect Related Docket
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -785,21 +756,21 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
       )}
 
       {/* Chronological Action History / Case Timeline */}
-      <div className="bg-card border border-line rounded-lg p-5">
+      <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-              <Clock className="w-4 h-4" />
+            <h2 className="text-xs font-bold uppercase tracking-wider text-stone-600 dark:text-stone-300 flex items-center gap-1.5">
+              <Clock className="w-4 h-4 text-[#4A5535]" />
               Chronological Regulatory Action Trail
             </h2>
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[11px] text-stone-500">
               Time-stamped log of notices, hearings, inspection visits, and inter-bureau syncs.
             </p>
           </div>
 
           <button
             onClick={handleOpenActionModal}
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#FAF9F5] text-ink cursor-pointer transition-colors shadow-2xs"
           >
             <Plus className="w-3.5 h-3.5" />
             Add Entry
@@ -811,8 +782,8 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
 
       {/* Document Inspection Modal */}
       {selectedDocPreview && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-card border border-line rounded-lg w-full max-w-lg shadow-xl p-5 space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl w-full max-w-lg shadow-xl p-5 space-y-4">
             <div className="flex items-center justify-between border-b border-line pb-3">
               <div className="flex items-center gap-2">
                 <FileCheck className="w-5 h-5 text-emerald-600" />
@@ -885,8 +856,8 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
 
       {/* Record Action Modal */}
       {isActionModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-card border border-line rounded-lg w-full max-w-lg shadow-xl p-5">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl w-full max-w-lg shadow-xl p-5">
             <h3 className="text-sm font-bold text-ink mb-3">
               Record Administrative Action & Update Docket Status
             </h3>

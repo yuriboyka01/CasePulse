@@ -13,6 +13,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { apiClient, ApiClientError, DashboardSummary } from '@/lib/api-client';
 import { CaseComplaint, CaseOverlap, Institution } from '@/types';
 
@@ -23,6 +24,17 @@ interface AnalyticsData {
   cases: CaseComplaint[];
   institutions: Institution[];
   overlaps: CaseOverlap[];
+}
+
+function getCategoryColor(category: string): string {
+  const cat = category.toUpperCase();
+  if (cat.includes('CAPITATION') || cat.includes('RAGGING') || cat.includes('SAFETY') || cat.includes('FRAUD')) {
+    return 'bg-[#DC2626]';
+  }
+  if (cat.includes('UNAPPROVED') || cat.includes('GHOST') || cat.includes('FACULTY') || cat.includes('ADMISSION')) {
+    return 'bg-[#D97706]';
+  }
+  return 'bg-[#4A5535]';
 }
 
 export default function AnalyticsPage() {
@@ -113,60 +125,63 @@ export default function AnalyticsPage() {
   // Cross-bureau pair matrix from API overlaps
   const matrix: Record<string, number> = {};
   overlaps.forEach((o) => {
-    const pairKey = [o.sourceBureau, o.targetBureau].sort().join(' ⟷ ');
+    const pairKey = [o.sourceBureau, o.targetBureau].sort().join(' <-> ');
     matrix[pairKey] = (matrix[pairKey] || 0) + 1;
   });
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
-              Regulatory Intelligence & Cross-Bureau Analytics
-            </h1>
-            <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
-              {summary ? 'POSTGRESQL' : 'CONNECTING...'}
+    <div className="space-y-4">
+      {/* Workspace Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A5535] dark:text-[#8FA367]">
+              Cross-Bureau Intelligence
             </span>
-          </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            Systemic violation trends, inter-agency correlation density, and statutory SLA compliance monitoring.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
+            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700 tabular-nums">
+              {summary ? summary.dataSource.toUpperCase() : 'CONNECTING...'}
+            </span>
+            {summary?.syntheticRecordsPresent && (
+              <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800">
+                SYNTHETIC INCLUDED
+              </span>
+            )}
+          </>
+        }
+        title="Regulatory Intelligence & Cross-Bureau Analytics"
+        subtitle="Systemic violation trends, inter-agency correlation density, and statutory SLA compliance monitoring."
+        actions={
           <button
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#F9F8F3] dark:hover:bg-slate-800 text-ink shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all cursor-pointer"
           >
-            <Download className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5 text-[#4A5535]" />
             Executive Summary Export
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Loading */}
       {loadState === 'loading' && (
-        <div className="py-16 text-center text-slate-500">
-          <div className="w-7 h-7 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-sm">Loading analytics data…</p>
+        <div className="py-16 text-center text-ink-muted rounded-xl border border-[#E2DEC9] dark:border-line bg-white dark:bg-card shadow-xs">
+          <div className="w-8 h-8 border-2 border-[#4A5535] border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <p className="text-xs font-semibold">Loading cross-bureau analytics data…</p>
         </div>
       )}
 
       {/* Error */}
       {loadState === 'error' && (
-        <div className="p-5 rounded-lg border border-rose-200 dark:border-rose-800 bg-rose-50 dark:bg-rose-950/30 flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+        <div className="p-5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/60 dark:bg-rose-950/30 flex items-start gap-3.5 shadow-xs">
+          <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-rose-800 dark:text-rose-300">
+            <p className="text-sm font-bold text-rose-900 dark:text-rose-300">
               Analytics data unavailable
             </p>
             <p className="text-xs text-rose-700 dark:text-rose-400 mt-1">{error}</p>
           </div>
           <button
             onClick={() => void fetchData()}
-            className="shrink-0 inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded border border-rose-300 dark:border-rose-700 bg-white dark:bg-slate-900 text-rose-700 dark:text-rose-300 hover:bg-rose-50 cursor-pointer"
+            className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg border border-rose-300 dark:border-rose-800 bg-card text-danger-ink hover:bg-rose-50 cursor-pointer shadow-2xs"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Retry
@@ -178,80 +193,125 @@ export default function AnalyticsPage() {
         <>
           {/* High-Level Regulatory Intelligence KPIs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                Statutory SLA Compliance
-              </span>
-              <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                  {slaComplianceRate}%
-                </span>
+            {/* Statutory SLA Compliance with Critical Alert Styling */}
+            <div
+              className={`p-4 rounded-xl transition-all shadow-[0_1px_2px_rgba(20,20,18,0.04)] ${
+                slaComplianceRate < 70
+                  ? 'bg-[#FEF2F2] dark:bg-rose-950/30 border-2 border-[#FECACA] dark:border-rose-900 shadow-sm relative overflow-hidden'
+                  : 'bg-white dark:bg-card border border-[#E2DEC9] dark:border-line'
+              }`}
+            >
+              <div className="flex items-center justify-between">
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded ${
-                    slaComplianceRate < 70
-                      ? 'bg-rose-100 text-rose-800'
-                      : 'bg-emerald-100 text-emerald-800'
+                  className={`font-mono text-[10px] font-bold uppercase tracking-wider block ${
+                    slaComplianceRate < 70 ? 'text-[#991B1B] dark:text-rose-300' : 'text-stone-500'
                   }`}
                 >
+                  Statutory SLA Compliance
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-mono text-[11px] font-bold tabular-nums shadow-2xs ${
+                    slaComplianceRate < 70
+                      ? 'bg-[#DC2626] text-white'
+                      : 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
+                  }`}
+                >
+                  {slaComplianceRate < 70 && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                  )}
                   {summary.overdueCases} Overdue
                 </span>
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <div className="mt-3 flex items-baseline justify-between">
+                <span
+                  className={`text-3xl font-bold font-mono tabular-nums ${
+                    slaComplianceRate < 70 ? 'text-[#B91C1C] dark:text-rose-200' : 'text-ink'
+                  }`}
+                >
+                  {slaComplianceRate}%
+                </span>
+                {slaComplianceRate < 70 && (
+                  <span className="font-mono text-[11px] font-bold text-[#DC2626] dark:text-rose-400 uppercase tracking-wide">
+                    Critical Alert
+                  </span>
+                )}
+              </div>
+              <p
+                className={`mt-2 text-xs leading-relaxed ${
+                  slaComplianceRate < 70
+                    ? 'text-[#991B1B]/80 dark:text-rose-300/80 font-medium'
+                    : 'text-stone-500'
+                }`}
+              >
                 Cases resolved or maintained within standard 30-day investigation SLA.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                Inter-Bureau Overlap Density
-              </span>
-              <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                  {summary.flaggedOverlapsCount} Pairs
+            {/* Inter-Bureau Overlap Density */}
+            <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                  Inter-Bureau Overlap Density
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-800">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-mono text-[11px] font-bold tabular-nums">
                   {summary.unresolvedOverlapsCount} Pending Review
                 </span>
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <div className="mt-3">
+                <span className="text-3xl font-bold font-mono tabular-nums text-ink">
+                  {summary.flaggedOverlapsCount} Pairs
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
                 Cross-bureau correlation rate:{' '}
-                {summary.totalCases > 0
-                  ? Math.round((summary.flaggedOverlapsCount / summary.totalCases) * 100)
-                  : 0}
-                % of complaints share entity ties.
+                <span className="font-mono font-semibold text-ink">
+                  {summary.totalCases > 0
+                    ? Math.round((summary.flaggedOverlapsCount / summary.totalCases) * 100)
+                    : 0}
+                  %
+                </span>{' '}
+                of complaints share entity ties.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                Repeat-Target Institutions
-              </span>
-              <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                  {summary.repeatOffenderInstitutions} of {summary.activeInstitutions}
+            {/* Repeat-Target Institutions */}
+            <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                  Repeat-Target Institutions
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-purple-100 text-purple-800">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800 font-mono text-[11px] font-bold">
                   Multi-Agency
                 </span>
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <div className="mt-3">
+                <span className="text-3xl font-bold font-mono tabular-nums text-ink">
+                  {summary.repeatOffenderInstitutions}{' '}
+                  <span className="text-stone-400 text-lg font-normal">/ {summary.activeInstitutions}</span>
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
                 Institutions with concurrent inquiries across multiple administrative bureaus.
               </p>
             </div>
 
-            <div className="p-4 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">
-                Joint Inquiries Activated
-              </span>
-              <div className="mt-2 flex items-baseline justify-between">
-                <span className="text-2xl font-bold font-mono text-slate-900 dark:text-slate-100">
-                  {summary.jointInquiriesActive}
+            {/* Joint Inquiries Activated */}
+            <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+                  Joint Inquiries Activated
                 </span>
-                <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-mono text-[11px] font-bold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   Synchronized
                 </span>
               </div>
-              <p className="mt-2 text-xs text-slate-500">
+              <div className="mt-3">
+                <span className="text-3xl font-bold font-mono tabular-nums text-ink">
+                  {summary.jointInquiriesActive}
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
                 Active joint hearing / shared notice proceedings between partner bureaus.
               </p>
             </div>
@@ -260,48 +320,52 @@ export default function AnalyticsPage() {
           {/* Cross-Bureau Correlation Matrix & Category Clusters */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Cross-Bureau Correlation Pairs */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                  <Layers className="w-4 h-4 text-blue-500" />
+            <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-[#4A5535]" />
                   Inter-Bureau Overlap Correlation Channels
                 </h2>
-                <span className="text-[11px] text-slate-400 font-mono">Bilateral Pairs</span>
+                <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">Bilateral Pairs</span>
               </div>
-              <p className="text-xs text-slate-500 mb-4">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
                 Frequency of concurrent complaints spanning across specific administrative bureau channels.
               </p>
 
               {Object.keys(matrix).length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-4">
+                <p className="text-xs text-stone-400 text-center py-6">
                   No cross-bureau overlap pairs in the current authorized scope.
                 </p>
               ) : (
                 <div className="space-y-2.5">
                   {Object.entries(matrix).map(([pair, count]) => {
-                    const [bureauA, bureauB] = pair.split(' ⟷ ');
+                    const [bureauA, bureauB] = pair.split(' <-> ');
                     return (
                       <div
                         key={pair}
-                        className="p-3 rounded border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/20 flex items-center justify-between"
+                        className="p-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#C5BFA8] transition-colors"
                       >
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
-                            {bureauA.replace(/_/g, ' ')}
+                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
+                          <span className="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 shadow-2xs tracking-wide">
+                            {(bureauA || '').replace(/_/g, ' ')}
                           </span>
-                          <span className="text-slate-400 font-bold">⟷</span>
-                          <span className="text-xs font-medium text-slate-800 dark:text-slate-200">
-                            {bureauB.replace(/_/g, ' ')}
+                          <span className="inline-flex items-center text-stone-400 dark:text-stone-500 font-mono text-xs">
+                            <span className="w-3 sm:w-5 border-t-2 border-dashed border-[#C5BFA8] dark:border-stone-600" />
+                            <span className="px-1 text-stone-500 font-bold">⇄</span>
+                            <span className="w-3 sm:w-5 border-t-2 border-dashed border-[#C5BFA8] dark:border-stone-600" />
+                          </span>
+                          <span className="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 shadow-2xs tracking-wide">
+                            {(bureauB || '').replace(/_/g, ' ')}
                           </span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 tabular-nums">
                             {count} Overlap{count > 1 ? 's' : ''}
                           </span>
                           <Link
                             href="/overlaps"
-                            className="text-xs text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center"
+                            className="text-xs text-[#4A5535] dark:text-[#8FA367] hover:underline inline-flex items-center font-medium"
                           >
                             Inspect <ArrowRight className="w-3 h-3 ml-0.5" />
                           </Link>
@@ -314,42 +378,45 @@ export default function AnalyticsPage() {
             </div>
 
             {/* Predatory Practice Categories */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                  <BarChart3 className="w-4 h-4 text-purple-500" />
+            <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-[#4A5535]" />
                   Violation Category Distribution
                 </h2>
-                <span className="text-[11px] text-slate-400 font-mono">By Frequency</span>
+                <span className="text-[11px] text-stone-500 dark:text-stone-400 font-mono">By Frequency</span>
               </div>
-              <p className="text-xs text-slate-500 mb-4">
+              <p className="text-xs text-stone-500 dark:text-stone-400 mb-4">
                 Prevalence of predatory grievance types reported across all coordinated registries.
               </p>
 
               {cases.length === 0 ? (
-                <p className="text-xs text-slate-400 text-center py-4">
+                <p className="text-xs text-stone-400 text-center py-6">
                   No case data available for the current authorized scope.
                 </p>
               ) : (
-                <div className="space-y-3">
+                <div className="space-y-3.5">
                   {Object.entries(categoryCounts)
                     .sort((a, b) => b[1] - a[1])
                     .map(([cat, count]) => {
                       const percentage = Math.round((count / cases.length) * 100);
+                      const barColorClass = getCategoryColor(cat);
                       return (
-                        <div key={cat} className="space-y-1">
+                        <div key={cat} className="space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            <span className="font-medium text-ink">
                               {cat.replace(/_/g, ' ')}
                             </span>
-                            <span className="font-mono text-slate-500 text-[11px]">
-                              {count} dockets ({percentage}%)
-                            </span>
+                            <div className="flex items-center gap-2 font-mono tabular-nums text-xs">
+                              <span className="font-bold text-ink">{count} dockets</span>
+                              <span className="text-stone-400">·</span>
+                              <span className="text-stone-500 font-semibold">{percentage}%</span>
+                            </div>
                           </div>
-                          <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                          <div className="w-full h-2.5 bg-[#FAF9F5] dark:bg-slate-800 rounded-full border border-stone-200/60 dark:border-stone-700/60 overflow-hidden p-0.5">
                             <div
-                              className="h-full bg-slate-700 dark:bg-slate-300 rounded-full"
-                              style={{ width: `${percentage}%` }}
+                              className={`h-full rounded-full transition-all duration-500 ${barColorClass}`}
+                              style={{ width: `${Math.max(percentage, 3)}%` }}
                             />
                           </div>
                         </div>
@@ -361,42 +428,42 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Repeat Offender Priority Target Table */}
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5">
+          <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-5 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                  <Building2 className="w-4 h-4 text-rose-500" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-rose-600" />
                   Institutions Facing Multi-Bureau Investigations
                 </h2>
-                <p className="text-xs text-slate-500 mt-0.5">
+                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
                   Entities with concurrent proceedings in 2 or more separate administrative agencies.
                 </p>
               </div>
               <Link
                 href="/institutions?riskRating=CRITICAL"
-                className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline inline-flex items-center gap-1"
+                className="text-xs font-semibold text-[#4A5535] dark:text-[#8FA367] hover:underline inline-flex items-center gap-1"
               >
                 Directory View <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-lg border border-[#E2DEC9] dark:border-line">
               <table className="w-full text-left border-collapse text-xs">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                    <th className="py-2.5 px-3">AISHE Code</th>
-                    <th className="py-2.5 px-3">Institution</th>
-                    <th className="py-2.5 px-3">Location</th>
-                    <th className="py-2.5 px-3">Active Inquiries</th>
-                    <th className="py-2.5 px-3 text-right">Actions</th>
+                  <tr className="border-b border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900 text-[11px] font-mono font-bold text-stone-500 uppercase tracking-wider">
+                    <th className="py-2.5 px-3.5">AISHE Code</th>
+                    <th className="py-2.5 px-3.5">Institution</th>
+                    <th className="py-2.5 px-3.5">Location</th>
+                    <th className="py-2.5 px-3.5">Active Inquiries</th>
+                    <th className="py-2.5 px-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-[#E2DEC9]/60 dark:divide-line">
                   {institutions.filter((i) => i.activeCasesCount > 1).length === 0 ? (
                     <tr>
                       <td
                         colSpan={5}
-                        className="py-6 text-center text-slate-400 text-xs"
+                        className="py-8 text-center text-stone-400 text-xs"
                       >
                         No repeat-offender institutions in the current authorized scope.
                       </td>
@@ -405,23 +472,26 @@ export default function AnalyticsPage() {
                     institutions
                       .filter((i) => i.activeCasesCount > 1)
                       .map((inst) => (
-                        <tr key={inst.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                          <td className="py-2.5 px-3 font-mono font-medium text-slate-700 dark:text-slate-300">
+                        <tr key={inst.id} className="hover:bg-[#F9F8F3] dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3 px-3.5 font-mono font-medium text-stone-700 dark:text-stone-300">
                             {inst.aisheCode}
                           </td>
-                          <td className="py-2.5 px-3 font-semibold text-slate-900 dark:text-slate-100">
+                          <td className="py-3 px-3.5 font-semibold text-ink">
                             {inst.name}
                           </td>
-                          <td className="py-2.5 px-3 text-slate-500">
+                          <td className="py-3 px-3.5 text-stone-500">
                             {inst.district}, {inst.state}
                           </td>
-                          <td className="py-2.5 px-3 font-mono font-bold text-rose-600">
-                            {inst.activeCasesCount} active cases
+                          <td className="py-3 px-3.5">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] font-mono font-bold text-[11px] tabular-nums">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
+                              {inst.activeCasesCount} active cases
+                            </span>
                           </td>
-                          <td className="py-2.5 px-3 text-right">
+                          <td className="py-3 px-3.5 text-right">
                             <Link
                               href={`/institutions/${inst.id}`}
-                              className="text-blue-600 hover:underline font-medium"
+                              className="text-xs font-semibold text-[#4A5535] dark:text-[#8FA367] hover:underline"
                             >
                               Inspect Dossier →
                             </Link>
@@ -435,28 +505,32 @@ export default function AnalyticsPage() {
           </div>
 
           {/* Architecture & Backend Info Box */}
-          <div className="bg-slate-900 text-white rounded-lg p-5 border border-slate-800">
+          <div className="bg-[#242A1E] text-stone-100 rounded-xl p-5 border border-[#384227] shadow-sm">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <div className="p-2 bg-blue-600/30 rounded text-blue-400">
-                  <Code2 className="w-5 h-5" />
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-[#384227] rounded-lg text-[#D1DBC0] border border-[#4A5535]">
+                  <Code2 className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">
+                  <h3 className="text-sm font-semibold text-white tracking-tight">
                     PostgreSQL & Python/FastAPI Backend Integration Specification
                   </h3>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-stone-400">
                     PostgreSQL DDL schema and clean REST/RPC service contract prepared for the upcoming Python correlation engine.
                   </p>
                 </div>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-stone-300 leading-relaxed font-sans">
               CASEPULSE uses PostgreSQL as the authoritative data source via Next.js Route Handlers.
               Data source:{' '}
-              <code className="text-blue-300">{summary.dataSource}</code>
-              {summary.syntheticRecordsPresent && <span className="ml-2 font-semibold text-amber-300">· Synthetic records are included</span>}
+              <code className="text-[#D1DBC0] font-mono bg-black/25 px-1.5 py-0.5 rounded">{summary.dataSource}</code>
+              {summary.syntheticRecordsPresent && (
+                <span className="ml-2 font-mono text-[11px] text-amber-300">
+                  · Synthetic records are included
+                </span>
+              )}
             </p>
           </div>
         </>

@@ -4,6 +4,7 @@ import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react
 import { useSearchParams } from 'next/navigation';
 import { AlertCircle, Download, RefreshCw } from 'lucide-react';
 import { SearchFilterBar } from '@/components/common/SearchFilterBar';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
 import { apiClient, ApiClientError, CaseFilters } from '@/lib/api-client';
@@ -91,43 +92,45 @@ function CasesContent() {
     setOverlapOnly(false);
   };
 
+  const overdueCount = cases.filter((c) => c.isOverdue).length;
+  const overlapCount = cases.filter((c) => c.crossBureauFlag).length;
+
   const displayCount =
     loadState === 'success' ? totalCount : loadState === 'loading' ? '…' : '—';
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="rounded-2xl border border-line bg-card p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">
-              Inter-Bureau Complaint & Case Register
-            </h1>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800">
+    <div className="space-y-4">
+      {/* Sleek Workspace Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A5535]">
+              Case Intelligence
+            </span>
+            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 tabular-nums">
               {displayCount} DOCKETS
             </span>
-          </div>
-          <p className="text-xs sm:text-sm text-ink-muted mt-1.5 max-w-3xl leading-relaxed">
-            Authoritative multi-agency registry of grievances across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 shrink-0">
+            {cases.some((record) => record.isSynthetic) && (
+              <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FFFBEB] text-[#B45309] border border-warning/30">
+                Synthetic records
+              </span>
+            )}
+          </>
+        }
+        title="Inter-Bureau Complaint & Case Register"
+        subtitle="Authoritative multi-agency registry of grievances across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum."
+        actions={
           <button
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-line bg-raised hover:bg-slate-50 dark:hover:bg-slate-700 text-ink-soft shadow-2xs transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted text-ink-soft shadow-2xs transition-colors cursor-pointer"
           >
             <Download className="w-3.5 h-3.5 text-ink-muted" />
             <span>Export Register Data</span>
           </button>
-        </div>
-      </div>
+        }
+      />
 
-      {cases.some((record) => record.isSynthetic) && (
-        <p className="text-xs text-ink-muted" role="note">Synthetic records are included in this register.</p>
-      )}
-
-      {/* Filter Toolbar */}
+      {/* Unified Command Filter Bar */}
       <SearchFilterBar
         searchQuery={searchQuery}
         onSearchChange={setSearchQuery}
@@ -142,13 +145,15 @@ function CasesContent() {
         overlapOnly={overlapOnly}
         onOverlapToggle={setOverlapOnly}
         onReset={handleResetFilters}
+        overdueCount={overdueCount}
+        overlapCount={overlapCount}
       />
 
       {/* Loading state */}
       {loadState === 'loading' && (
         <div className="py-16 text-center text-ink-muted rounded-2xl border border-line bg-card shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-semibold">Filtering complaint registry dockets…</p>
+          <p className="text-xs font-semibold">Filtering complaint registry docketsâ€¦</p>
         </div>
       )}
 

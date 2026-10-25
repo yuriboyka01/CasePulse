@@ -28,6 +28,7 @@ import {
   StatusBadge,
 } from '@/components/ui/StatusBadge';
 import { BUREAUS } from '@/data/synthetic-dataset';
+import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import {
   Bureau,
   CaseComplaint,
@@ -204,7 +205,7 @@ export default function ExplorerClient() {
     }
   };
 
-  // Filtered dataset — map API statuses to legacy UI statuses for filter compatibility
+  // Filtered dataset â€” map API statuses to legacy UI statuses for filter compatibility
   const filteredOverlaps = useMemo(() => {
     return overlaps.filter((o) => {
       const isConfirmed = o.status === 'CONFIRMED' || o.status === 'JOINT_INQUIRY_INITIATED';
@@ -385,90 +386,84 @@ export default function ExplorerClient() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Header */}
-      <div className="border-b border-line pb-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded bg-blue-600/20 text-blue-400 border border-blue-500/30">
-                <Network className="w-5 h-5 text-blue-400" />
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight text-ink">
-                Inter-Bureau Relationship Explorer
-              </h1>
-              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950/60 dark:text-blue-300 font-mono">
-                {loadState === 'success' ? filteredOverlaps.length : '…'} CORRELATIONS
+    <div className="space-y-4">
+      {/* Workspace Command Header */}
+      <WorkspaceHeader
+        eyebrows={
+          <>
+            <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A5535] dark:text-[#8FA367]">
+              Network Topology
+            </span>
+            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 border border-stone-200 dark:bg-stone-800 dark:text-stone-300 dark:border-stone-700 tabular-nums">
+              {loadState === 'success' ? filteredOverlaps.length : '…'} CORRELATIONS
+            </span>
+            {(institutions.some((record) => record.isSynthetic) || overlaps.some((record) => record.isSynthetic)) && (
+              <span className="font-mono text-[10px] font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800" role="note">
+                SYNTHETIC INCLUDED
               </span>
-            </div>
-            <p className="text-xs text-ink-muted mt-1">
-              Visual map of confirmed and potential regulatory links connecting institutions, case dockets, and coordinating bureaus.
-            </p>
+            )}
+          </>
+        }
+        title="Inter-Bureau Relationship Explorer"
+        subtitle="Visual map of confirmed and potential regulatory links connecting institutions, case dockets, and coordinating bureaus."
+        actions={
+          <div role="group" aria-label="Explorer view" className="inline-flex rounded-lg border border-[#E2DEC9] dark:border-line p-0.5 bg-stone-100 dark:bg-slate-900 text-xs font-semibold shadow-2xs">
+            <button
+              onClick={() => setViewMode('GRAPH')}
+              aria-pressed={viewMode === 'GRAPH'}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+                viewMode === 'GRAPH'
+                  ? 'bg-white dark:bg-card text-ink shadow-2xs font-bold'
+                  : 'text-stone-500 hover:text-ink'
+              }`}
+            >
+              Visual Topology
+            </button>
+            <button
+              onClick={() => setViewMode('MATRIX')}
+              aria-pressed={viewMode === 'MATRIX'}
+              className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+                viewMode === 'MATRIX'
+                  ? 'bg-white dark:bg-card text-ink shadow-2xs font-bold'
+                  : 'text-stone-500 hover:text-ink'
+              }`}
+            >
+              Correlation Matrix
+            </button>
           </div>
+        }
+      />
 
-          <div className="flex items-center gap-2">
-            <div role="group" aria-label="Explorer view" className="hidden md:inline-flex rounded-lg border border-line p-0.5 bg-slate-100 dark:bg-slate-900 text-xs font-semibold">
-              <button
-                onClick={() => setViewMode('GRAPH')}
-                aria-pressed={viewMode === 'GRAPH'}
-                className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                  viewMode === 'GRAPH'
-                    ? 'bg-raised text-ink shadow-xs'
-                    : 'text-slate-500 hover:text-ink'
-                }`}
-              >
-                Visual Topology
-              </button>
-              <button
-                onClick={() => setViewMode('MATRIX')}
-                aria-pressed={viewMode === 'MATRIX'}
-                className={`px-3 py-1 rounded-md transition-colors cursor-pointer ${
-                  viewMode === 'MATRIX'
-                    ? 'bg-raised text-ink shadow-xs'
-                    : 'text-slate-500 hover:text-ink'
-                }`}
-              >
-                Correlation Matrix
-              </button>
-            </div>
+      {/* Legend strip */}
+      <div className="p-3 bg-[#20241A] text-stone-200 border border-[#384227] rounded-xl flex flex-wrap items-center justify-between gap-3 text-xs shadow-sm">
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="text-stone-400 font-semibold uppercase tracking-wider text-[10px] font-mono">
+            Topology Legend:
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-full bg-blue-500 ring-2 ring-blue-500/30" />
+            <span className="text-stone-300">Administrative Bureau</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-3 h-3 rounded-md bg-purple-500 ring-2 ring-purple-500/30" />
+            <span className="text-stone-300">Regulated Institution</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-4 h-0.5 bg-emerald-500 inline-block" />
+            <span className="text-emerald-400 font-medium">Confirmed Relationship</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-4 h-0.5 border-t border-dashed border-amber-400 inline-block" />
+            <span className="text-amber-300 font-medium">Potential Overlap (Pending Triage)</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="w-4 h-0.5 bg-stone-500 inline-block" />
+            <span className="text-stone-400 font-medium">Rejected / Dismissed</span>
           </div>
         </div>
 
-        {(institutions.some((record) => record.isSynthetic) || overlaps.some((record) => record.isSynthetic)) && (
-          <p className="mt-3 text-xs text-ink-muted" role="note">Synthetic records are included in this relationship map.</p>
-        )}
-
-        {/* Legend strip */}
-        <div className="mt-4 p-3 bg-slate-900 border border-slate-800 rounded-lg flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span className="text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-              Topology Legend:
-            </span>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-full bg-blue-500 ring-2 ring-blue-500/30" />
-              <span className="text-slate-300">Administrative Bureau</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-3 h-3 rounded-md bg-purple-500 ring-2 ring-purple-500/30" />
-              <span className="text-slate-300">Regulated Institution</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-4 h-0.5 bg-emerald-500 inline-block" />
-              <span className="text-emerald-400 font-medium">Confirmed Relationship</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-4 h-0.5 border-t border-dashed border-amber-400 inline-block" />
-              <span className="text-amber-300 font-medium">Potential Overlap (Pending Triage)</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-4 h-0.5 bg-slate-500 inline-block" />
-              <span className="text-slate-400 font-medium">Rejected / Dismissed</span>
-            </div>
-          </div>
-
-          <div className="text-[11px] text-slate-400">
-            Select a node or link to inspect evidence. Keyboard users can Tab through graph items.
-          </div>
+        <div className="text-[11px] text-stone-400">
+          Select a node or link to inspect evidence. Keyboard users can Tab through graph items.
         </div>
       </div>
 
@@ -502,17 +497,17 @@ export default function ExplorerClient() {
       {loadState === 'success' && (
         <>
           {/* Control / Filter Bar */}
-          <div className="bg-card border border-line rounded-lg p-3.5 space-y-3">
+          <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-3.5 space-y-3 shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
             <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search relationships by institution, case, or reference"
                   placeholder="Search by institution, case docket ID, or overlap reference..."
-                  className="w-full pl-9 pr-3 py-1.5 text-xs rounded border border-line bg-background text-ink placeholder:text-slate-400 focus:outline-hidden focus:ring-1 focus:ring-slate-400"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
                 />
               </div>
 
@@ -521,7 +516,7 @@ export default function ExplorerClient() {
                   type="button"
                   aria-label="Clear relationship search"
                   onClick={() => setSearchQuery('')}
-                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 bg-muted rounded border border-line cursor-pointer"
+                  className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200 bg-stone-100 rounded-lg border border-[#E2DEC9] cursor-pointer"
                 >
                   <X className="w-3.5 h-3.5" />
                   Clear Search
@@ -532,13 +527,13 @@ export default function ExplorerClient() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
               {/* Bureau Filter */}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">
                   Filter by Bureau Channel
                 </label>
                 <select
                   value={selectedBureau}
                   onChange={(e) => setSelectedBureau(e.target.value)}
-                  className="w-full text-xs py-1.5 px-2 rounded border border-line bg-white dark:bg-slate-950 text-ink"
+                  className="w-full text-xs py-2 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] cursor-pointer"
                 >
                   <option value="ALL">All Bureaus (Multi-Agency Network)</option>
                   {bureaus.map((b) => (
@@ -551,13 +546,13 @@ export default function ExplorerClient() {
 
               {/* Institution Filter */}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">
                   Focus Specific Institution
                 </label>
                 <select
                   value={selectedInstitution}
                   onChange={(e) => setSelectedInstitution(e.target.value)}
-                  className="w-full text-xs py-1.5 px-2 rounded border border-line bg-white dark:bg-slate-950 text-ink"
+                  className="w-full text-xs py-2 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] cursor-pointer"
                 >
                   <option value="ALL">All Institutions ({institutions.length} Registered)</option>
                   {institutions.map((inst) => (
@@ -570,7 +565,7 @@ export default function ExplorerClient() {
 
               {/* Relationship Status Filter */}
               <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">
+                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-500 mb-1">
                   Relationship Status Filter
                 </label>
                 <select
@@ -578,7 +573,7 @@ export default function ExplorerClient() {
                   onChange={(e) =>
                     setRelationFilter(e.target.value as 'ALL' | 'CONFIRMED' | 'POTENTIAL')
                   }
-                  className="w-full text-xs py-1.5 px-2 rounded border border-line bg-white dark:bg-slate-950 text-ink"
+                  className="w-full text-xs py-2 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink font-medium focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] cursor-pointer"
                 >
                   <option value="ALL">All Relationships (Confirmed & Potential)</option>
                   <option value="CONFIRMED">Confirmed / Joint Inquiry Only</option>
@@ -616,11 +611,11 @@ export default function ExplorerClient() {
                       <p className="mt-2 text-sm font-semibold text-ink">{overlap.institutionName}</p>
                       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
                         <BureauBadge bureauId={overlap.sourceBureau} size="sm" />
-                        <span aria-hidden="true">→</span>
+                        <span aria-hidden="true">â†’</span>
                         <BureauBadge bureauId={overlap.targetBureau} size="sm" />
                         <span className="ml-auto font-semibold">{overlap.confidenceScore}% match</span>
                       </div>
-                      <p className="mt-2 text-xs text-slate-500">Cases {overlap.sourceCaseId} · {overlap.targetCaseId}</p>
+                      <p className="mt-2 text-xs text-slate-500">Cases {overlap.sourceCaseId} Â· {overlap.targetCaseId}</p>
                     </button>
                     {selected && (
                       <div className="rounded-b-xl border border-t-0 border-blue-300 bg-white p-4 text-xs dark:border-blue-800 dark:bg-slate-900" aria-label={`Evidence for ${overlap.id}`}>
@@ -632,7 +627,7 @@ export default function ExplorerClient() {
                         <div className="mt-3 space-y-2">
                           {overlap.evidenceMatches.slice(0, 3).map((evidence, index) => (
                             <div key={`${overlap.id}-evidence-${index}`} className="rounded-lg border border-slate-200 p-2.5 dark:border-slate-800">
-                              <p className="font-semibold text-ink">{evidence.label}{evidence.isMatch ? ' · Match' : ''}</p>
+                              <p className="font-semibold text-ink">{evidence.label}{evidence.isMatch ? ' Â· Match' : ''}</p>
                               <p className="mt-0.5 leading-relaxed text-slate-500">{evidence.description}</p>
                             </div>
                           ))}
@@ -644,7 +639,7 @@ export default function ExplorerClient() {
                         </div>
                         {reviewHistory?.overlapId === overlap.id && reviewHistory.state === 'loaded' && reviewHistory.records[0] && (
                           <p className="mt-3 border-t border-slate-200 pt-3 text-slate-600 dark:border-slate-800 dark:text-slate-300">
-                            Latest decision: <strong>{reviewHistory.records[0].decision.replace(/_/g, ' ')}</strong> · {reviewHistory.records[0].reviewer.displayName}
+                            Latest decision: <strong>{reviewHistory.records[0].decision.replace(/_/g, ' ')}</strong> Â· {reviewHistory.records[0].reviewer.displayName}
                           </p>
                         )}
                       </div>
@@ -661,7 +656,7 @@ export default function ExplorerClient() {
             <div className="hidden md:flex md:col-span-12 lg:col-span-8 surface-edge bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-[var(--shadow-lift)] ring-1 ring-brand/15 relative min-h-[560px] flex-col justify-between">
               {viewMode === 'GRAPH' && (
                 <div className="flex items-center justify-between gap-3 border-b border-slate-800 px-4 py-2.5 text-xs text-slate-300">
-                  <div className="inline-flex items-center gap-2"><Move className="h-3.5 w-3.5 text-slate-400" /><span>Drag to pan · Use controls to zoom</span></div>
+                  <div className="inline-flex items-center gap-2"><Move className="h-3.5 w-3.5 text-slate-400" /><span>Drag to pan Â· Use controls to zoom</span></div>
                   <div className="inline-flex items-center gap-1">
                     <button type="button" aria-label="Zoom out" title="Zoom out" onClick={() => setZoom((value) => Math.max(0.7, Math.round((value - 0.15) * 100) / 100))} className="rounded-lg border border-slate-700 p-2 text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-400"><Minus className="h-4 w-4" /></button>
                     <span className="min-w-12 text-center font-mono" aria-live="polite">{Math.round(zoom * 100)}%</span>
@@ -1030,7 +1025,7 @@ export default function ExplorerClient() {
                             <td className="py-3 px-3 font-sans">
                               <div className="flex items-center gap-1.5">
                                 <BureauBadge bureauId={ovl.sourceBureau} size="sm" />
-                                <span className="text-slate-500 font-bold">⟷</span>
+                                <span className="text-slate-500 font-bold">âŸ·</span>
                                 <BureauBadge bureauId={ovl.targetBureau} size="sm" />
                               </div>
                             </td>
@@ -1162,7 +1157,7 @@ export default function ExplorerClient() {
                       </span>
                       {selectedItem.data.relationshipKind === 'SAME_INSTITUTION' && (
                         <p className="text-slate-500 mt-0.5 leading-snug">
-                          Entity match — does not imply complaint duplication.
+                          Entity match â€” does not imply complaint duplication.
                         </p>
                       )}
                     </div>
@@ -1278,7 +1273,7 @@ export default function ExplorerClient() {
                       <span className="text-[10px] text-slate-400">Latest 5 entries</span>
                     </div>
                     {!selectedReviewHistory ? (
-                      <p className="text-[11px] text-slate-500" role="status">Loading authoritative review history…</p>
+                      <p className="text-[11px] text-slate-500" role="status">Loading authoritative review historyâ€¦</p>
                     ) : selectedReviewHistory.state === 'error' ? (
                       <p className="text-[11px] text-slate-500" role="status">Review history is temporarily unavailable.</p>
                     ) : selectedReviewHistory.records.length === 0 ? (
@@ -1291,7 +1286,7 @@ export default function ExplorerClient() {
                               <span className="font-semibold text-ink">{review.decision.replace(/_/g, ' ')}</span>
                               <time className="text-[10px] text-slate-500" dateTime={review.reviewedAt}>{new Date(review.reviewedAt).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}</time>
                             </div>
-                            <p className="mt-0.5 text-[10px] text-slate-500">{review.reviewer.displayName} · Version {review.newVersion}</p>
+                            <p className="mt-0.5 text-[10px] text-slate-500">{review.reviewer.displayName} Â· Version {review.newVersion}</p>
                             <p className="mt-1 whitespace-pre-wrap break-words text-[11px] leading-relaxed text-ink-soft">{review.notes}</p>
                           </li>
                         ))}
@@ -1299,7 +1294,7 @@ export default function ExplorerClient() {
                     )}
                   </section>
 
-                  {/* Triage — redirect to /overlaps for authorized write action */}
+                  {/* Triage â€” redirect to /overlaps for authorized write action */}
                   <div className="pt-2 border-t border-line space-y-2">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
                       Authorized Officer Triage Decision
@@ -1473,7 +1468,7 @@ export default function ExplorerClient() {
               {canLoadMore && (
                 <button type="button" onClick={() => void loadMore()} disabled={isLoadingMore} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-colors hover:bg-slate-700 disabled:cursor-wait disabled:opacity-60 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
                   {isLoadingMore ? <RefreshCw className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Plus className="h-3.5 w-3.5" aria-hidden="true" />}
-                  {isLoadingMore ? 'Loading records…' : 'Load next 100 records'}
+                  {isLoadingMore ? 'Loading recordsâ€¦' : 'Load next 100 records'}
                 </button>
               )}
             </div>
