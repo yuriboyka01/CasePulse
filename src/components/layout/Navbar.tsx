@@ -139,7 +139,7 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
           {!collapsed && <p className="mb-2.5 px-2.5 text-[10px] font-bold uppercase tracking-[0.16em] text-ink-muted">Workspace</p>}
           <NavigationItems collapsed={collapsed} />
         </div>
-        <div className="border-t border-[#DFDBD2] dark:border-line p-3">
+        <div className="border-t border-[#DFDBD2] dark:border-line p-3 pb-8">
           {!collapsed && (
             <div className="mb-3 rounded-lg border border-[#DFDBD2] dark:border-line bg-white/70 dark:bg-card-muted/60 p-2.5 text-[9.5px] leading-relaxed text-ink-muted">
               <span className="font-semibold text-ink-soft block mb-0.5">Jurisdictional Notice</span>
