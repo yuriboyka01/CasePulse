@@ -8,6 +8,7 @@ import {
   ReviewDecision,
   TimelineEvent,
 } from '@/types';
+import type { AssistantContext, AssistantResponse, AssistantTurn } from '@/lib/assistant-types';
 
 export type CaseActionType =
   | 'NOTE_ADDED'
@@ -179,6 +180,8 @@ export class ApiClientError extends Error {
   }
 
   get userFriendlyMessage(): string {
+    if (this.code === 'AI_NOT_CONFIGURED') return 'The AI assistant is not configured yet. Add the server-side AI_API_KEY and AI_MODEL settings.';
+    if (this.code.startsWith('AI_')) return this.message || 'The AI assistant could not complete this request.';
     switch (this.status) {
       case 401:
         return 'Authentication required. Please sign in with an authorized officer account to view or modify this record.';
@@ -469,5 +472,15 @@ export const apiClient = {
       relationship: normalizeOverlap(res.data.relationship),
       review: res.data.review,
     };
+  },
+
+  /** Sends a read-only question to the authorized, server-side casework assistant. */
+  async askAssistant(messages: AssistantTurn[], context?: AssistantContext): Promise<AssistantResponse> {
+    const res = await requestJson<{ data: AssistantResponse }>('/api/assistant', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, ...(context ? { context } : {}) }),
+    });
+    return res.data;
   },
 };

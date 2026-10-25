@@ -6,6 +6,7 @@ import { AppSidebar, TopBar } from '@/components/layout/Navbar';
 import { AuthProvider } from '@/components/auth/AuthProvider';
 import { ThemeProvider } from '@/components/theme/ThemeProvider';
 import { getAuthUiConfig } from '@/lib/server/auth-presentation';
+import { AssistantWidget } from '@/components/assistant/AssistantWidget';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
@@ -48,6 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </footer>
               </div>
             </div>
+            <AssistantWidget />
           </AuthProvider>
         </ThemeProvider>
       </body>
