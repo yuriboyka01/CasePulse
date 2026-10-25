@@ -1,20 +1,20 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * CASEPULSE — "Obsidian Intelligence" design tokens.
+ * CASEPULSE â€” "Obsidian Intelligence" design tokens.
  *
  * Dark (Obsidian) is the default theme; light is "Ivory".
  * Semantic tokens below are the preferred API for new/redesigned components:
- *   bg-background · bg-card · bg-raised · border-line · text-ink · text-ink-soft · text-ink-muted
- *   bg-brand · text-brand · bg-brand-soft · text-danger · text-success · text-warning
+ *   bg-background Â· bg-card Â· bg-raised Â· border-line Â· text-ink Â· text-ink-soft Â· text-ink-muted
+ *   bg-brand Â· text-brand Â· bg-brand-soft Â· text-danger Â· text-success Â· text-warning
  *
  * The legacy Tailwind scales (slate / blue / rose / amber / emerald / indigo / purple / teal)
  * are remapped in @theme below, so existing utility classes re-theme without per-file edits:
  *   slate   = warm graphite neutral      blue   = antique brass (brand)
  *   rose    = signal coral (urgent)      emerald= verification green
- *   amber   = review-needed amber        indigo/sky = steel · purple/violet = mauve
+ *   amber   = review-needed amber        indigo/sky = steel Â· purple/violet = mauve
  */
 :root {
   color-scheme: light;
@@ -78,6 +78,9 @@
   --danger: #e57967;
   --warning: #eba23d;
   --success: #72b79a;
+  --danger-ink: #ef9a89;
+  --warning-ink: #f2b95f;
+  --success-ink: #8fc8ae;
   --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.24), 0 8px 24px -12px rgba(0, 0, 0, 0.5);
   --shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.28), 0 16px 32px -14px rgba(0, 0, 0, 0.62);
 }
@@ -238,8 +241,12 @@
   --color-danger: var(--danger);
   --color-warning: var(--warning);
   --color-success: var(--success);
+  --color-danger-ink: var(--danger-ink);
+  --color-warning-ink: var(--warning-ink);
+  --color-success-ink: var(--success-ink);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces), "Iowan Old Style", Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -252,16 +259,13 @@ html {
 
 body {
   min-height: 100%;
-  background: radial-gradient(ellipse at 50% 0%, rgba(135, 106, 40, 0.06), transparent 36rem), var(--background);
+  /* Background is painted by html + the fixed .atmosphere layer (see below). */
+  background: transparent;
   color: var(--foreground);
   font-family: var(--font-geist-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-}
-
-.dark body {
-  background: radial-gradient(ellipse at 50% 0%, rgba(197, 164, 109, 0.07), transparent 40rem), var(--background);
 }
 
 /* Monospace numerals alignment */
@@ -366,4 +370,126 @@ button, a { -webkit-tap-highlight-color: transparent; }
   stroke: #fff;
   stroke-width: 4px;
   opacity: 1;
+}
+
+/* ================================================================
+   Atmosphere â€” ambient depth behind the whole workspace
+   ================================================================ */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.atmosphere::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(52rem 30rem at 88% -8%, color-mix(in srgb, var(--brand) 16%, transparent), transparent 70%),
+    radial-gradient(44rem 28rem at -8% 18%, color-mix(in srgb, var(--success) 8%, transparent), transparent 72%),
+    radial-gradient(60rem 30rem at 50% 118%, color-mix(in srgb, var(--brand) 9%, transparent), transparent 70%);
+}
+
+.atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.55;
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1.2px);
+  background-size: 26px 26px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 55% at 62% 0%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse 70% 55% at 62% 0%, #000 0%, transparent 72%);
+}
+
+/* ================================================================
+   Display typography â€” editorial serif headings over a sans UI
+   ================================================================ */
+h1,
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+}
+
+h1 {
+  font-weight: 600;
+  letter-spacing: -0.018em;
+}
+
+.text-brass {
+  background-image: linear-gradient(120deg, var(--brand-strong), var(--brand) 55%, color-mix(in srgb, var(--brand) 60%, var(--ink)));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ================================================================
+   Spotlight surface â€” pointer-following glow + luminous border
+   Pair with <SpotlightCard>, which sets --mx / --my (and --rx / --ry when tilt is on).
+   ================================================================ */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+  --mx: 50%;
+  --my: 0%;
+  --rx: 0deg;
+  --ry: 0deg;
+}
+
+.spotlight.spotlight-tilt {
+  transform: perspective(1000px) rotateX(var(--ry)) rotateY(var(--rx));
+  transition: transform 220ms cubic-bezier(0.2, 0.75, 0.25, 1), box-shadow 220ms, border-color 220ms;
+  will-change: transform;
+}
+
+.spotlight::before,
+.spotlight::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 260ms ease;
+}
+
+.spotlight::before {
+  z-index: -1; /* above surface bg, below content (isolation: isolate) */
+  background: radial-gradient(360px circle at var(--mx) var(--my), color-mix(in srgb, var(--brand) 13%, transparent), transparent 62%);
+}
+
+.spotlight::after {
+  z-index: 1;
+  padding: 1px;
+  background: radial-gradient(260px circle at var(--mx) var(--my), color-mix(in srgb, var(--brand) 70%, transparent), transparent 65%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+
+.spotlight:hover::before,
+.spotlight:hover::after,
+.spotlight:focus-within::before,
+.spotlight:focus-within::after {
+  opacity: 1;
+}
+
+/* Hairline top highlight gives surfaces a machined-metal edge in dark mode. */
+.dark .surface-edge {
+  box-shadow: inset 0 1px 0 rgba(234, 231, 222, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight.spotlight-tilt {
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Slim scrollbars that match the surface palette */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--ink-muted) 45%, transparent) transparent;
 }

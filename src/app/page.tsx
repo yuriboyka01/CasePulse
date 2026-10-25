@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -17,6 +17,8 @@ import { BUREAUS } from '@/data/synthetic-dataset';
 import { MetricCard } from '@/components/ui/MetricCard';
 import { WorkQueue } from '@/components/dashboard/WorkQueue';
 import { BureauBadge } from '@/components/ui/BureauBadge';
+import { BureauConstellation } from '@/components/ui/BureauConstellation';
+import { SpotlightCard } from '@/components/ui/SpotlightCard';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
 import { apiClient, ApiClientError, type DashboardOverview } from '@/lib/api-client';
@@ -89,26 +91,42 @@ export default function OverviewDashboardPage() {
   }
 
   const { summary, priorityCases, pendingOverlaps, recentCases } = data;
+  const constellationNodes = BUREAUS.filter((bureau) => Object.hasOwn(summary.bureauCounts, bureau.id)).map((bureau) => ({ id: bureau.id, label: bureau.shortName, count: summary.bureauCounts[bureau.id] ?? 0 }));
 
   return (
     <div className="space-y-6">
       <DashboardReveal order={0}>
-        <section className="flex flex-col justify-between gap-5 rounded-2xl border border-line bg-card p-5 shadow-[var(--shadow-card)] sm:flex-row sm:items-center sm:p-6">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">Inter-Bureau Operational Command</h1>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card-muted px-2.5 py-1 text-[10px] font-semibold text-ink-soft">
-                <span className="h-1.5 w-1.5 rounded-full bg-success" />{summary.dataSource}
-              </span>
-              {summary.syntheticRecordsPresent && <span className="rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-[10px] font-semibold text-warning">Synthetic records</span>}
+        <SpotlightCard as="section" className="surface-edge overflow-hidden rounded-3xl border border-line bg-card/80 shadow-[var(--shadow-card)] backdrop-blur-sm">
+          <div className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-px bg-gradient-to-r from-transparent via-brand to-transparent opacity-70" aria-hidden="true" />
+          <div className="relative z-[2] grid grid-cols-1 items-stretch gap-2 lg:grid-cols-[minmax(0,1fr)_minmax(300px,380px)]">
+            <div className="flex min-w-0 flex-col justify-between gap-6 p-6 sm:p-8">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.22em] text-brand">Command overview</span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-line bg-card-muted px-2.5 py-1 text-[10px] font-semibold text-ink-soft">
+                    <span className="h-1.5 w-1.5 rounded-full bg-success" />{summary.dataSource}
+                  </span>
+                  {summary.syntheticRecordsPresent && <span className="rounded-full border border-warning/25 bg-warning/10 px-2.5 py-1 text-[10px] font-semibold text-warning-ink">Synthetic records</span>}
+                </div>
+                <h1 className="mt-3 text-4xl leading-[1.05] text-ink sm:text-5xl">Inter-Bureau <span className="text-brass">Operational Command</span></h1>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted sm:text-[15px]">A clear view of statutory case priorities, unresolved relationships, and workloads across your authorized bureaus.</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                {summary.unresolvedOverlapsCount > 0 && (
+                  <Link href="/overlaps" className="inline-flex items-center gap-2 rounded-xl bg-brand px-4 py-2.5 text-xs font-bold text-[var(--primary-foreground)] shadow-[0_10px_28px_-10px_color-mix(in_srgb,var(--brand)_80%,transparent)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-brand-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+                    <AlertTriangle className="h-3.5 w-3.5" />Review {summary.unresolvedOverlapsCount.toLocaleString('en-IN')} unresolved links
+                  </Link>
+                )}
+                <button type="button" onClick={() => setIsExportOpen(true)} className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-raised/80 px-3.5 py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Download className="h-3.5 w-3.5" />Executive dossier</button>
+                <Link href="/explorer" className="inline-flex items-center gap-1.5 rounded-xl border border-line bg-raised/80 px-3.5 py-2.5 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Network className="h-3.5 w-3.5" />Explore relationships</Link>
+              </div>
             </div>
-            <p className="mt-1.5 max-w-3xl text-xs leading-relaxed text-ink-muted sm:text-sm">A clear view of statutory case priorities, unresolved relationships, and workloads across your authorized bureaus.</p>
+            <div className="relative hidden min-h-[280px] lg:block">
+              <BureauConstellation nodes={constellationNodes} className="absolute inset-0" />
+              <p className="pointer-events-none absolute bottom-3 left-0 right-4 text-right text-[9px] uppercase tracking-[0.16em] text-ink-muted">Orbit size reflects case volume Â· spokes show bureau â†’ joint desk only</p>
+            </div>
           </div>
-          <div className="flex shrink-0 flex-wrap items-center gap-2">
-            <button type="button" onClick={() => setIsExportOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-raised px-3.5 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Download className="h-3.5 w-3.5" />Executive dossier</button>
-            <Link href="/explorer" className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-raised px-3.5 py-2 text-xs font-semibold text-ink-soft transition-colors hover:bg-card-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"><Network className="h-3.5 w-3.5" />Explore relationships</Link>
-          </div>
-        </section>
+        </SpotlightCard>
       </DashboardReveal>
 
       <DashboardReveal order={1}>
@@ -139,14 +157,14 @@ export default function OverviewDashboardPage() {
               const count = summary.bureauCounts[bureau.id] ?? 0;
               const percentage = summary.totalCases > 0 ? Math.round((count / summary.totalCases) * 100) : 0;
               return (
-                <Link key={bureau.id} href={`/cases?bureau=${bureau.id}`} className="group rounded-xl border border-line bg-card-muted/50 p-4 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-card)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
+                <SpotlightCard as={Link} key={bureau.id} href={`/cases?bureau=${bureau.id}`} className="group block rounded-xl border border-line bg-card-muted/50 p-4 transition-[transform,border-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-[var(--shadow-card)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0"><BureauBadge bureauId={bureau.id} size="sm" /><h3 className="mt-1.5 truncate text-xs font-bold text-ink group-hover:text-brand">{bureau.shortName}</h3></div>
                     <div className="text-right"><span className="font-mono text-base font-extrabold text-ink">{count.toLocaleString('en-IN')}</span><span className="block font-mono text-[10px] text-ink-muted">{percentage}%</span></div>
                   </div>
-                  <div className="my-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-brand transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
+                  <div className="my-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-gradient-to-r from-brand to-brand-strong transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
                   <span className="flex items-center justify-between gap-2 text-[10px] text-ink-muted"><span className="truncate">{bureau.contactOfficer.split('(')[0].trim()}</span><span className="shrink-0">{count.toLocaleString('en-IN')} cases</span></span>
-                </Link>
+                </SpotlightCard>
               );
             })}
           </div>
@@ -163,7 +181,7 @@ export default function OverviewDashboardPage() {
         </section>
       </DashboardReveal>
 
-      {summary.syntheticRecordsPresent && <p className="text-center text-[10px] text-ink-muted">Synthetic records are included · Source: {summary.dataSource}</p>}
+      {summary.syntheticRecordsPresent && <p className="text-center text-[10px] text-ink-muted">Synthetic records are included Â· Source: {summary.dataSource}</p>}
       <ExportDossierModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
     </div>
   );

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { ViewTransition, useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -117,10 +117,10 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
 
   return (
     <>
-      <aside className={`hidden shrink-0 flex-col border-r border-line bg-card transition-[width] duration-200 lg:flex ${collapsed ? 'w-[76px]' : 'w-[260px]'}`}>
+      <aside className={`hidden shrink-0 flex-col border-r border-line bg-card/70 backdrop-blur-xl transition-[width] duration-200 lg:sticky lg:top-0 lg:flex lg:h-screen ${collapsed ? 'w-[76px]' : 'w-[260px]'}`}>
         <div className={`flex h-[72px] items-center border-b border-line px-4 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="CASEPULSE overview">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand text-[var(--primary-foreground)] shadow-sm"><Shield className="h-4 w-4" /></span>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand text-[var(--primary-foreground)] shadow-[0_8px_22px_-8px_color-mix(in_srgb,var(--brand)_75%,transparent)] ring-1 ring-brand-strong/40"><Shield className="h-4 w-4" /></span>
             {!collapsed && <span className="min-w-0"><span className="block text-sm font-bold tracking-wide text-ink">CASEPULSE</span><span className="block truncate text-[9px] uppercase tracking-[0.16em] text-ink-muted">Regulatory intelligence</span></span>}
           </Link>
         </div>
@@ -165,8 +165,8 @@ export function TopBar({ isOidcConfigured = false, isDemoMode = false }: NavbarP
   const pageTitle = PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
 
   return (
-    <header className="sticky top-0 z-30 hidden min-h-[72px] items-center justify-between gap-4 border-b border-line bg-background/90 px-6 backdrop-blur lg:flex">
-      <div className="min-w-0"><p className="truncate text-base font-semibold text-ink">{pageTitle}</p><p className="text-[10px] text-ink-muted">Operational workspace</p></div>
+    <header className="sticky top-0 z-30 hidden min-h-[72px] items-center justify-between gap-4 border-b border-line bg-background/60 px-6 backdrop-blur-xl lg:flex">
+      <div className="min-w-0"><p className="font-display truncate text-lg font-semibold tracking-tight text-ink">{pageTitle}</p><p className="text-[10px] text-ink-muted">Operational workspace</p></div>
       <div className="flex items-center gap-3">
         <span className="inline-flex items-center gap-2 rounded-lg border border-line bg-card px-3 py-1.5"><span className="h-2 w-2 rounded-full bg-success shadow-[0_0_0_3px_color-mix(in_srgb,var(--success)_18%,transparent)]" /><span className="text-[11px] font-semibold text-ink">Joint Desk</span><span className="text-[10px] text-ink-muted">6 bureaus</span></span>
         <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
