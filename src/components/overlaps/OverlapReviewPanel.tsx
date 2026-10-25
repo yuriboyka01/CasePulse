@@ -170,7 +170,7 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
   return (
     <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:shadow-md hover:border-[#C5BFA8] transition-all">
       {/* Header Bar */}
-      <div className="p-4 sm:p-5 bg-[#FAF9F5] dark:bg-slate-900/60 border-b border-[#E2DEC9] dark:border-line flex flex-wrap items-center justify-between gap-3">
+      <div className="p-4 sm:p-5 bg-white dark:bg-card border-b border-[#E2DEC9] dark:border-line flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2.5 flex-wrap">
           <span className="font-mono text-xs font-bold text-ink bg-stone-100 dark:bg-slate-800 border border-stone-200 dark:border-stone-700 px-2.5 py-1 rounded-md tabular-nums">
             {overlap.id}

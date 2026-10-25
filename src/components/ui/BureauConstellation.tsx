@@ -84,8 +84,8 @@ export function BureauConstellation({ nodes, coreLabel = 'JOINT DESK', className
       if (width === 0 || height === 0) return;
 
       const cx = width * 0.5;
-      const cy = height * 0.54;
-      const ring = Math.min(width * 0.4, height * 0.95);
+      const cy = height * 0.5;
+      const ring = Math.min(width * 0.32, height * 0.70);
       const tilt = 1.02 + pointer.ny * 0.1;
       const yaw = time * 0.16 + pointer.nx * 0.35;
       const focal = ring * 4.2;

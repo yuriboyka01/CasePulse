@@ -201,23 +201,23 @@ export default function AnalyticsPage() {
                   : 'bg-white dark:bg-card border border-[#E2DEC9] dark:border-line'
               }`}
             >
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2">
                 <span
-                  className={`font-mono text-[10px] font-bold uppercase tracking-wider block ${
+                  className={`font-mono text-[10px] font-bold uppercase tracking-wider truncate ${
                     slaComplianceRate < 70 ? 'text-[#991B1B] dark:text-rose-300' : 'text-stone-500'
                   }`}
                 >
                   Statutory SLA Compliance
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-mono text-[11px] font-bold tabular-nums shadow-2xs ${
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-xs font-bold tabular-nums whitespace-nowrap shrink-0 shadow-2xs ${
                     slaComplianceRate < 70
                       ? 'bg-[#DC2626] text-white'
                       : 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
                   }`}
                 >
                   {slaComplianceRate < 70 && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse shrink-0" />
                   )}
                   {summary.overdueCases} Overdue
                 </span>
@@ -231,7 +231,7 @@ export default function AnalyticsPage() {
                   {slaComplianceRate}%
                 </span>
                 {slaComplianceRate < 70 && (
-                  <span className="font-mono text-[11px] font-bold text-[#DC2626] dark:text-rose-400 uppercase tracking-wide">
+                  <span className="font-mono text-[11px] font-bold text-[#DC2626] dark:text-rose-400 uppercase tracking-wide whitespace-nowrap">
                     Critical Alert
                   </span>
                 )}
@@ -249,11 +249,11 @@ export default function AnalyticsPage() {
 
             {/* Inter-Bureau Overlap Density */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
                   Inter-Bureau Overlap Density
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-mono text-[11px] font-bold tabular-nums">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-mono text-xs font-bold tabular-nums whitespace-nowrap shrink-0">
                   {summary.unresolvedOverlapsCount} Pending Review
                 </span>
               </div>
@@ -276,11 +276,11 @@ export default function AnalyticsPage() {
 
             {/* Repeat-Target Institutions */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
                   Repeat-Target Institutions
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800 font-mono text-[11px] font-bold">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800 font-mono text-xs font-bold whitespace-nowrap shrink-0">
                   Multi-Agency
                 </span>
               </div>
@@ -297,12 +297,12 @@ export default function AnalyticsPage() {
 
             {/* Joint Inquiries Activated */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 block">
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
                   Joint Inquiries Activated
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-mono text-[11px] font-bold">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-mono text-xs font-bold whitespace-nowrap shrink-0">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                   Synchronized
                 </span>
               </div>
@@ -337,35 +337,31 @@ export default function AnalyticsPage() {
                   No cross-bureau overlap pairs in the current authorized scope.
                 </p>
               ) : (
-                <div className="space-y-2.5">
+                <div className="space-y-2">
                   {Object.entries(matrix).map(([pair, count]) => {
                     const [bureauA, bureauB] = pair.split(' <-> ');
                     return (
                       <div
                         key={pair}
-                        className="p-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-[#C5BFA8] transition-colors"
+                        className="py-2.5 px-3 rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900/40 flex items-center justify-between gap-3 hover:border-[#C5BFA8] transition-colors"
                       >
-                        <div className="flex items-center gap-2 min-w-0 flex-wrap">
-                          <span className="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 shadow-2xs tracking-wide">
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span className="whitespace-nowrap text-[11px] font-mono font-semibold px-2 py-1 bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-stone-700 rounded text-stone-800 dark:text-stone-200 truncate">
                             {(bureauA || '').replace(/_/g, ' ')}
                           </span>
-                          <span className="inline-flex items-center text-stone-400 dark:text-stone-500 font-mono text-xs">
-                            <span className="w-3 sm:w-5 border-t-2 border-dashed border-[#C5BFA8] dark:border-stone-600" />
-                            <span className="px-1 text-stone-500 font-bold">⇄</span>
-                            <span className="w-3 sm:w-5 border-t-2 border-dashed border-[#C5BFA8] dark:border-stone-600" />
-                          </span>
-                          <span className="font-mono text-[11px] font-bold px-2.5 py-1 rounded-md bg-white dark:bg-slate-800 text-stone-800 dark:text-stone-200 border border-stone-200 dark:border-stone-700 shadow-2xs tracking-wide">
+                          <span className="text-stone-400 dark:text-stone-500 shrink-0 text-xs">⇄</span>
+                          <span className="whitespace-nowrap text-[11px] font-mono font-semibold px-2 py-1 bg-stone-50 dark:bg-slate-800 border border-stone-200 dark:border-stone-700 rounded text-stone-800 dark:text-stone-200 truncate">
                             {(bureauB || '').replace(/_/g, ' ')}
                           </span>
                         </div>
 
                         <div className="flex items-center gap-2 shrink-0">
-                          <span className="font-mono text-xs font-bold px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 tabular-nums">
+                          <span className="whitespace-nowrap font-mono text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950/60 dark:text-blue-300 dark:border-blue-800 tabular-nums">
                             {count} Overlap{count > 1 ? 's' : ''}
                           </span>
                           <Link
                             href="/overlaps"
-                            className="text-xs text-[#4A5535] dark:text-[#8FA367] hover:underline inline-flex items-center font-medium"
+                            className="whitespace-nowrap text-xs text-[#4A5535] dark:text-[#8FA367] hover:underline inline-flex items-center font-medium"
                           >
                             Inspect <ArrowRight className="w-3 h-3 ml-0.5" />
                           </Link>

@@ -65,16 +65,16 @@ export function StatusBadge({ status, isOverdue }: StatusBadgeProps) {
   const config = getStatusConfig();
 
   return (
-    <div className="inline-flex items-center gap-1.5 flex-wrap">
+    <div className="inline-flex items-center justify-end gap-1.5 whitespace-nowrap shrink-0">
       <span
-        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${config.bg}`}
+        className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border whitespace-nowrap shrink-0 ${config.bg}`}
       >
-        <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`} />
+        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${config.dot}`} />
         {config.label}
       </span>
       {isOverdue && (
-        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626] animate-pulse" />
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap shrink-0 bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] dark:bg-rose-950/60 dark:text-rose-300 dark:border-rose-800">
+          <span className="w-1.5 h-1.5 rounded-full shrink-0 bg-[#DC2626] animate-pulse" />
           OVERDUE
         </span>
       )}

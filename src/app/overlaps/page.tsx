@@ -144,16 +144,16 @@ function OverlapsContent() {
       />
 
       {/* Verification Protocol Callout */}
-      <div className="p-3.5 bg-white dark:bg-card text-stone-700 dark:text-stone-300 rounded-xl text-xs flex items-start gap-2.5 border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
-        <Info className="w-4 h-4 text-[#4A5535] shrink-0 mt-0.5" />
-        <div className="leading-relaxed">
-          <strong className="font-semibold text-ink">Verification Protocol:</strong> CASEPULSE surfaces matching identifiers (AISHE/Permanent ID), geospatial proximity, and predatory pattern co-occurrence. A shared institution code indicates jurisdictional synergy; officers must verify allegation independence before initiating joint inquiry or dismissal.
+      <div className="py-2 px-3.5 bg-amber-50/60 text-stone-700 dark:text-amber-200 rounded-lg text-xs flex items-center gap-2 border border-amber-200/80 dark:border-amber-900/60 shadow-2xs">
+        <Info className="w-4 h-4 text-[#B45309] shrink-0" />
+        <div className="leading-snug truncate sm:whitespace-normal">
+          <strong className="font-semibold text-ink dark:text-white">Verification Protocol:</strong> CASEPULSE surfaces matching identifiers (AISHE/Permanent ID), geospatial proximity, and predatory pattern co-occurrence. A shared institution code indicates jurisdictional synergy; officers must verify allegation independence before initiating joint inquiry or dismissal.
         </div>
       </div>
 
       {/* Summary KPI Pills */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+        <div className="p-4 bg-white dark:bg-card border border-[#E2DEC9] border-t-2 border-t-[#4A5535] dark:border-line rounded-xl shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
           <span className="text-[10px] font-bold text-stone-500 uppercase tracking-wider block">
             Total Overlaps Flagged
           </span>
@@ -192,14 +192,14 @@ function OverlapsContent() {
 
       {/* Filter and Search Bar */}
       <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl p-3 shadow-[0_1px_2px_rgba(20,20,18,0.04)] flex flex-col md:flex-row gap-2.5 items-stretch md:items-center justify-between">
-        <div className="relative flex-1">
+        <div className="relative flex-1 min-w-[280px]">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search overlap by ID, Docket No, Institution name, or rationale..."
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
+            className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
           />
         </div>
 

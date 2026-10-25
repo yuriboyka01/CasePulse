@@ -84,15 +84,15 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-[#DFDBD2] dark:border-line bg-[#EFECE6]/80 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-ink-muted">
-              <th className="py-3 px-4">Case Docket</th>
-              <th className="py-3 px-3">Bureau</th>
-              <th className="py-3 px-4 min-w-[200px]">Target Institution</th>
-              <th className="py-3 px-4 min-w-[200px]">Allegation & Category</th>
-              <th className="py-3 px-3">Assigned Officer</th>
-              <th className="py-3 px-4">Next Action & SLA</th>
-              <th className="py-3 px-3 whitespace-nowrap min-w-[170px]">Status</th>
-              <th className="py-3 px-3">Cross-Bureau</th>
-              <th className="py-3 px-4 text-right">Actions</th>
+              <th className="py-2.5 px-3 whitespace-nowrap">Case Docket</th>
+              <th className="py-2.5 px-2.5 whitespace-nowrap">Bureau</th>
+              <th className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">Target Institution</th>
+              <th className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">Allegation & Category</th>
+              <th className="py-2.5 px-2.5 max-w-[160px]">Assigned Officer</th>
+              <th className="py-2.5 px-3 max-w-[180px] xl:max-w-[220px]">Next Action & SLA</th>
+              <th className="py-2.5 px-3 w-[165px] min-w-[165px] whitespace-nowrap text-right pr-4">Status</th>
+              <th className="py-2.5 px-2.5 whitespace-nowrap">Cross-Bureau</th>
+              <th className="py-2.5 px-3 text-right pr-4 whitespace-nowrap">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
@@ -118,7 +118,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   className="hover:bg-[#F9F8F3] dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
                 >
                   {/* Case Docket */}
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-2.5 px-3 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/cases/${c.id}`}
@@ -147,12 +147,12 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Bureau */}
-                  <td className="py-3 px-3 whitespace-nowrap">
+                  <td className="py-2.5 px-2.5 whitespace-nowrap">
                     <BureauBadge bureauId={c.bureauId} size="sm" />
                   </td>
 
                   {/* Target Institution */}
-                  <td className="py-3 px-4 min-w-[200px] max-w-[280px]">
+                  <td className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">
                     <Link
                       href={`/institutions/${c.institutionId}`}
                       onClick={(e) => e.stopPropagation()}
@@ -169,7 +169,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Allegation */}
-                  <td className="py-3 px-4 min-w-[200px] max-w-[280px]">
+                  <td className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">
                     <div className="font-semibold text-ink line-clamp-1 leading-snug" title={c.title}>
                       {c.title}
                     </div>
@@ -181,7 +181,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Assigned Officer */}
-                  <td className="py-3 px-3 min-w-[140px] max-w-[180px]">
+                  <td className="py-2.5 px-2.5 max-w-[160px]">
                     <div className="font-semibold text-ink truncate" title={c.assignedOfficer.name}>
                       {c.assignedOfficer.name}
                     </div>
@@ -191,7 +191,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Next Action & SLA */}
-                  <td className="py-3 px-4 min-w-[180px] max-w-[220px]">
+                  <td className="py-2.5 px-3 max-w-[180px] xl:max-w-[220px]">
                     <div
                       className={`font-semibold text-xs truncate ${
                         nextAction.urgency === 'high' ? 'text-warning-ink' : 'text-ink-soft'
@@ -213,12 +213,12 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Status */}
-                  <td className="py-3 px-3 whitespace-nowrap min-w-[170px]">
+                  <td className="py-2.5 px-3 w-[165px] min-w-[165px] whitespace-nowrap text-right pr-4">
                     <StatusBadge status={c.status} isOverdue={c.isOverdue} />
                   </td>
 
                   {/* Cross-Bureau Link */}
-                  <td className="py-3 px-3 whitespace-nowrap">
+                  <td className="py-2.5 px-2.5 whitespace-nowrap">
                     {c.crossBureauFlag ? (
                       <Link
                         href={`/overlaps?search=${c.id}`}
@@ -236,7 +236,7 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                   </td>
 
                   {/* Actions */}
-                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                  <td className="py-2.5 px-3 text-right pr-4 whitespace-nowrap">
                     <Link
                       href={`/cases/${c.id}`}
                       onClick={(e) => e.stopPropagation()}

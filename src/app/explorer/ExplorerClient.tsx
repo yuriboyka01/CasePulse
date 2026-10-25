@@ -507,7 +507,7 @@ export default function ExplorerClient() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   aria-label="Search relationships by institution, case, or reference"
                   placeholder="Search by institution, case docket ID, or overlap reference..."
-                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-[#FAF9F5] dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
+                  className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-slate-900 text-ink placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#4A5535]/25 focus:border-[#4A5535] font-medium transition-colors"
                 />
               </div>
 
