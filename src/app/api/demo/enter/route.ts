@@ -10,11 +10,13 @@ export async function POST(request: Request) {
   );
   const isDevelopmentDemo =
     process.env.NODE_ENV === 'development' &&
-    process.env.CASEPULSE_AUTH_MODE === 'demo' &&
-    !isOidcConfigured;
+    process.env.CASEPULSE_AUTH_MODE === 'demo';
+  const isExplicitProductionDemo =
+    process.env.NODE_ENV === 'production' &&
+    process.env.CASEPULSE_DEMO_ENABLED === 'true';
 
-  if (!isDevelopmentDemo) {
-    return Response.json({ error: 'Development demo access is not enabled.' }, { status: 404 });
+  if ((!isDevelopmentDemo && !isExplicitProductionDemo) || isOidcConfigured) {
+    return Response.json({ error: 'Demo access is not enabled.' }, { status: 404 });
   }
 
   const response = NextResponse.redirect(new URL('/', request.url), 303);

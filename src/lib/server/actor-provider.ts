@@ -129,8 +129,10 @@ export async function resolveActor(
     process.env.AUTH_OIDC_CLIENT_ID?.trim() &&
     (process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim())
   );
-  const demoModeActive = process.env.NODE_ENV === 'development' &&
-    process.env.CASEPULSE_AUTH_MODE === 'demo' && !isOidcConfigured;
+  const demoModeActive = (
+    (process.env.NODE_ENV === 'development' && process.env.CASEPULSE_AUTH_MODE === 'demo') ||
+    (process.env.NODE_ENV === 'production' && process.env.CASEPULSE_DEMO_ENABLED === 'true')
+  ) && !isOidcConfigured;
   const demoActor: Actor = {
     id: 'DEMO-OFFICER-001',
     displayName: 'CASEPULSE Development Demo Officer',
@@ -139,8 +141,13 @@ export async function resolveActor(
     isDemo: true,
   };
 
-  if (process.env.CASEPULSE_AUTH_MODE === 'demo' && process.env.NODE_ENV !== 'development' && !isOidcConfigured) {
-    // Fail closed if demo mode is attempted in production or non-development environments.
+  if (
+    process.env.CASEPULSE_AUTH_MODE === 'demo' &&
+    process.env.NODE_ENV !== 'development' &&
+    !(process.env.NODE_ENV === 'production' && process.env.CASEPULSE_DEMO_ENABLED === 'true') &&
+    !isOidcConfigured
+  ) {
+    // Fail closed unless production demo access was explicitly enabled for this prototype.
     return null;
   }
 
@@ -206,11 +213,13 @@ export function canReadBureau(actor: Actor, bureau: string): boolean {
 
 /** Admins may perform write workflows across bureaus; CROSS_BUREAU_VIEW is read-only. */
 export function canWriteCaseAction(actor: Actor, bureau: string): boolean {
+  if (actor.isDemo) return false;
   return actor.roles.includes('ADMIN') || actor.bureauCodes.includes(bureau as Actor['bureauCodes'][number]);
 }
 
 /** Overlap review requires provisioned membership in both bureaus, or the ADMIN role. */
 export function canWriteOverlapReview(actor: Actor, sourceBureau: string, targetBureau: string): boolean {
+  if (actor.isDemo) return false;
   return actor.roles.includes('ADMIN') ||
     (actor.bureauCodes.includes(sourceBureau as Actor['bureauCodes'][number]) &&
       actor.bureauCodes.includes(targetBureau as Actor['bureauCodes'][number]));

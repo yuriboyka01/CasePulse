@@ -21,12 +21,15 @@ export function getAuthUiConfig(): AuthUiConfig {
   // OIDC requires an issuer, client ID, and an Auth.js session secret.
   const isOidcConfigured = Boolean(issuer && clientId && secret);
 
-  // Development demo mode is strictly allowed only when NODE_ENV === 'development' AND CASEPULSE_AUTH_MODE === 'demo'.
-  // Fails closed if attempted in production or when not explicitly requested.
-  const isDemoMode =
+  // Production demo access is opt-in and intended only for the public synthetic-data prototype.
+  // Never expose demo entry when a real OIDC provider is configured.
+  const isDevelopmentDemo =
     process.env.NODE_ENV === 'development' &&
-    process.env.CASEPULSE_AUTH_MODE === 'demo' &&
-    !isOidcConfigured;
+    process.env.CASEPULSE_AUTH_MODE === 'demo';
+  const isExplicitProductionDemo =
+    process.env.NODE_ENV === 'production' &&
+    process.env.CASEPULSE_DEMO_ENABLED === 'true';
+  const isDemoMode = (isDevelopmentDemo || isExplicitProductionDemo) && !isOidcConfigured;
 
   return {
     isOidcConfigured,

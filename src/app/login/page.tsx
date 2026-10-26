@@ -26,7 +26,7 @@ export default function LoginPage() {
         <p className="relative text-[10px] text-white/40">Authorized bureau officers only · SIH 2026 prototype</p>
       </section>
 
-      <section className="flex min-h-screen items-center justify-center px-5 py-10 sm:px-8">
+      <section className="flex min-h-screen items-center justify-center bg-[#F4F2EC] px-5 py-10 text-[#252923] sm:px-8">
         <LoginForm isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
       </section>
     </div>
