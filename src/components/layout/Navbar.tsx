@@ -168,8 +168,8 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
               <button
                 type="button"
                 onClick={toggleAssistant}
-                aria-label="Ask CASEPULSE AI (⌘K)"
-                title="Ask CASEPULSE AI (⌘K)"
+                aria-label="Ask CASEPULSE AI"
+                title="Ask CASEPULSE AI"
                 className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#DFDBD2] dark:border-line bg-white dark:bg-slate-800 text-brand transition-colors hover:bg-stone-50"
               >
                 <Sparkles className="h-4 w-4" />
@@ -240,14 +240,11 @@ export function TopBar({ isOidcConfigured = false, isDemoMode = false }: NavbarP
         <button
           type="button"
           onClick={toggleAssistant}
-          aria-label="Ask CASEPULSE AI casework assistant (⌘K)"
+          aria-label="Ask CASEPULSE AI casework assistant"
           className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-semibold bg-gradient-to-b from-[#586540] to-[#424C2F] text-white shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.25)] hover:brightness-110 active:translate-y-[1px] transition-all cursor-pointer border border-[#6b7b4f]/40"
         >
           <Sparkles className="h-3.5 w-3.5 text-emerald-200 transition-transform group-hover:scale-110" />
           <span>Ask CASEPULSE AI</span>
-          <kbd className="hidden sm:inline-flex items-center rounded border border-white/20 bg-black/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-100">
-            ⌘K
-          </kbd>
         </button>
 
         <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />

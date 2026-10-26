@@ -281,7 +281,7 @@ function AssistantLauncher({
           <button
             type="button"
             onClick={openAssistant}
-            aria-label="Ask CASEPULSE AI casework assistant (⌘K)"
+            aria-label="Ask CASEPULSE AI casework assistant"
             className="group relative inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full bg-gradient-to-b from-[#586540] to-[#424C2F] text-white shadow-[0_4px_16px_rgba(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.25)] hover:brightness-110 active:translate-y-[1px] transition-all cursor-pointer border border-[#6b7b4f]/40"
           >
             {/* Glowing Pulse Indicator */}
@@ -291,9 +291,6 @@ function AssistantLauncher({
             </span>
             <Bot className="w-4 h-4 text-emerald-200 transition-transform group-hover:scale-110" />
             <span className="text-xs font-bold tracking-wide">Ask CASEPULSE AI</span>
-            <kbd className="hidden sm:inline-flex items-center rounded border border-white/25 bg-black/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-100">
-              ⌘K
-            </kbd>
           </button>
         </div>
       )}
@@ -318,9 +315,6 @@ function AssistantLauncher({
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5">
                   <h2 className="text-xs font-bold text-ink">CASEPULSE AI</h2>
-                  <span className="font-mono text-[9px] uppercase px-1.5 py-0.2 rounded bg-brand-soft text-brand font-semibold">
-                    Local RAG
-                  </span>
                 </div>
                 <p className="truncate text-[10px] text-ink-muted">
                   {contextLabel ? `Context: ${contextLabel}` : 'Regulatory Intelligence Engine'}
@@ -343,7 +337,7 @@ function AssistantLauncher({
               <button
                 type="button"
                 onClick={closeAssistant}
-                title="Minimize assistant (⌘K)"
+                title="Minimize assistant"
                 aria-label="Minimize assistant"
                 className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-ink-muted transition hover:bg-raised hover:text-ink cursor-pointer"
               >
