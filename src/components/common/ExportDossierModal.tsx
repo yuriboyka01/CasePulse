@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Copy, Download, FileCode, FileText, X } from 'lucide-react';
+import { exportAnalyticsToCsv } from '@/lib/export-utils';
 import { apiClient, DashboardSummary } from '@/lib/api-client';
 import { CaseComplaint, CaseOverlap, Institution } from '@/types';
 
@@ -354,6 +355,15 @@ ${institutions
               <Copy className="w-3.5 h-3.5" />
               {copied ? 'Copied to Clipboard!' : 'Copy to Clipboard'}
             </button>
+            {!caseId && tab === 'DOSSIER' && summary && (
+              <button
+                onClick={() => exportAnalyticsToCsv(summary)}
+                className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded border border-line bg-raised hover:bg-slate-50 text-ink-soft cursor-pointer"
+              >
+                <Download className="w-3.5 h-3.5" />
+                Summary CSV
+              </button>
+            )}
             <button
               onClick={handleDownload}
               className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs cursor-pointer"

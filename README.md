@@ -60,10 +60,19 @@ npm start       # Start production server on port 3000
 | `/` | **Overview Dashboard** | Real-time operational metrics, overdue investigation alerts, priority cross-bureau overlaps, quick jump to dockets. |
 | `/overlaps` | **Cross-Bureau Overlap Review** | Dedicated workbench to triage flagged case pairs with confidence scores, multi-point evidence inspection, and triage actions (*Confirm Correlation*, *Initiate Joint Inquiry*, *Mark False Positive*). |
 | `/cases` | **Complaint & Case Register** | Filterable case docket by Bureau, Status, Category, Overdue SLA toggle, and Cross-bureau overlap flag. |
+| `/cases/new` | **Register Received Case** | Authorized officers record a complaint received through an existing channel, with its institution, responsible bureau, receipt date, and source reference. |
 | `/cases/[id]` | **Case Detail Docket** | Full allegation particulars, chronological action history timeline, assigned officer dossier, inter-bureau coordination links, and interactive action logging. |
+| `/login` | **Officer Sign-in** | Email/password for provisioned officers, organization OIDC when configured, and a separate development demo entry. |
+| `/signup` | **Officer Access Request** | Collects officer details and a password request for administrator review; it never grants bureau access by itself. |
 | `/institutions` | **Institution Directory** | Directory of regulated entities with AISHE codes, active case count, risk ratings, and multi-bureau involvement tags. |
 | `/institutions/[id]` | **Institution Detail** | Comprehensive institutional profile with all linked cases and active overlaps across bureaus. |
 | `/analytics` | **Intelligence & Reports** | Inter-bureau correlation channels matrix, predatory category distribution, SLA compliance breakdown, and PostgreSQL DDL schema export. |
+
+### Complaint intake boundary
+
+CASEPULSE is an officer-facing monitoring and coordination workspace. `/cases/new` registers a complaint that arrived through an existing channel; it is not a public student complaint portal. The prototype records the complainant type, not complainant contact details or uploaded evidence. Initial demo cases are synthetic. Production ingestion from AICTE systems would require an authorized data source and integration agreement; the problem statement does not specify an API or database connection.
+
+`/login` offers organization sign-in when server-side OIDC settings are present. In development demo mode, the dashboard starts behind a `Continue as Demo Officer` entry step and shows a small evaluation-workspace indicator. This entry step is for the demo experience only; it is not real authentication. Live OIDC remains unverified until a real provider is configured and exercised.
 
 ---
 

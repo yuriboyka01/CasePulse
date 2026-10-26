@@ -13,6 +13,7 @@ import type {
 } from './types';
 import { canReadBureau, canReadCrossBureau, canWriteCaseAction, canWriteOverlapReview } from './actor-provider';
 import { ApiError } from './errors';
+import type { CreateCaseInput } from './validation';
 
 type Row = QueryResultRow & Record<string, unknown>;
 type Sql = (text: string, values?: unknown[]) => Promise<{ rows: Row[]; rowCount: number | null }>;
@@ -187,6 +188,62 @@ const RELATIONSHIP_SELECT = `
 
 export class CasePulseRepository {
   constructor(private readonly sql: Sql = query as unknown as Sql, private readonly transaction: Transaction = withTransaction) {}
+
+  async createCase(actor: Actor, input: CreateCaseInput) {
+    if (!canWriteCaseAction(actor, input.bureauId)) return null;
+
+    return this.transaction(async (client) => {
+      const institution = await client.query(`
+        SELECT i.id, i.name, i.aishe_code AS "aisheCode"
+        FROM institutions i
+        WHERE i.id = $1 AND EXISTS (
+          SELECT 1 FROM institution_bureaus ib
+          WHERE ib.institution_id = i.id AND ib.bureau_code = $2
+        )
+        LIMIT 1
+      `, [input.institutionId, input.bureauId]);
+      const institutionRow = institution.rows[0] as Row | undefined;
+      if (!institutionRow) return null;
+
+      const year = input.filingDate.slice(0, 4);
+      const caseId = `CP-${year}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+      const actionId = crypto.randomUUID();
+      const intakeLabel = {
+        EXISTING_PORTAL: 'existing portal',
+        EMAIL: 'email',
+        LETTER: 'letter',
+        PHONE: 'phone',
+        OTHER: 'other channel',
+      }[input.intakeSource];
+      const notes = `Registered from ${intakeLabel}${input.sourceReference ? ` (reference ${input.sourceReference})` : ''}.`;
+
+      await client.query(`
+        INSERT INTO complaint_cases (
+          id, bureau_code, institution_id, title, description, category, severity, status,
+          complainant_type, filing_date, sla_due_date, assigned_officer_id,
+          assigned_officer_name, is_synthetic
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'NEW', $8, $9, $10, $11, $12, $13)
+      `, [caseId, input.bureauId, input.institutionId, input.title, input.description, input.category,
+        input.severity, input.complainantType, input.filingDate, input.slaDueDate, actor.id, actor.displayName, actor.isDemo]);
+
+      await client.query(`
+        INSERT INTO case_actions (
+          id, case_id, occurred_at, actor_id, actor_display_name, bureau_code,
+          action_type, action, notes, metadata, is_synthetic
+        ) VALUES ($1, $2, now(), $3, $4, $5, 'FILING', 'Case registered from an existing complaint channel', $6, $7::jsonb, $8)
+      `, [actionId, caseId, actor.id, actor.displayName, input.bureauId, notes,
+        JSON.stringify({ intakeSource: input.intakeSource, ...(input.sourceReference ? { sourceReference: input.sourceReference } : {}) }), actor.isDemo]);
+
+      const caseResult = await client.query(`${caseSelect(2)} WHERE c.id = $1 AND c.bureau_code = ANY($2::text[]) LIMIT 1`, [caseId, scopedBureaus(actor)]);
+      const actionResult = await client.query(`
+        SELECT id, case_id AS "caseId", occurred_at AS "occurredAt", actor_id AS "actorId",
+          actor_display_name AS "actorDisplayName", bureau_code AS "bureauId", action_type AS "actionType",
+          action, notes, metadata, is_synthetic AS "isSynthetic"
+        FROM case_actions WHERE id = $1
+      `, [actionId]);
+      return caseProjection(caseResult.rows[0] as Row, [actionResult.rows[0] as Row]);
+    });
+  }
 
   async appendCaseAction(id: string, actor: Actor, input: { idempotencyKey: string; type: string; notes: string; nextStatus?: string }) {
     return this.transaction(async (client) => {

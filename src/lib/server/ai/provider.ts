@@ -71,7 +71,7 @@ export class OpenAICompatibleProvider implements AssistantModel {
             ...messages.map(({ role, content }) => ({ role, content })),
           ],
           temperature: 0.2,
-          max_completion_tokens: 900,
+          max_tokens: 900,
         }),
         signal: AbortSignal.timeout(this.config.timeoutMs),
         cache: 'no-store',

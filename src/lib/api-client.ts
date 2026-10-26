@@ -3,6 +3,9 @@ import {
   CaseComplaint,
   CaseOverlap,
   CaseStatus,
+  CaseSeverity,
+  ComplaintCategory,
+  ComplainantType,
   Institution,
   RelationshipStatus,
   ReviewDecision,
@@ -23,6 +26,20 @@ export interface CaseActionPayload {
   type: CaseActionType;
   notes: string;
   nextStatus?: CaseStatus;
+}
+
+export interface NewCasePayload {
+  institutionId: string;
+  bureauId: BureauCode;
+  title: string;
+  description: string;
+  category: ComplaintCategory;
+  severity: CaseSeverity;
+  complainantType: ComplainantType;
+  filingDate: string;
+  slaDueDate: string;
+  intakeSource: 'EXISTING_PORTAL' | 'EMAIL' | 'LETTER' | 'PHONE' | 'OTHER';
+  sourceReference?: string;
 }
 
 export interface CaseActionRecord {
@@ -265,6 +282,20 @@ function normalizeOverlap(o: CaseOverlap): CaseOverlap {
 }
 
 export const apiClient = {
+  async getCaseRegistrationOptions(): Promise<{ bureauCodes: BureauCode[] }> {
+    const res = await requestJson<{ data: { bureauCodes: BureauCode[] } }>('/api/cases/registration-options');
+    return res.data;
+  },
+
+  async registerCase(payload: NewCasePayload): Promise<CaseComplaint> {
+    const res = await requestJson<{ data: CaseComplaint }>('/api/cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return normalizeCase(res.data);
+  },
+
   /**
    * Retrieves the scoped overview payload used by the command dashboard.
    * GET /api/dashboard/overview

@@ -79,20 +79,19 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
   }
 
   return (
-    <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(20,20,18,0.04)]">
+    <div className="bg-white dark:bg-card border border-[#E2DEC9] dark:border-line rounded-xl overflow-hidden shadow-[0_4px_20px_-2px_rgba(0,0,0,0.06),inset_0_1px_0_0_rgba(255,255,255,0.8)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.08)]">
       <div className="overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-[#DFDBD2] dark:border-line bg-[#EFECE6]/80 dark:bg-slate-900/80 text-[11px] font-bold uppercase tracking-wider text-ink-muted">
-              <th className="py-2.5 px-3 whitespace-nowrap">Case Docket</th>
-              <th className="py-2.5 px-2.5 whitespace-nowrap">Bureau</th>
-              <th className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">Target Institution</th>
-              <th className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">Allegation & Category</th>
-              <th className="py-2.5 px-2.5 max-w-[160px]">Assigned Officer</th>
-              <th className="py-2.5 px-3 max-w-[180px] xl:max-w-[220px]">Next Action & SLA</th>
-              <th className="py-2.5 px-3 w-[165px] min-w-[165px] whitespace-nowrap text-right pr-4">Status</th>
-              <th className="py-2.5 px-2.5 whitespace-nowrap">Cross-Bureau</th>
-              <th className="py-2.5 px-3 text-right pr-4 whitespace-nowrap">Actions</th>
+            <tr className="border-b border-[#DFDBD2] dark:border-line bg-[#EFECE6]/80 dark:bg-[#0E110E]/80 text-[10.5px] font-bold uppercase tracking-wider text-ink-muted">
+              <th className="py-2.5 px-3 w-[130px] min-w-[125px]">Case Docket</th>
+              <th className="py-2.5 px-2.5 w-[85px] min-w-[80px]">Bureau</th>
+              <th className="py-2.5 px-3 min-w-[210px] max-w-[260px]">Target Institution</th>
+              <th className="py-2.5 px-3 min-w-[200px] max-w-[250px]">Allegation & Category</th>
+              <th className="py-2.5 px-2.5 min-w-[130px] max-w-[155px]">Assigned Officer</th>
+              <th className="py-2.5 px-3 min-w-[170px] max-w-[210px]">Next Action & SLA</th>
+              <th className="py-2.5 px-3 min-w-[160px] text-right">Status & Scope</th>
+              <th className="py-2.5 px-3 w-[80px] text-right pr-3.5">Action</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-xs">
@@ -115,10 +114,10 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                 <tr
                   key={c.id}
                   onClick={() => router.push(`/cases/${c.id}`)}
-                  className="hover:bg-[#F9F8F3] dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                  className="hover:bg-[#F9F8F3] dark:hover:bg-[#1B211B]/60 transition-colors group cursor-pointer"
                 >
                   {/* Case Docket */}
-                  <td className="py-2.5 px-3 whitespace-nowrap">
+                  <td className="py-2.5 px-3 w-[130px] min-w-[125px] align-top">
                     <div className="flex items-center gap-1.5">
                       <Link
                         href={`/cases/${c.id}`}
@@ -141,57 +140,60 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                         )}
                       </button>
                     </div>
-                    <div className="text-[11px] font-sans text-ink-muted mt-0.5">
+                    <div className="text-[10px] font-sans text-ink-muted mt-0.5">
                       Filed: <span className="font-mono">{filingDateFormatted}</span>
                     </div>
                   </td>
 
                   {/* Bureau */}
-                  <td className="py-2.5 px-2.5 whitespace-nowrap">
+                  <td className="py-2.5 px-2.5 w-[85px] min-w-[80px] align-top whitespace-nowrap">
                     <BureauBadge bureauId={c.bureauId} size="sm" />
                   </td>
 
-                  {/* Target Institution */}
-                  <td className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">
+                  {/* Target Institution: line-clamp-2 wraps onto at most 2 lines */}
+                  <td className="py-2.5 px-3 min-w-[210px] max-w-[260px] align-top">
                     <Link
                       href={`/institutions/${c.institutionId}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="font-medium text-ink hover:text-brand block line-clamp-1 leading-snug transition-colors"
+                      className="font-medium text-ink hover:text-brand block line-clamp-2 leading-snug transition-colors"
                       title={c.institutionName}
                     >
                       {c.institutionName}
                     </Link>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="font-mono text-[10px] font-semibold px-1.5 py-0.2 rounded bg-[#F4F2EC] dark:bg-slate-800 text-ink-muted border border-line/60">
+                      <span className="font-mono text-[9.5px] font-semibold px-1.5 py-0.2 rounded bg-[#F4F2EC] dark:bg-[#1B211B] text-ink-muted border border-line/60">
                         AISHE: {c.aisheCode}
                       </span>
                     </div>
                   </td>
 
-                  {/* Allegation */}
-                  <td className="py-2.5 px-3 max-w-[200px] xl:max-w-[240px]">
-                    <div className="font-semibold text-ink line-clamp-1 leading-snug" title={c.title}>
+                  {/* Allegation & Category: line-clamp-2 allows 2 full lines of wrapping */}
+                  <td className="py-2.5 px-3 min-w-[200px] max-w-[250px] align-top">
+                    <div
+                      className="font-semibold text-ink line-clamp-2 leading-snug"
+                      title={c.title}
+                    >
                       {c.title}
                     </div>
                     <div className="flex items-center gap-1.5 mt-1">
-                      <span className="font-mono text-[9.5px] uppercase font-bold tracking-tight text-ink-muted px-1.5 py-0.2 rounded bg-[#F4F2EC] dark:bg-slate-800 border border-line/60">
+                      <span className="font-mono text-[9px] uppercase font-bold tracking-tight text-ink-muted px-1.5 py-0.2 rounded bg-[#F4F2EC] dark:bg-[#1B211B] border border-line/60">
                         {c.category.replace(/_/g, ' ')}
                       </span>
                     </div>
                   </td>
 
                   {/* Assigned Officer */}
-                  <td className="py-2.5 px-2.5 max-w-[160px]">
+                  <td className="py-2.5 px-2.5 min-w-[130px] max-w-[155px] align-top">
                     <div className="font-semibold text-ink truncate" title={c.assignedOfficer.name}>
                       {c.assignedOfficer.name}
                     </div>
-                    <div className="text-[11px] text-ink-muted truncate" title={c.assignedOfficer.designation}>
+                    <div className="text-[10px] text-ink-muted truncate" title={c.assignedOfficer.designation}>
                       {c.assignedOfficer.designation}
                     </div>
                   </td>
 
                   {/* Next Action & SLA */}
-                  <td className="py-2.5 px-3 max-w-[180px] xl:max-w-[220px]">
+                  <td className="py-2.5 px-3 min-w-[170px] max-w-[210px] align-top">
                     <div
                       className={`font-semibold text-xs truncate ${
                         nextAction.urgency === 'high' ? 'text-warning-ink' : 'text-ink-soft'
@@ -200,47 +202,45 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
                     >
                       {nextAction.action}
                     </div>
-                    <div className="text-[10px] font-mono mt-0.5 flex items-center gap-1.5">
-                      <span className={c.isOverdue ? 'text-[#B91C1C] font-bold' : 'text-ink-muted'}>
+                    <div className="text-[10px] font-mono mt-1 flex flex-wrap items-center gap-1.5">
+                      <span className={c.isOverdue ? 'text-red-700 dark:text-red-300 font-bold' : 'text-ink-muted'}>
                         Due: {slaDateFormatted}
                       </span>
                       {c.isOverdue && (
-                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]">
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded-full bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800/60 shadow-2xs">
                           OVERDUE
                         </span>
                       )}
                     </div>
                   </td>
 
-                  {/* Status */}
-                  <td className="py-2.5 px-3 w-[165px] min-w-[165px] whitespace-nowrap text-right pr-4">
-                    <StatusBadge status={c.status} isOverdue={c.isOverdue} />
+                  {/* Combined Status & Scope (Stacked Cleanly) */}
+                  <td className="py-2.5 px-3 min-w-[160px] align-top text-right">
+                    <div className="flex flex-col items-end gap-1.5">
+                      <StatusBadge status={c.status} isOverdue={c.isOverdue} />
+                      {c.crossBureauFlag ? (
+                        <Link
+                          href={`/overlaps?search=${c.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors shadow-2xs"
+                        >
+                          <AlertTriangle className="w-2.5 h-2.5 text-amber-600 dark:text-amber-400" />
+                          <span>Overlap ({c.overlapIds.length || 1})</span>
+                        </Link>
+                      ) : (
+                        <span className="text-[9.5px] text-ink-muted font-medium pr-1">
+                          Single Bureau
+                        </span>
+                      )}
+                    </div>
                   </td>
 
-                  {/* Cross-Bureau Link */}
-                  <td className="py-2.5 px-2.5 whitespace-nowrap">
-                    {c.crossBureauFlag ? (
-                      <Link
-                        href={`/overlaps?search=${c.id}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A] hover:bg-amber-100 transition-colors"
-                      >
-                        <AlertTriangle className="w-3 h-3 text-[#B45309]" />
-                        <span>Overlap</span>
-                      </Link>
-                    ) : (
-                      <span className="text-[11px] text-ink-muted font-medium">
-                        Isolated
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Actions */}
-                  <td className="py-2.5 px-3 text-right pr-4 whitespace-nowrap">
+                  {/* Compact Actions */}
+                  <td className="py-2.5 px-3 w-[80px] align-top text-right pr-3.5 whitespace-nowrap">
                     <Link
                       href={`/cases/${c.id}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-semibold rounded-lg border border-line bg-white dark:bg-card text-ink-soft hover:border-[#4A5535] hover:text-[#4A5535] transition-all shadow-2xs group-hover:border-[#4A5535]/50"
+                      className="inline-flex items-center gap-1 px-2 py-1 text-xs font-semibold rounded-lg border border-line bg-white dark:bg-[#141814] text-ink-soft hover:border-brand hover:text-brand transition-all shadow-2xs group-hover:border-brand/50"
                     >
                       <span>Inspect</span>
                       <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-0.5" />
@@ -253,9 +253,9 @@ export function ComplaintTable({ cases, isLoading }: ComplaintTableProps) {
         </table>
       </div>
 
-      <div className="p-3 bg-[#EFECE6]/50 dark:bg-slate-900/60 border-t border-[#DFDBD2] dark:border-line text-xs text-ink-muted flex items-center justify-between">
+      <div className="p-3 bg-[#EFECE6]/50 dark:bg-[#0E110E]/70 border-t border-[#DFDBD2] dark:border-line text-xs text-ink-muted flex items-center justify-between">
         <span className="font-medium">Showing {cases.length} case docket(s)</span>
-        <span className="font-mono text-[11px]">CASEPULSE Benchmark Grid</span>
+        <span className="font-mono text-[10.5px]">CASEPULSE Unified Bureau Grid</span>
       </div>
     </div>
   );

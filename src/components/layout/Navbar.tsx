@@ -1,6 +1,6 @@
 'use client';
 
-import React, { ViewTransition, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -34,6 +34,12 @@ const NAV_ITEMS = [
 ];
 
 const PAGE_TITLES = NAV_ITEMS.map(({ label, href }) => ({ label, href }));
+
+function getPageTitle(pathname: string | null) {
+  if (pathname === '/login') return 'Officer sign-in';
+  if (pathname === '/cases/new') return 'Register received case';
+  return PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
+}
 
 function ThemeToggleButton() {
   const { toggleTheme } = useTheme();
@@ -124,7 +130,7 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
   const [mobileOpen, setMobileOpen] = useState(false);
   const { toggleAssistant } = useAssistantModal();
   const pathname = usePathname();
-  const pageTitle = PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
+  const pageTitle = getPageTitle(pathname);
 
   return (
     <>
@@ -197,7 +203,10 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
           <aside className="flex h-full w-[min(88vw,320px)] flex-col border-r border-[#DFDBD2] dark:border-line bg-[#EFECE6] dark:bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
             <div className="flex h-14 items-center justify-between border-b border-[#DFDBD2] dark:border-line px-4"><span className="font-bold tracking-wide text-ink">CASEPULSE</span><button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-raised"><X className="h-4 w-4" /></button></div>
             <div className="flex-1 overflow-y-auto p-3"><NavigationItems onNavigate={() => setMobileOpen(false)} /></div>
-            <div className="border-t border-[#DFDBD2] dark:border-line p-4"><AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} /></div>
+            <div className="border-t border-[#DFDBD2] dark:border-line p-4">
+              <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
+              <Link href="/login" onClick={() => setMobileOpen(false)} className="mt-3 inline-flex text-xs font-semibold text-ink-muted underline-offset-4 hover:text-ink hover:underline">Sign-in information</Link>
+            </div>
           </aside>
         </div>}
       </div>
@@ -205,13 +214,17 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
   );
 }
 
+
+
+
+
 export function TopBar({ isOidcConfigured = false, isDemoMode = false }: NavbarProps) {
   const pathname = usePathname();
   const { toggleAssistant } = useAssistantModal();
-  const pageTitle = PAGE_TITLES.find(({ href }) => href === '/' ? pathname === '/' : pathname === href || pathname?.startsWith(`${href}/`))?.label ?? 'CASEPULSE';
+  const pageTitle = getPageTitle(pathname);
 
   return (
-    <header className="sticky top-0 z-30 hidden min-h-[64px] items-center justify-between gap-4 border-b border-[#DFDBD2] dark:border-line bg-[#EFECE6]/90 dark:bg-background/80 px-6 backdrop-blur-md lg:flex">
+    <header className="sticky top-0 z-30 hidden min-h-[64px] items-center justify-between gap-4 border-b border-stone-200/80 dark:border-white/10 bg-[#EFECE6]/80 dark:bg-[#0E110E]/80 px-6 backdrop-blur-md lg:flex">
       <div className="min-w-0">
         <p className="font-display truncate text-lg font-semibold tracking-tight text-ink">{pageTitle}</p>
         <p className="text-[10px] text-ink-muted">Operational workspace</p>
@@ -228,16 +241,17 @@ export function TopBar({ isOidcConfigured = false, isDemoMode = false }: NavbarP
           type="button"
           onClick={toggleAssistant}
           aria-label="Ask CASEPULSE AI casework assistant (⌘K)"
-          className="group inline-flex items-center gap-2 rounded-xl border border-[#DFDBD2] dark:border-line bg-white dark:bg-card px-3 py-1.5 text-xs font-semibold text-ink shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all hover:border-[#4A5535] hover:bg-stone-50 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-[#4A5535]"
+          className="group inline-flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-semibold bg-gradient-to-b from-[#586540] to-[#424C2F] text-white shadow-[0_2px_6px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.25)] hover:brightness-110 active:translate-y-[1px] transition-all cursor-pointer border border-[#6b7b4f]/40"
         >
-          <Sparkles className="h-3.5 w-3.5 text-[#4A5535] transition-transform group-hover:scale-110" />
+          <Sparkles className="h-3.5 w-3.5 text-emerald-200 transition-transform group-hover:scale-110" />
           <span>Ask CASEPULSE AI</span>
-          <kbd className="hidden sm:inline-flex items-center rounded border border-[#DFDBD2] dark:border-line bg-[#F4F2EC] dark:bg-slate-800 px-1.5 py-0.5 font-mono text-[10px] text-ink-muted">
+          <kbd className="hidden sm:inline-flex items-center rounded border border-white/20 bg-black/20 px-1.5 py-0.5 font-mono text-[9px] font-bold text-emerald-100">
             ⌘K
           </kbd>
         </button>
 
         <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />
+        <Link href="/login" className="text-[10px] font-medium text-ink-muted underline-offset-4 hover:text-ink hover:underline" aria-label="Sign-in information">Access info</Link>
         <ThemeToggleButton />
       </div>
     </header>

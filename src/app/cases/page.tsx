@@ -1,8 +1,10 @@
 'use client';
 
 import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { AlertCircle, Download, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Download, FileText, RefreshCw } from 'lucide-react';
+import { exportDocketsToCsv } from '@/lib/export-utils';
 import { SearchFilterBar } from '@/components/common/SearchFilterBar';
 import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { ComplaintTable } from '@/components/cases/ComplaintTable';
@@ -22,6 +24,14 @@ function CasesContent() {
   const [overdueOnly, setOverdueOnly] = useState(searchParams.get('overdueOnly') === 'true');
   const [overlapOnly, setOverlapOnly] = useState(searchParams.get('overlapOnly') === 'true');
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [toastNotice, setToastNotice] = useState<string | null>(null);
+
+  const handleExportCsv = () => {
+    if (cases.length === 0) return;
+    const result = exportDocketsToCsv(cases);
+    setToastNotice(`✓ Exported ${result.count} filtered dockets to CSV`);
+    setTimeout(() => setToastNotice(null), 4000);
+  };
 
   const [loadState, setLoadState] = useState<LoadState>('idle');
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +121,7 @@ function CasesContent() {
               {displayCount} DOCKETS
             </span>
             {cases.some((record) => record.isSynthetic) && (
-              <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FFFBEB] text-[#B45309] border border-warning/30">
+              <span className="font-mono text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50">
                 Synthetic records
               </span>
             )}
@@ -120,13 +130,27 @@ function CasesContent() {
         title="Inter-Bureau Complaint & Case Register"
         subtitle="Authoritative multi-agency registry of grievances across AICTE, UGC, State DTEs, Anti-Ragging Cell, and Consumer Forum."
         actions={
-          <button
-            onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted text-ink-soft shadow-2xs transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5 text-ink-muted" />
-            <span>Export Register Data</span>
-          </button>
+          <>
+            <Link href="/cases/new" className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-3.5 py-1.5 text-xs font-semibold text-white shadow-2xs transition hover:opacity-90">
+              <FileText className="h-3.5 w-3.5" aria-hidden="true" />
+              <span>Register received case</span>
+            </Link>
+            <button
+              onClick={handleExportCsv}
+              disabled={cases.length === 0}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted text-ink-soft shadow-2xs transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Download className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Export CSV</span>
+            </button>
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold rounded-xl border border-line bg-white hover:bg-stone-50 dark:bg-card dark:hover:bg-card-muted text-ink-soft shadow-2xs transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5 text-ink-muted" />
+              <span>Export Register Data</span>
+            </button>
+          </>
         }
       />
 
@@ -153,7 +177,7 @@ function CasesContent() {
       {loadState === 'loading' && (
         <div className="py-16 text-center text-ink-muted rounded-2xl border border-line bg-card shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-semibold">Filtering complaint registry docketsâ€¦</p>
+          <p className="text-xs font-semibold">Filtering complaint registry dockets…</p>
         </div>
       )}
 
@@ -188,6 +212,13 @@ function CasesContent() {
 
       {/* Case Table */}
       {loadState === 'success' && <ComplaintTable cases={cases} />}
+
+      {toastNotice && (
+        <div role="status" className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs font-semibold text-emerald-900 shadow-lg dark:border-emerald-900/60 dark:bg-emerald-950/80 dark:text-emerald-200">
+          <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+          <span>{toastNotice}</span>
+        </div>
+      )}
 
       {/* Export Modal */}
       <ExportDossierModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />

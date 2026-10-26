@@ -209,6 +209,28 @@ export async function retrieveAssistantEvidence(
       }
     }
 
+    const normalizedQuestion = question.toLowerCase();
+    if (/(recent|latest|newest|most recent)/.test(normalizedQuestion)) {
+      const rows = await repository.listCases({ page: 1, pageSize: 5 }, actor);
+      rows.data.forEach(addCase);
+    }
+    if (/(overdue|sla|deadline|late cases)/.test(normalizedQuestion)) {
+      const rows = await repository.listCases({ page: 1, pageSize: 8, overdueOnly: true }, actor);
+      rows.data.forEach(addCase);
+    }
+    if (/(overlap|cross[- ]bureau|correlation|inter-bureau|relationship)/.test(normalizedQuestion)) {
+      const rows = await repository.listOverlaps({ page: 1, pageSize: 8 }, actor);
+      rows.data.forEach(addRelationship);
+    }
+    if (/(critical|high risk|high-risk)/.test(normalizedQuestion)) {
+      const [caseRows, institutionRows] = await Promise.all([
+        repository.listCases({ page: 1, pageSize: 30 }, actor),
+        repository.listInstitutions({ page: 1, pageSize: 30 }, actor),
+      ]);
+      caseRows.data.filter((row) => String((row as Record<string, unknown>).severity).toUpperCase() === 'CRITICAL').forEach(addCase);
+      institutionRows.data.filter((row) => String((row as Record<string, unknown>).riskRating).toUpperCase() === 'CRITICAL').forEach(addInstitution);
+    }
+
     const terms = searchTerms(question);
     if (terms.length > 0 && cases.size + institutions.size + relationships.size < 12) {
       const results = await Promise.all(terms.map(async (term) => {

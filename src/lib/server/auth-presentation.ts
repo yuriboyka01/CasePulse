@@ -24,7 +24,9 @@ export function getAuthUiConfig(): AuthUiConfig {
   // Development demo mode is strictly allowed only when NODE_ENV === 'development' AND CASEPULSE_AUTH_MODE === 'demo'.
   // Fails closed if attempted in production or when not explicitly requested.
   const isDemoMode =
-    process.env.NODE_ENV === 'development' && process.env.CASEPULSE_AUTH_MODE === 'demo';
+    process.env.NODE_ENV === 'development' &&
+    process.env.CASEPULSE_AUTH_MODE === 'demo' &&
+    !isOidcConfigured;
 
   return {
     isOidcConfigured,

@@ -1,4 +1,6 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+import { authenticateOfficerCredentials } from '@/lib/server/password-auth';
 
 function getOidcProviders() {
   const issuer = process.env.AUTH_OIDC_ISSUER;
@@ -22,16 +24,38 @@ function getOidcProviders() {
 }
 
 export const authConfig: NextAuthConfig = {
-  providers: getOidcProviders(),
+  providers: [
+    ...getOidcProviders(),
+    Credentials({
+      id: 'credentials',
+      name: 'Email and password',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (typeof credentials?.email !== 'string' || typeof credentials.password !== 'string') return null;
+        return authenticateOfficerCredentials(credentials.email, credentials.password);
+      },
+    }),
+  ],
   secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
   session: {
     strategy: 'jwt',
   },
+  pages: {
+    signIn: '/login',
+  },
   callbacks: {
-    async jwt({ token, account }) {
+    async jwt({ token, account, user }) {
       if (account) {
-        token.sub = account.providerAccountId ?? token.sub;
-        token.iss = account.issuer ?? process.env.AUTH_OIDC_ISSUER ?? 'oidc';
+        if (account.provider === 'credentials' && user?.id) {
+          token.sub = user.id;
+          token.iss = 'casepulse-password';
+        } else {
+          token.sub = account.providerAccountId ?? token.sub;
+          token.iss = account.issuer ?? process.env.AUTH_OIDC_ISSUER ?? 'oidc';
+        }
       }
       return token;
     },

@@ -125,7 +125,7 @@ export default function OverviewDashboardPage() {
                 {summary.unresolvedOverlapsCount > 0 && (
                   <Link
                     href="/overlaps"
-                    className="inline-flex items-center gap-1.5 rounded-lg bg-[#4A5535] hover:bg-[#384227] px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition-colors"
+                    className="btn-3d-primary inline-flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-semibold border border-[#6b7b4f]/40 transition-all cursor-pointer"
                   >
                     <AlertTriangle className="h-3.5 w-3.5" />
                     Review {summary.unresolvedOverlapsCount.toLocaleString('en-IN')} unresolved links
@@ -151,7 +151,7 @@ export default function OverviewDashboardPage() {
 
             <div className="relative hidden lg:block h-[190px] lg:w-[380px] xl:w-[420px] rounded-xl border border-line/60 bg-gradient-to-b from-[#F4F2EC]/60 to-[#EFECE6]/40 dark:from-card-muted/40 dark:to-card-muted/10 overflow-hidden shrink-0 shadow-inner">
               <BureauConstellation nodes={constellationNodes} className="absolute inset-0" />
-              <span className="pointer-events-none absolute top-2.5 right-2.5 rounded border border-[#DFDBD2] dark:border-line bg-white/85 dark:bg-card/85 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-ink-muted backdrop-blur-sm z-10">
+              <span className="pointer-events-none absolute bottom-2 left-2.5 rounded border border-[#DFDBD2] dark:border-line bg-white/85 dark:bg-card/85 px-1.5 py-0.5 text-[9px] font-mono uppercase tracking-wider text-ink-muted backdrop-blur-sm z-10 opacity-75">
                 3D BUREAU CONSTELLATION · JOINT DESK CORE
               </span>
             </div>
@@ -192,7 +192,7 @@ export default function OverviewDashboardPage() {
                     <div className="min-w-0"><BureauBadge bureauId={bureau.id} size="sm" /><h3 className="mt-1.5 truncate text-xs font-bold text-ink group-hover:text-brand">{bureau.shortName}</h3></div>
                     <div className="text-right"><span className="font-mono text-base font-extrabold text-ink">{count.toLocaleString('en-IN')}</span><span className="block font-mono text-[10px] text-ink-muted">{percentage}%</span></div>
                   </div>
-                  <div className="my-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-gradient-to-r from-brand to-brand-strong transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
+                  <div className="my-3 h-2 overflow-hidden rounded-full progress-track-3d" role="progressbar" aria-label={`${bureau.shortName} share of cases`} aria-valuenow={percentage} aria-valuemin={0} aria-valuemax={100}><div className="h-full rounded-full bg-gradient-to-r from-brand to-brand-strong progress-fill-3d transition-[width] duration-700" style={{ width: `${percentage}%` }} /></div>
                   <span className="flex items-center justify-between gap-2 text-[10px] text-ink-muted"><span className="truncate">{bureau.contactOfficer.split('(')[0].trim()}</span><span className="shrink-0 font-mono">{count.toLocaleString('en-IN')} cases</span></span>
                 </SpotlightCard>
               );

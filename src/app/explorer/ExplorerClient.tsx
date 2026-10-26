@@ -653,9 +653,9 @@ export default function ExplorerClient() {
           {/* Main Workspace: navigable relationship graph or matrix and evidence inspector */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
             {/* Graph/Matrix Area */}
-            <div className="hidden md:flex md:col-span-12 lg:col-span-8 surface-edge bg-slate-950 border border-slate-800 rounded-2xl overflow-hidden shadow-[var(--shadow-lift)] ring-1 ring-brand/15 relative min-h-[560px] flex-col justify-between">
+            <div className="hidden md:flex md:col-span-12 lg:col-span-8 surface-edge bg-[#0A0C0A] border border-stone-200/80 dark:border-white/10 rounded-2xl overflow-hidden shadow-[inset_0_3px_12px_rgba(0,0,0,0.6)] ring-1 ring-brand/15 relative min-h-[560px] flex-col justify-between">
               {viewMode === 'GRAPH' && (
-                <div className="flex items-center justify-between gap-3 border-b border-slate-800 px-4 py-2.5 text-xs text-slate-300">
+                <div className="flex items-center justify-between gap-3 border-b border-stone-200/80 dark:border-white/10 bg-[#EFECE6]/80 dark:bg-[#0E110E]/80 backdrop-blur-md px-4 py-2.5 text-xs text-ink-muted">
                   <div className="inline-flex items-center gap-2"><Move className="h-3.5 w-3.5 text-slate-400" /><span>Drag to pan · Use controls to zoom</span></div>
                   <div className="inline-flex items-center gap-1">
                     <button type="button" aria-label="Zoom out" title="Zoom out" onClick={() => setZoom((value) => Math.max(0.7, Math.round((value - 0.15) * 100) / 100))} className="rounded-lg border border-slate-700 p-2 text-slate-200 hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-400"><Minus className="h-4 w-4" /></button>
@@ -677,7 +677,7 @@ export default function ExplorerClient() {
                   <svg
                     viewBox={`${(900 - 900 / zoom) / 2 - pan.x} ${(640 - 640 / zoom) / 2 - pan.y} ${900 / zoom} ${640 / zoom}`}
                     className={`relationship-graph w-full h-auto select-none touch-none ${isPanning ? 'cursor-grabbing' : 'cursor-grab'}`}
-                    style={{ background: 'radial-gradient(ellipse at center, #191e1b 0%, #0c0f0e 100%)', aspectRatio: '900 / 640' }}
+                    style={{ background: 'radial-gradient(ellipse at center, rgba(148,168,114,0.07) 0%, #141814 55%, #0A0C0A 100%)', aspectRatio: '900 / 640' }}
                     role="group"
                     aria-label="Relationship network graph. Use Tab to select nodes and links. Drag the background to pan."
                     aria-describedby="relationship-graph-description"
@@ -704,6 +704,9 @@ export default function ExplorerClient() {
                       <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
                         <feGaussianBlur stdDeviation="2" result="blur" />
                         <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                      <filter id="node-3d-shadow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="rgba(0, 0, 0, 0.65)" />
                       </filter>
                       <radialGradient id="node-bureau" cx="35%" cy="30%" r="80%">
                         <stop offset="0%" stopColor="#323c36" />
@@ -839,6 +842,7 @@ export default function ExplorerClient() {
                             aria-label={`${node.fullName} bureau`}
                             style={nodeStyle('bureau', node.rawId, nodeIndex)}
                             aria-pressed={isSelected}
+                            filter="url(#node-3d-shadow)"
                             className="graph-node graph-enter group cursor-pointer transition-transform duration-200 focus:outline-hidden"
                             onClick={() => setSelectedItem({ type: 'BUREAU', data: node.data })}
                             onKeyDown={(event) => {
@@ -912,6 +916,7 @@ export default function ExplorerClient() {
                             aria-label={`${node.label}, ${node.risk.toLowerCase()} risk institution, AISHE ${node.aishe}`}
                             style={nodeStyle('institution', node.rawId, nodeIndex)}
                             aria-pressed={isSelected}
+                            filter="url(#node-3d-shadow)"
                             className="graph-node graph-enter group cursor-pointer transition-transform duration-200 focus:outline-hidden"
                             onClick={() =>
                               setSelectedItem({ type: 'INSTITUTION', data: node.data })
@@ -961,19 +966,29 @@ export default function ExplorerClient() {
                               {node.aishe.slice(0, 7)}
                             </text>
 
-                            {/* Institutional Name Callout label */}
-                            <text
-                              textAnchor="middle"
-                              dy="34"
-                              fill="#c9cbbf"
-                              fontSize="9"
-                              fontWeight="600"
-                              className={`pointer-events-none transition-opacity ${graphNodes.instNodes.length > 12 && !isSelected ? 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100' : 'opacity-100'}`}
-                            >
-                              {node.label.length > 20
-                                ? `${node.label.slice(0, 18)}...`
-                                : node.label}
-                            </text>
+                            {/* Full readable 3D pill label below node */}
+                            <g transform="translate(0, 32)" className="pointer-events-none">
+                              <rect
+                                x={-Math.min(Math.max(node.label.length * 3.3, 42), 95)}
+                                y="-9"
+                                width={Math.min(Math.max(node.label.length * 6.6, 84), 190)}
+                                height="18"
+                                rx="9"
+                                fill={isSelected ? '#141814' : 'rgba(14, 17, 14, 0.92)'}
+                                stroke={isSelected ? '#c5a46d' : ringColor}
+                                strokeWidth={isSelected ? '1.5' : '1'}
+                                strokeOpacity={isSelected ? '0.9' : '0.55'}
+                              />
+                              <text
+                                textAnchor="middle"
+                                dy="3.5"
+                                fill={isSelected ? '#c5a46d' : '#eae7de'}
+                                fontSize="8.5"
+                                fontWeight="600"
+                              >
+                                {node.label.length > 28 ? `${node.label.slice(0, 26)}…` : node.label}
+                              </text>
+                            </g>
                           </g>
                         );
                       })}

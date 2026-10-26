@@ -15,7 +15,7 @@ const MAX_TILT_DEG = 2.4;
 
 /**
  * Surface that follows the pointer with a soft brass glow and a luminous edge.
- * The effect is purely presentational â€” layout, semantics and focus behaviour
+ * The effect is purely presentational — layout, semantics and focus behaviour
  * come from the element it renders as.
  */
 export function SpotlightCard<T extends React.ElementType = 'div'>({

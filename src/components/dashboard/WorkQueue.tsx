@@ -55,7 +55,7 @@ export function WorkQueue({ cases, pendingOverlaps, unresolvedRelationships, det
                     <span className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-bold text-ink">{item.id}</span>
                       <BureauBadge bureauId={item.bureauId} size="sm" />
-                      <span className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] font-bold ${item.isOverdue ? 'bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA]' : 'bg-[#FFFBEB] text-[#B45309] border border-[#FDE68A]'}`}>
+                      <span className={`rounded-md px-1.5 py-0.5 font-mono text-[9px] font-bold ${item.isOverdue ? 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800/60' : 'bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800/50'}`}>
                         {item.isOverdue ? 'OVERDUE' : 'CRITICAL'}
                       </span>
                     </span>

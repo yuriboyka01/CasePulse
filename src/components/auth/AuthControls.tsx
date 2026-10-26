@@ -103,7 +103,7 @@ export function AuthControls({
               className="text-danger-ink hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
-              Ã—
+              ×
             </button>
           </div>
         )}
@@ -139,16 +139,19 @@ export function AuthControls({
   // State 3: Unauthenticated with local workspace access enabled
   if (isDemoMode) {
     return (
-      <div className={`flex flex-col gap-1 ${className}`}>
+      <div className={`flex flex-wrap items-center gap-2 ${className}`}>
         <div
           role="status"
-          aria-label="Local workspace access is active."
+          aria-label="Development evaluation workspace is active."
           className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 shadow-2xs"
-          title="Local workspace access"
+          title="Development demo officer session"
         >
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-          <span>Local access</span>
+          <span>Evaluation workspace</span>
         </div>
+        <form action="/api/demo/exit" method="post">
+          <button type="submit" className="rounded-md px-2 py-1 text-[11px] font-medium text-ink-muted underline-offset-4 hover:text-ink hover:underline" aria-label="Exit demo officer session">Exit demo</button>
+        </form>
       </div>
     );
   }
@@ -170,7 +173,7 @@ export function AuthControls({
               className="text-red-600 dark:text-red-300 hover:opacity-80 cursor-pointer ml-1 font-bold"
               aria-label="Dismiss error notification"
             >
-              Ã—
+              ×
             </button>
           </div>
         )}

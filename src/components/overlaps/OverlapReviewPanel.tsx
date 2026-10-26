@@ -19,6 +19,8 @@ import {
   Link2,
   RotateCw,
   UserCheck,
+  XCircle,
+  Zap,
 } from 'lucide-react';
 import { apiClient, ApiClientError, OverlapReviewRecord } from '@/lib/api-client';
 
@@ -79,6 +81,67 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
       ignore = true;
     };
   }, [overlap.id]);
+
+  const handleQuickTriage = async (decision: ReviewDecision) => {
+    if (!hasValidVersion || currentVersion === undefined) {
+      setFeedback({
+        type: 'error',
+        message:
+          'Authoritative relationship version is missing from backend contract. Cannot submit review without a valid version.',
+      });
+      return;
+    }
+
+    const defaultNotes =
+      decision === 'CONFIRMED'
+        ? 'Confirmed multi-attribute cross-bureau correlation. Shared institution entity validated across jurisdictions.'
+        : decision === 'FURTHER_COORDINATION'
+        ? 'Joint multi-bureau inquiry initiated. Coordinating evidence and hearings across sister agencies.'
+        : 'Dismissed correlation as independent non-overlapping complaint or false positive match.';
+
+    setIsSubmitting(true);
+    setFeedback(null);
+
+    try {
+      // Server-authoritative: reviewer identity comes from the authenticated session,
+      // and local state only changes after the API confirms the write.
+      const response = await apiClient.recordOverlapReview(overlap.id, {
+        decision,
+        notes: defaultNotes,
+        expectedVersion: currentVersion,
+      });
+      const updatedRelationship = response.relationship;
+      const reviewRecord = response.review;
+
+      setDecisionChoice(decision);
+      setCurrentVersion(updatedRelationship.version);
+      setCurrentStatus(updatedRelationship.status);
+      setLatestDecision(updatedRelationship.latestDecision ?? null);
+      setReviewHistory((prev) => [reviewRecord, ...prev]);
+      setFeedback({
+        type: 'success',
+        message: `Decision recorded. Relationship status is now ${updatedRelationship.status} (version ${updatedRelationship.version}).`,
+      });
+
+      onReviewSuccess?.(updatedRelationship, reviewRecord);
+      onTriage?.(
+        overlap.id,
+        updatedRelationship.status as OverlapStatus,
+        defaultNotes,
+        reviewRecord.reviewer.displayName
+      );
+    } catch (err) {
+      setFeedback({
+        type: 'error',
+        message:
+          err instanceof ApiClientError
+            ? err.userFriendlyMessage
+            : 'The review could not be recorded. Nothing was saved; please retry.',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleCommitDecision = async () => {
     if (!hasValidVersion || currentVersion === undefined) {
@@ -222,6 +285,63 @@ export function OverlapReviewPanel({ overlap, onReviewSuccess, onTriage }: Overl
             title={isExpanded ? 'Collapse match breakdown' : 'Expand match breakdown'}
           >
             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Interactive Quick Triage Command Strip */}
+      <div className="px-4 py-2.5 bg-[#FAF9F5] dark:bg-[#0E110E] border-b border-[#E2DEC9]/80 dark:border-white/10 flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2 text-xs">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400 flex items-center gap-1.5">
+            <span className="w-2 h-2 rounded-full bg-[#4A5535] animate-pulse" />
+            Operational Triage:
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={() => handleQuickTriage('CONFIRMED')}
+            disabled={isSubmitting || currentStatus === 'CONFIRMED'}
+            title="Confirm Match and link cross-bureau cases"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer shadow-2xs ${
+              currentStatus === 'CONFIRMED'
+                ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
+                : 'bg-white dark:bg-[#1B211B] text-ink hover:bg-emerald-50 dark:hover:bg-emerald-950/40 hover:border-emerald-500/50 hover:text-emerald-700 dark:hover:text-emerald-300 border-stone-200 dark:border-white/10'
+            }`}
+          >
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />
+            <span>✓ Confirm Match & Link</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleQuickTriage('FURTHER_COORDINATION')}
+            disabled={isSubmitting || currentStatus === 'FURTHER_COORDINATION'}
+            title="Initiate joint inter-agency inquiry"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer shadow-2xs ${
+              currentStatus === 'FURTHER_COORDINATION'
+                ? 'bg-indigo-600 text-white border-indigo-700 shadow-xs'
+                : 'bg-white dark:bg-[#1B211B] text-ink hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:border-indigo-500/50 hover:text-indigo-700 dark:hover:text-indigo-300 border-stone-200 dark:border-white/10'
+            }`}
+          >
+            <Zap className="w-3.5 h-3.5 text-amber-500" />
+            <span>⚡ Initiate Joint Inquiry</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => handleQuickTriage('REJECTED')}
+            disabled={isSubmitting || currentStatus === 'REJECTED' || currentStatus === 'DISMISSED_FALSE_POSITIVE'}
+            title="Dismiss as false positive correlation"
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border transition-all cursor-pointer shadow-2xs ${
+              currentStatus === 'REJECTED' || currentStatus === 'DISMISSED_FALSE_POSITIVE'
+                ? 'bg-rose-600 text-white border-rose-700 shadow-xs'
+                : 'bg-white dark:bg-[#1B211B] text-ink hover:bg-rose-50 dark:hover:bg-rose-950/40 hover:border-rose-500/50 hover:text-rose-700 dark:hover:text-rose-300 border-stone-200 dark:border-white/10'
+            }`}
+          >
+            <XCircle className="w-3.5 h-3.5 text-rose-500" />
+            <span>✕ Dismiss False Positive</span>
           </button>
         </div>
       </div>

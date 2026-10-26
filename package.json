@@ -13,6 +13,8 @@
     "db:migrate": "tsx scripts/db-migrate.ts",
     "db:seed": "tsx scripts/db-seed.ts",
     "db:provision": "tsx scripts/provision-officer.ts",
+    "auth:approve-request": "tsx scripts/approve-officer-request.ts",
+    "auth:list-requests": "tsx scripts/list-officer-requests.ts",
     "db:psql": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/open-psql.ps1",
     "db:view": "tsx scripts/db-view.ts",
     "db:dev:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-dev-postgres.ps1",

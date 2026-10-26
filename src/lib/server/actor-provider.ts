@@ -70,6 +70,36 @@ export async function lookupOfficerInDb(
   };
 }
 
+export async function lookupOfficerByPasswordId(
+  officerId: string,
+  sqlQuery = query
+): Promise<Actor> {
+  const result = await sqlQuery<OfficerDbRow>(
+    `SELECT
+       o.id,
+       o.display_name AS "displayName",
+       o.is_active AS "isActive",
+       COALESCE((
+         SELECT jsonb_agg(ob.bureau_code ORDER BY ob.bureau_code)
+         FROM officer_bureaus ob WHERE ob.officer_id = o.id
+       ), '[]'::jsonb) AS "bureauCodes",
+       COALESCE((
+         SELECT jsonb_agg(r.role ORDER BY r.role)
+         FROM officer_roles r WHERE r.officer_id = o.id
+       ), '[]'::jsonb) AS roles
+     FROM officers o WHERE o.id = $1 LIMIT 1`,
+    [officerId]
+  );
+  const row = result.rows[0];
+  if (!row || !row.isActive) {
+    throw new ApiError(403, 'FORBIDDEN', 'This officer account is inactive or unavailable.');
+  }
+  const validBureaus = (row.bureauCodes ?? []).filter((bureau): bureau is BureauCode =>
+    (BUREAU_CODES as readonly string[]).includes(bureau)
+  );
+  return { id: row.id, displayName: row.displayName, bureauCodes: validBureaus, roles: row.roles ?? [], isDemo: false };
+}
+
 /**
  * Resolves the authenticated Actor for the incoming request.
  *
@@ -94,16 +124,22 @@ export async function resolveActor(
   lookupOfficer: OfficerLookup = lookupOfficerInDb
 ): Promise<Actor | null> {
   // Development demo mode is strictly disallowed in production or when not explicitly requested.
-  if (process.env.CASEPULSE_AUTH_MODE === 'demo') {
-    if (process.env.NODE_ENV === 'development') {
-      return {
-        id: 'DEMO-OFFICER-001',
-        displayName: 'CASEPULSE Development Demo Officer',
-        bureauCodes: [...BUREAU_CODES],
-        roles: ['OFFICER', 'CROSS_BUREAU_VIEW'],
-        isDemo: true,
-      };
-    }
+  const isOidcConfigured = Boolean(
+    process.env.AUTH_OIDC_ISSUER?.trim() &&
+    process.env.AUTH_OIDC_CLIENT_ID?.trim() &&
+    (process.env.AUTH_SECRET?.trim() || process.env.NEXTAUTH_SECRET?.trim())
+  );
+  const demoModeActive = process.env.NODE_ENV === 'development' &&
+    process.env.CASEPULSE_AUTH_MODE === 'demo' && !isOidcConfigured;
+  const demoActor: Actor = {
+    id: 'DEMO-OFFICER-001',
+    displayName: 'CASEPULSE Development Demo Officer',
+    bureauCodes: [...BUREAU_CODES],
+    roles: ['OFFICER', 'CROSS_BUREAU_VIEW'],
+    isDemo: true,
+  };
+
+  if (process.env.CASEPULSE_AUTH_MODE === 'demo' && process.env.NODE_ENV !== 'development' && !isOidcConfigured) {
     // Fail closed if demo mode is attempted in production or non-development environments.
     return null;
   }
@@ -111,7 +147,7 @@ export async function resolveActor(
   const secret = process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET;
   if (!secret) {
     // Identity provider is unconfigured. Fail closed.
-    return null;
+    return demoModeActive ? demoActor : null;
   }
 
   let token: { sub?: string; iss?: string; issuer?: string; [key: string]: unknown } | null = null;
@@ -122,11 +158,11 @@ export async function resolveActor(
       secureCookie: process.env.NODE_ENV === 'production',
     })) as { sub?: string; iss?: string; issuer?: string; [key: string]: unknown } | null;
   } catch {
-    return null;
+    return demoModeActive ? demoActor : null;
   }
 
   if (!token) {
-    return null;
+    return demoModeActive ? demoActor : null;
   }
 
   const subject = typeof token.sub === 'string' ? token.sub.trim() : '';
@@ -139,6 +175,12 @@ export async function resolveActor(
   if (!subject || !tokenIssuer) {
     throw new ApiError(401, 'UNAUTHENTICATED', 'The authenticated session does not contain valid identity claims.');
   }
+
+  if (tokenIssuer === 'casepulse-password') {
+    return await lookupOfficerByPasswordId(subject);
+  }
+
+  if (demoModeActive) return demoActor;
 
   return await lookupOfficer(tokenIssuer, subject);
 }

@@ -28,24 +28,11 @@ const BADGE_STYLES: Record<NonNullable<MetricCardProps['badge']>['variant'], str
   neutral: 'bg-muted text-ink-soft border-line',
 };
 
-const TOP_ACCENT_STYLES: Record<NonNullable<MetricCardProps['badge']>['variant'], string> = {
-  danger: 'border-t-2 border-t-[#DC2626]',
-  warning: 'border-t-2 border-t-[#B45309]',
-  success: 'border-t-2 border-t-[#047857]',
-  info: 'border-t-2 border-t-[#4A5535]',
-  neutral: 'border-t-2 border-t-[#C5BFA8]',
-};
-
-export function MetricCard({ label, value, description, icon, badge, href, isUrgent, accentVariant }: MetricCardProps) {
-  const variant = accentVariant ?? (isUrgent ? 'danger' : badge?.variant ?? 'neutral');
-  const topAccent = TOP_ACCENT_STYLES[variant] ?? 'border-t-2 border-t-[#DFDBD2]';
-
+export function MetricCard({ label, value, description, icon, badge, href }: MetricCardProps) {
   const content = (
     <SpotlightCard
       tilt
-      className={`group flex h-full flex-col justify-between overflow-hidden rounded-xl border border-[#E2DEC9] bg-white p-4 shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all duration-200 hover:border-[#C5BFA8] hover:shadow-md dark:border-line dark:bg-card ${topAccent} ${
-        isUrgent ? 'bg-[#FEF2F2]/20 dark:bg-rose-950/10' : ''
-      }`}
+      className="group flex h-full flex-col justify-between overflow-hidden rounded-xl border border-[#E2DEC9] bg-white dark:border-line dark:bg-card p-4 shadow-[0_4px_20px_-2px_rgba(20,20,18,0.05),inset_0_1px_0_0_rgba(255,255,255,0.85)] dark:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.45),inset_0_1px_0_0_rgba(255,255,255,0.08)] transition-all duration-200 hover:border-[#C5BFA8] hover:shadow-md cursor-pointer"
     >
       <div className="relative z-[2]">
         <div className="flex items-center justify-between gap-2">

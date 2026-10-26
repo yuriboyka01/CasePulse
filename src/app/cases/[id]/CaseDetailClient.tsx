@@ -502,8 +502,8 @@ export default function CaseDetailClient({ caseId }: CaseDetailClientProps) {
             <div
               className={`px-3 py-1.5 rounded-lg border text-xs font-mono tabular-nums text-right shadow-2xs ${
                 caseData.isOverdue
-                  ? 'bg-[#FEF2F2] border-[#FECACA] text-[#B91C1C]'
-                  : 'bg-white dark:bg-card border-[#E2DEC9] dark:border-line text-ink'
+                  ? 'bg-red-50/90 dark:bg-red-950/45 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-300 shadow-[0_0_20px_-5px_rgba(239,68,68,0.2)]'
+                  : 'bg-white dark:bg-[#141814] border-stone-200 dark:border-white/10 text-stone-700 dark:text-stone-300'
               }`}
             >
               <span className="text-[10px] text-stone-400 block uppercase font-bold tracking-wider">Investigation SLA</span>

@@ -19,12 +19,26 @@ CASEPULSE_AUTH_MODE=demo
 
 ## Authentication & Trusted Identity Architecture (Phase 2B)
 
-CASEPULSE uses standard OpenID Connect (OIDC) through Auth.js / `next-auth` for production authentication. The platform enforces server-side identity resolution and strict database-backed, bureau-scoped authorization:
+CASEPULSE supports provisioned email/password accounts and standard OpenID Connect (OIDC) through Auth.js / `next-auth`. Both resolve to an active server-provisioned officer before the API grants access. The platform enforces server-side identity resolution and strict database-backed, bureau-scoped authorization:
 
 1. **Authentication Boundary**: The client authenticates against a trusted OpenID Connect Identity Provider (IdP). The validated session token is stored in an encrypted, HTTP-only cookie (`authjs.session-token`, or `__Secure-authjs.session-token` on HTTPS).
 2. **Identity Resolution**: `resolveActor(request)` decodes and cryptographically verifies the session token using `AUTH_SECRET`. It extracts the validated OpenID Connect `issuer` (`iss`) and `subject` (`sub`) claims. It never trusts client-supplied headers (such as `x-officer-id`, `x-roles`, or `x-bureau`) or client-supplied body payloads.
 3. **Provisioned Officer Mapping**: The server maps `(issuer, subject)` to a record in `officers` and `officer_identities`. If the identity is not provisioned in CASEPULSE, or if `is_active` is false, access is denied (`403 FORBIDDEN`). Access is never granted solely on display name or email matching.
 4. **Bureau & Role Scoping**: Bureau memberships (`officer_bureaus`) and application roles (`officer_roles`) are loaded exclusively from PostgreSQL.
+
+### Email and Password Accounts
+
+The `/login` page accepts credentials only for active officers with a password credential in `officer_password_credentials`. Passwords use Node.js scrypt hashes; plaintext passwords are never stored. The signup page creates a pending access request and does not create an active officer or grant a role.
+
+After verifying the applicant's identity and bureau outside the application, an administrator can review requests with:
+
+```powershell
+npm run db:migrate
+npm run auth:list-requests
+npm run auth:approve-request -- --request <request-id>
+```
+
+Approval creates an active `OFFICER` account for the requested bureau and enables the password chosen in the pending request. Signup does not verify email automatically, so an administrator must verify the applicant before approval. Pending requests retain only the password hash. Password resets are handled by an administrator; there is no email reset service configured.
 
 ### OIDC Environment Variables
 
@@ -134,6 +148,7 @@ Migrations are stored in `db/migrations/`:
 - `001_initial.sql`: Core schema (bureaus, institutions, complaint cases, case actions, case relationships, overlap reviews).
 - `002_officers_and_auth.sql`: Officer identities, bureau memberships, roles, and OIDC issuer/subject mapping.
 - `003_write_workflows.sql`: Adds the `NOTE_ADDED` case action type and per-case action idempotency constraint.
+- `004_password_auth.sql`: Password credentials for provisioned officers and pending signup requests.
 
 The seed command is blocked in production and requires the explicit `CASEPULSE_ALLOW_SYNTHETIC_SEED=true` opt-in. It seeds synthetic SIH benchmark records and synthetic test officers, sets `is_synthetic=true`, and uses stable IDs plus `ON CONFLICT DO NOTHING`.
 

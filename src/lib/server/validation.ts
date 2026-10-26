@@ -14,6 +14,9 @@ const RELATIONSHIP_STATUSES: RelationshipStatus[] = [
 ];
 const OVERLAP_TYPES = ['CONFIRMED_ID', 'HIGH_PROBABILITY_NAME', 'PATTERN_CORRELATION'];
 const ACTION_TYPES = ['NOTE_ADDED', 'HEARING', 'NOTICE_ISSUED', 'INTER_BUREAU_SYNC', 'PENALTY_ISSUED', 'CLOSURE'] as const;
+const CASE_SEVERITIES = ['ROUTINE', 'ELEVATED', 'HIGH', 'CRITICAL'] as const;
+const COMPLAINANT_TYPES = ['STUDENT', 'FACULTY', 'PARENT', 'WHISTLEBLOWER', 'ANONYMOUS'] as const;
+const INTAKE_SOURCES = ['EXISTING_PORTAL', 'EMAIL', 'LETTER', 'PHONE', 'OTHER'] as const;
 
 function fail(message: string): never {
   throw new ApiError(400, 'VALIDATION_ERROR', message);
@@ -134,6 +137,67 @@ export function parseCaseActionBody(value: unknown): { idempotencyKey: string; t
   if (typeof body.type !== 'string' || !ACTION_TYPES.includes(body.type as typeof ACTION_TYPES[number])) fail('type is invalid.');
   if ('nextStatus' in body && (typeof body.nextStatus !== 'string' || !CASE_STATUSES.includes(body.nextStatus as CaseStatus))) fail('nextStatus is invalid.');
   return { idempotencyKey: body.idempotencyKey, type: body.type as typeof ACTION_TYPES[number], notes: boundedNote(body.notes, 'notes', true), ...(body.nextStatus ? { nextStatus: body.nextStatus as CaseStatus } : {}) };
+}
+
+export interface CreateCaseInput {
+  institutionId: string;
+  bureauId: typeof BUREAU_CODES[number];
+  title: string;
+  description: string;
+  category: typeof CASE_CATEGORIES[number];
+  severity: typeof CASE_SEVERITIES[number];
+  complainantType: typeof COMPLAINANT_TYPES[number];
+  filingDate: string;
+  slaDueDate: string;
+  intakeSource: typeof INTAKE_SOURCES[number];
+  sourceReference?: string;
+}
+
+export function parseCreateCaseBody(value: unknown): CreateCaseInput {
+  const body = parseWriteBody(value);
+  const allowed = ['institutionId', 'bureauId', 'title', 'description', 'category', 'severity', 'complainantType', 'filingDate', 'slaDueDate', 'intakeSource', 'sourceReference'];
+  if (Object.keys(body).some((key) => !allowed.includes(key))) {
+    fail('Unsupported request field; case identifiers, actor identity, and case status are assigned by the server.');
+  }
+
+  const institutionId = typeof body.institutionId === 'string' ? body.institutionId.trim() : '';
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$/.test(institutionId)) fail('institutionId is invalid.');
+  if (typeof body.bureauId !== 'string' || !BUREAU_CODES.includes(body.bureauId as typeof BUREAU_CODES[number])) fail('bureauId is invalid.');
+  const title = boundedNote(body.title, 'title', true);
+  if (title.length > 240) fail('title must be at most 240 characters.');
+  const description = boundedNote(body.description, 'description', true);
+  if (description.length > 4000) fail('description must be at most 4000 characters.');
+  if (typeof body.category !== 'string' || !CASE_CATEGORIES.includes(body.category as typeof CASE_CATEGORIES[number])) fail('category is invalid.');
+  if (typeof body.severity !== 'string' || !CASE_SEVERITIES.includes(body.severity as typeof CASE_SEVERITIES[number])) fail('severity is invalid.');
+  if (typeof body.complainantType !== 'string' || !COMPLAINANT_TYPES.includes(body.complainantType as typeof COMPLAINANT_TYPES[number])) fail('complainantType is invalid.');
+  if (typeof body.intakeSource !== 'string' || !INTAKE_SOURCES.includes(body.intakeSource as typeof INTAKE_SOURCES[number])) fail('intakeSource is invalid.');
+
+  const parseDate = (input: unknown, name: string) => {
+    if (typeof input !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(input)) fail(`${name} must be a valid date.`);
+    const date = new Date(`${input}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== input) fail(`${name} must be a valid date.`);
+    return date.toISOString();
+  };
+  const filingDate = parseDate(body.filingDate, 'filingDate');
+  const slaDueDate = parseDate(body.slaDueDate, 'slaDueDate');
+  if (new Date(slaDueDate) < new Date(filingDate)) fail('slaDueDate must be on or after filingDate.');
+
+  const sourceReference = body.sourceReference === undefined ? undefined : boundedNote(body.sourceReference, 'sourceReference', false);
+  if (sourceReference && sourceReference.length > 100) fail('sourceReference must be at most 100 characters.');
+
+  return {
+    institutionId,
+    bureauId: body.bureauId as CreateCaseInput['bureauId'],
+    title,
+    description,
+    category: body.category as CreateCaseInput['category'],
+    severity: body.severity as CreateCaseInput['severity'],
+    complainantType: body.complainantType as CreateCaseInput['complainantType'],
+    filingDate,
+    slaDueDate,
+    intakeSource: body.intakeSource as CreateCaseInput['intakeSource'],
+    ...(sourceReference ? { sourceReference } : {}),
+  };
 }
 
 export function parseOverlapReviewBody(value: unknown): { decision: ReviewDecision; notes: string; expectedVersion: number } {

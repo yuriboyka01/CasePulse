@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { ApiError } from '../../src/lib/server/errors';
 import { POST } from '../../src/app/api/assistant/route';
+import { buildLocalEvidenceAnswer } from '../../src/lib/server/assistant-fallback';
 import { parseAssistantBody } from '../../src/lib/server/assistant-validation';
 
 function setEnv(name: string, value: string | undefined) {
@@ -69,7 +70,7 @@ test('assistant endpoint rejects unauthenticated requests before retrieving data
   }
 });
 
-test('assistant endpoint reports missing AI configuration without accessing PostgreSQL', async () => {
+test('assistant endpoint falls back to Local Regulatory Intelligence Engine when AI configuration is missing', async () => {
   const restoreNodeEnv = setEnv('NODE_ENV', 'development');
   const restoreMode = setEnv('CASEPULSE_AUTH_MODE', 'demo');
   const restoreApiKey = setEnv('AI_API_KEY', '');
@@ -79,11 +80,12 @@ test('assistant endpoint reports missing AI configuration without accessing Post
     const response = await POST(new Request('http://local/api/assistant', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: [{ role: 'user', content: 'Summarize cases.' }] }),
+      body: JSON.stringify({ messages: [{ role: 'user', content: 'recent case?' }] }),
     }));
     const body = await response.json();
-    assert.equal(response.status, 503);
-    assert.equal(body.error.code, 'AI_NOT_CONFIGURED');
+    assert.equal(response.status, 200);
+    assert.ok(body.data?.answer);
+    assert.ok(body.data?.sources?.length > 0);
   } finally {
     restoreDatabase();
     restoreModel();
@@ -91,4 +93,35 @@ test('assistant endpoint reports missing AI configuration without accessing Post
     restoreMode();
     restoreNodeEnv();
   }
+});
+
+
+test('assistant deterministic fallback answers only from retrieved evidence and marks relationships for human review', () => {
+  const result = buildLocalEvidenceAnswer('Explain this cross-bureau relationship', {
+    evidence: {
+      cases: [],
+      institutions: [],
+      relationships: [{
+        id: 'OVL-TEST-01',
+        institutionName: 'Synthetic Test University',
+        sourceBureau: 'AICTE_APPROVAL',
+        targetBureau: 'UGC_VIGILANCE',
+        status: 'PROPOSED',
+        confidenceScore: 0.82,
+        reasons: ['Institution name match'],
+      }],
+    },
+    sources: [{
+      id: 'OVL-TEST-01',
+      type: 'relationship',
+      label: 'OVL-TEST-01',
+      href: '/overlaps?search=OVL-TEST-01',
+    }],
+  });
+
+  assert.match(result.answer, /OVL-TEST-01/);
+  assert.match(result.answer, /candidates for human review/i);
+  assert.equal(result.sources[0].id, 'OVL-TEST-01');
+  assert.equal(result.counts.relationships, 1);
+  assert.doesNotMatch(result.answer, /Apex Institute|Kalinga Academy/);
 });

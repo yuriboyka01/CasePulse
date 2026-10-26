@@ -6,7 +6,7 @@ import { Institution } from '@/types';
 import { RiskBadge } from '@/components/ui/StatusBadge';
 import { BureauBadge } from '@/components/ui/BureauBadge';
 import { SpotlightCard } from '@/components/ui/SpotlightCard';
-import { Building2, ChevronRight, MapPin } from 'lucide-react';
+import { ChevronRight, MapPin } from 'lucide-react';
 
 interface InstitutionCardProps {
   institution: Institution;

@@ -102,7 +102,7 @@ export function CaseTimeline({ events }: CaseTimelineProps) {
                   <BureauBadge bureauId={evt.bureau} size="sm" />
                 </div>
                 <div className="text-[11px] text-slate-400 font-mono">
-                  {formattedDate} Â· {formattedTime} IST
+                  {formattedDate} · {formattedTime} IST
                 </div>
               </div>
 

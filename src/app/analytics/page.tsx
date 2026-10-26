@@ -4,6 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   AlertCircle,
+  CheckCircle2,
+  FileText,
   ArrowRight,
   BarChart3,
   Building2,
@@ -13,6 +15,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { ExportDossierModal } from '@/components/common/ExportDossierModal';
+import { exportAnalyticsToCsv } from '@/lib/export-utils';
 import { WorkspaceHeader } from '@/components/common/WorkspaceHeader';
 import { apiClient, ApiClientError, DashboardSummary } from '@/lib/api-client';
 import { CaseComplaint, CaseOverlap, Institution } from '@/types';
@@ -39,6 +42,20 @@ function getCategoryColor(category: string): string {
 
 export default function AnalyticsPage() {
   const [isExportOpen, setIsExportOpen] = useState(false);
+  const [toastNotice, setToastNotice] = useState<string | null>(null);
+
+  const handleExportSummaryCsv = () => {
+    if (!analyticsData) return;
+    const categoryList = analyticsData.cases ? Object.entries(
+      analyticsData.cases.reduce((acc, c) => {
+        acc[c.category] = (acc[c.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ).map(([category, count]) => ({ category, count })) : [];
+    const res = exportAnalyticsToCsv(analyticsData.summary, categoryList);
+    setToastNotice(`✓ Exported executive analytics summary to CSV (${res.filename})`);
+    setTimeout(() => setToastNotice(null), 4000);
+  };
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [error, setError] = useState<string | null>(null);
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
@@ -151,13 +168,25 @@ export default function AnalyticsPage() {
         title="Regulatory Intelligence & Cross-Bureau Analytics"
         subtitle="Systemic violation trends, inter-agency correlation density, and statutory SLA compliance monitoring."
         actions={
-          <button
-            onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#F9F8F3] dark:hover:bg-slate-800 text-ink shadow-[0_1px_2px_rgba(20,20,18,0.04)] transition-all cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5 text-[#4A5535]" />
-            Executive Summary Export
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExportSummaryCsv}
+              disabled={!analyticsData}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#F9F8F3] dark:hover:bg-slate-800 text-ink shadow-2xs transition-all cursor-pointer disabled:opacity-40"
+              title="Instant RFC-4180 CSV export of system metrics and category counts"
+            >
+              <Download className="w-3.5 h-3.5 text-[#4A5535] dark:text-[#8FA367]" />
+              Export Summary CSV
+            </button>
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-lg border border-[#E2DEC9] dark:border-line bg-white dark:bg-card hover:bg-[#F9F8F3] dark:hover:bg-slate-800 text-ink shadow-2xs transition-all cursor-pointer"
+              title="Open full Dossier Memorandum and PostgreSQL Schema"
+            >
+              <FileText className="w-3.5 h-3.5 text-stone-400" />
+              Executive Dossier
+            </button>
+          </div>
         }
       />
 
@@ -193,24 +222,24 @@ export default function AnalyticsPage() {
         <>
           {/* High-Level Regulatory Intelligence KPIs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Statutory SLA Compliance with Critical Alert Styling */}
+            {/* Statutory SLA Compliance with Critical Alert Ambient Glow */}
             <div
-              className={`p-4 rounded-xl transition-all shadow-[0_1px_2px_rgba(20,20,18,0.04)] ${
+              className={`p-4 rounded-xl transition-all ${
                 slaComplianceRate < 70
-                  ? 'bg-[#FEF2F2] dark:bg-rose-950/30 border-2 border-[#FECACA] dark:border-rose-900 shadow-sm relative overflow-hidden'
-                  : 'bg-white dark:bg-card border border-[#E2DEC9] dark:border-line'
+                  ? 'critical-card-glow relative overflow-hidden'
+                  : 'bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)]'
               }`}
             >
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-start justify-between gap-2 min-h-[32px]">
                 <span
-                  className={`font-mono text-[10px] font-bold uppercase tracking-wider truncate ${
-                    slaComplianceRate < 70 ? 'text-[#991B1B] dark:text-rose-300' : 'text-stone-500'
+                  className={`font-mono text-[11px] font-bold uppercase tracking-wider leading-tight ${
+                    slaComplianceRate < 70 ? 'text-[#991B1B] dark:text-red-300' : 'text-ink-muted'
                   }`}
                 >
                   Statutory SLA Compliance
                 </span>
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-mono text-xs font-bold tabular-nums whitespace-nowrap shrink-0 shadow-2xs ${
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-mono text-[10px] font-bold tabular-nums whitespace-nowrap shrink-0 shadow-2xs ${
                     slaComplianceRate < 70
                       ? 'bg-[#DC2626] text-white'
                       : 'bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800'
@@ -225,13 +254,13 @@ export default function AnalyticsPage() {
               <div className="mt-3 flex items-baseline justify-between">
                 <span
                   className={`text-3xl font-bold font-mono tabular-nums ${
-                    slaComplianceRate < 70 ? 'text-[#B91C1C] dark:text-rose-200' : 'text-ink'
+                    slaComplianceRate < 70 ? 'text-[#B91C1C] dark:text-red-200' : 'text-ink'
                   }`}
                 >
                   {slaComplianceRate}%
                 </span>
                 {slaComplianceRate < 70 && (
-                  <span className="font-mono text-[11px] font-bold text-[#DC2626] dark:text-rose-400 uppercase tracking-wide whitespace-nowrap">
+                  <span className="font-mono text-[11px] font-bold text-[#DC2626] dark:text-red-400 uppercase tracking-wide whitespace-nowrap">
                     Critical Alert
                   </span>
                 )}
@@ -239,8 +268,8 @@ export default function AnalyticsPage() {
               <p
                 className={`mt-2 text-xs leading-relaxed ${
                   slaComplianceRate < 70
-                    ? 'text-[#991B1B]/80 dark:text-rose-300/80 font-medium'
-                    : 'text-stone-500'
+                    ? 'text-[#991B1B]/90 dark:text-red-300/80 font-medium'
+                    : 'text-ink-muted'
                 }`}
               >
                 Cases resolved or maintained within standard 30-day investigation SLA.
@@ -249,12 +278,12 @@ export default function AnalyticsPage() {
 
             {/* Inter-Bureau Overlap Density */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
+              <div className="flex items-start justify-between gap-2 min-h-[32px]">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider leading-tight text-ink-muted">
                   Inter-Bureau Overlap Density
                 </span>
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-mono text-xs font-bold tabular-nums whitespace-nowrap shrink-0">
-                  {summary.unresolvedOverlapsCount} Pending Review
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800 font-mono text-[10px] font-bold tabular-nums whitespace-nowrap shrink-0 shadow-2xs">
+                  {summary.unresolvedOverlapsCount} Pending
                 </span>
               </div>
               <div className="mt-3">
@@ -262,7 +291,7 @@ export default function AnalyticsPage() {
                   {summary.flaggedOverlapsCount} Pairs
                 </span>
               </div>
-              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed">
                 Cross-bureau correlation rate:{' '}
                 <span className="font-mono font-semibold text-ink">
                   {summary.totalCases > 0
@@ -276,11 +305,11 @@ export default function AnalyticsPage() {
 
             {/* Repeat-Target Institutions */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
+              <div className="flex items-start justify-between gap-2 min-h-[32px]">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider leading-tight text-ink-muted">
                   Repeat-Target Institutions
                 </span>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800 font-mono text-xs font-bold whitespace-nowrap shrink-0">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800 font-mono text-[10px] font-bold whitespace-nowrap shrink-0 shadow-2xs">
                   Multi-Agency
                 </span>
               </div>
@@ -290,18 +319,18 @@ export default function AnalyticsPage() {
                   <span className="text-stone-400 text-lg font-normal">/ {summary.activeInstitutions}</span>
                 </span>
               </div>
-              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed">
                 Institutions with concurrent inquiries across multiple administrative bureaus.
               </p>
             </div>
 
             {/* Joint Inquiries Activated */}
             <div className="p-4 rounded-xl bg-white dark:bg-card border border-[#E2DEC9] dark:border-line shadow-[0_1px_2px_rgba(20,20,18,0.04)] hover:border-[#C5BFA8] transition-all">
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-stone-500 truncate">
+              <div className="flex items-start justify-between gap-2 min-h-[32px]">
+                <span className="font-mono text-[11px] font-bold uppercase tracking-wider leading-tight text-ink-muted">
                   Joint Inquiries Activated
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-mono text-xs font-bold whitespace-nowrap shrink-0">
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-800 font-mono text-[10px] font-bold whitespace-nowrap shrink-0 shadow-2xs">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
                   Synchronized
                 </span>
@@ -311,7 +340,7 @@ export default function AnalyticsPage() {
                   {summary.jointInquiriesActive}
                 </span>
               </div>
-              <p className="mt-2 text-xs text-stone-500 leading-relaxed">
+              <p className="mt-2 text-xs text-ink-muted leading-relaxed">
                 Active joint hearing / shared notice proceedings between partner bureaus.
               </p>
             </div>
@@ -409,9 +438,9 @@ export default function AnalyticsPage() {
                               <span className="text-stone-500 font-semibold">{percentage}%</span>
                             </div>
                           </div>
-                          <div className="w-full h-2.5 bg-[#FAF9F5] dark:bg-slate-800 rounded-full border border-stone-200/60 dark:border-stone-700/60 overflow-hidden p-0.5">
+                          <div className="w-full h-2.5 rounded-full progress-track-3d overflow-hidden p-0.5">
                             <div
-                              className={`h-full rounded-full transition-all duration-500 ${barColorClass}`}
+                              className={`h-full rounded-full transition-all duration-500 progress-fill-3d ${barColorClass}`}
                               style={{ width: `${Math.max(percentage, 3)}%` }}
                             />
                           </div>
@@ -479,7 +508,7 @@ export default function AnalyticsPage() {
                             {inst.district}, {inst.state}
                           </td>
                           <td className="py-3 px-3.5">
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FEF2F2] text-[#B91C1C] border border-[#FECACA] font-mono font-bold text-[11px] tabular-nums">
+                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-50 text-red-700 border border-red-200 dark:bg-red-950/70 dark:text-red-300 dark:border-red-800/60 font-mono font-bold text-[11px] tabular-nums">
                               <span className="w-1.5 h-1.5 rounded-full bg-[#DC2626]" />
                               {inst.activeCasesCount} active cases
                             </span>
@@ -534,6 +563,14 @@ export default function AnalyticsPage() {
 
       {/* Export Modal */}
       <ExportDossierModal isOpen={isExportOpen} onClose={() => setIsExportOpen(false)} />
+
+      {/* Toast Notice */}
+      {toastNotice && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#141814] text-white border border-white/15 px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs animate-pulse-fade-up font-medium">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{toastNotice}</span>
+        </div>
+      )}
     </div>
   );
 }

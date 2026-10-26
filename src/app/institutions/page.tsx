@@ -75,7 +75,7 @@ function InstitutionsContent() {
   const repeatCount = institutions.filter((i) => i.activeCasesCount > 1).length;
 
   const displayCount =
-    loadState === 'success' ? totalCount : loadState === 'loading' ? 'â€¦' : 'â€”';
+    loadState === 'success' ? totalCount : loadState === 'loading' ? '…' : '—';
 
   return (
     <div className="space-y-4">
@@ -172,7 +172,7 @@ function InstitutionsContent() {
       {loadState === 'loading' && (
         <div className="py-16 text-center text-ink-muted rounded-2xl border border-line bg-card shadow-xs">
           <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-          <p className="text-xs font-semibold">Filtering institution directory recordsâ€¦</p>
+          <p className="text-xs font-semibold">Filtering institution directory records…</p>
         </div>
       )}
 

@@ -51,7 +51,7 @@ const DUST = Array.from({ length: 42 }, (_, i) => ({
 /**
  * Perspective-projected orbit of bureau nodes around the Joint Desk core.
  * Node size reflects real case volume. The spokes only connect each bureau to the
- * shared desk â€” no line between bureaus is ever drawn, so no relationship between
+ * shared desk — no line between bureaus is ever drawn, so no relationship between
  * complaints is implied. Motion is ambient and stops for reduced-motion users.
  */
 export function BureauConstellation({ nodes, coreLabel = 'JOINT DESK', className = '' }: BureauConstellationProps) {
@@ -128,7 +128,8 @@ export function BureauConstellation({ nodes, coreLabel = 'JOINT DESK', className
       const maxCount = Math.max(1, ...list.map((n) => n.count));
       const placed = list
         .map((node, index) => {
-          const a = yaw + (index / Math.max(list.length, 1)) * Math.PI * 2;
+          const angleOffset = Math.PI / 6;
+          const a = yaw + angleOffset + (index / Math.max(list.length, 1)) * Math.PI * 2;
           const p = project(Math.cos(a) * ring, 0, Math.sin(a) * ring);
           const radius = (5 + Math.sqrt(node.count / maxCount) * 9) * p.scale;
           return { node, p, radius };
