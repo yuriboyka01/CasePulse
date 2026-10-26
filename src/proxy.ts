@@ -20,10 +20,13 @@ export function proxy(request: NextRequest) {
   );
   const isDevelopmentDemo =
     process.env.NODE_ENV === 'development' &&
-    process.env.CASEPULSE_AUTH_MODE === 'demo' &&
-    !isOidcConfigured;
+    process.env.CASEPULSE_AUTH_MODE === 'demo';
+  const isExplicitProductionDemo =
+    process.env.NODE_ENV === 'production' &&
+    process.env.CASEPULSE_DEMO_ENABLED === 'true';
 
-  const hasDemoEntry = isDevelopmentDemo && request.cookies.get(DEMO_ENTRY_COOKIE)?.value === '1';
+  const isDemoModeEnabled = (isDevelopmentDemo || isExplicitProductionDemo) && !isOidcConfigured;
+  const hasDemoEntry = isDemoModeEnabled && request.cookies.get(DEMO_ENTRY_COOKIE)?.value === '1';
   const hasAuthJsSession = request.cookies.has('authjs.session-token') ||
     request.cookies.has('__Secure-authjs.session-token');
   if (hasDemoEntry || hasAuthJsSession) {
