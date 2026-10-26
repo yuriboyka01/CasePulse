@@ -1,5 +1,6 @@
 import { LoginForm } from '@/components/auth/LoginForm';
 import { getAuthUiConfig } from '@/lib/server/auth-presentation';
+import { BrandMark } from '@/components/common/BrandMark';
 
 export default function LoginPage() {
   const { isOidcConfigured, isDemoMode } = getAuthUiConfig();
@@ -10,7 +11,7 @@ export default function LoginPage() {
         <div aria-hidden="true" className="pointer-events-none absolute -right-28 top-28 h-[440px] w-[440px] rounded-full border border-white/10" />
         <div aria-hidden="true" className="pointer-events-none absolute -right-12 top-44 h-[280px] w-[280px] rounded-full border border-white/10" />
         <div className="relative flex items-center gap-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/15 bg-white/10"><span className="font-display text-lg font-bold">C</span></span>
+          <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white"><BrandMark className="h-10 w-10" /></span>
           <span><span className="block text-sm font-bold tracking-[0.12em]">CASEPULSE</span><span className="block text-[9px] uppercase tracking-[0.2em] text-white/55">Inter-bureau intelligence</span></span>
         </div>
         <div className="relative my-auto max-w-xl py-20">

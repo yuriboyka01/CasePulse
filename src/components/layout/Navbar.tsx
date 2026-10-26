@@ -14,7 +14,6 @@ import {
   Menu,
   Moon,
   Network,
-  Shield,
   Sparkles,
   Sun,
   X,
@@ -23,6 +22,7 @@ import { AuthControls } from '@/components/auth/AuthControls';
 import { useTheme } from '@/components/theme/ThemeProvider';
 import { useAssistantModal } from '@/components/assistant/AssistantContext';
 import { apiClient } from '@/lib/api-client';
+import { BrandMark } from '@/components/common/BrandMark';
 
 const NAV_ITEMS = [
   { label: 'Overview', href: '/', icon: <Layers className="h-4 w-4" /> },
@@ -137,7 +137,7 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
       <aside className={`hidden shrink-0 flex-col border-r border-[#DFDBD2] dark:border-line bg-[#EFECE6] dark:bg-[#151A17] transition-[width] duration-200 lg:sticky lg:top-0 lg:flex lg:h-screen ${collapsed ? 'w-[76px]' : 'w-[264px]'}`}>
         <div className={`flex h-[64px] items-center border-b border-[#DFDBD2] dark:border-line px-4 ${collapsed ? 'justify-center' : 'justify-between'}`}>
           <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="CASEPULSE overview">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand text-[var(--primary-foreground)] shadow-xs ring-1 ring-brand-strong/40"><Shield className="h-4 w-4" /></span>
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-xs ring-1 ring-brand-strong/40"><BrandMark className="h-9 w-9" /></span>
             {!collapsed && <span className="min-w-0"><span className="block text-sm font-bold tracking-wide text-ink">CASEPULSE</span><span className="block truncate text-[9px] uppercase tracking-[0.16em] text-ink-muted">Regulatory intelligence</span></span>}
           </Link>
         </div>
@@ -182,7 +182,7 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
 
       <div className="lg:hidden">
         <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-[#DFDBD2] dark:border-line bg-[#EFECE6]/95 dark:bg-card/95 px-4 backdrop-blur">
-          <Link href="/" className="flex items-center gap-2 font-bold tracking-wide text-ink"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand text-[var(--primary-foreground)]"><Shield className="h-4 w-4" /></span>CASEPULSE</Link>
+          <Link href="/" className="flex items-center gap-2 font-bold tracking-wide text-ink"><span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white"><BrandMark className="h-8 w-8" /></span>CASEPULSE</Link>
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -201,7 +201,7 @@ export function AppSidebar({ isOidcConfigured = false, isDemoMode = false }: Nav
         </div>
         {mobileOpen && <div className="fixed inset-0 z-50 bg-black/45" onClick={() => setMobileOpen(false)}>
           <aside className="flex h-full w-[min(88vw,320px)] flex-col border-r border-[#DFDBD2] dark:border-line bg-[#EFECE6] dark:bg-card shadow-2xl" onClick={(event) => event.stopPropagation()}>
-            <div className="flex h-14 items-center justify-between border-b border-[#DFDBD2] dark:border-line px-4"><span className="font-bold tracking-wide text-ink">CASEPULSE</span><button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-raised"><X className="h-4 w-4" /></button></div>
+            <div className="flex h-14 items-center justify-between border-b border-[#DFDBD2] dark:border-line px-4"><Link href="/" onClick={() => setMobileOpen(false)} className="inline-flex items-center gap-2 font-bold tracking-wide text-ink"><span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg bg-white"><BrandMark className="h-8 w-8" /></span>CASEPULSE</Link><button type="button" onClick={() => setMobileOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-raised"><X className="h-4 w-4" /></button></div>
             <div className="flex-1 overflow-y-auto p-3"><NavigationItems onNavigate={() => setMobileOpen(false)} /></div>
             <div className="border-t border-[#DFDBD2] dark:border-line p-4">
               <AuthControls isOidcConfigured={isOidcConfigured} isDemoMode={isDemoMode} />

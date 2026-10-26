@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 535 495" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">CASEPULSE</title>
+  <desc id="desc">Regulatory intelligence, represented by a shield and a connected hand.</desc>
+  <g stroke="#172321" stroke-linecap="round" stroke-linejoin="round">
+    <path d="m276 99 53 19v49c0 39-23 62-53 77-30-15-53-38-53-77v-49l53-19Z" stroke-width="7"/>
+    <path d="M241 136c9-4 17 1 24 11l10 10 13-9c7-5 15-7 25-5" stroke-width="3.5"/>
+    <path d="M240 174h16l6-11 7 24 8-35 7 28 7-13 7 7h18" stroke-width="3.5"/>
+    <path d="M239 181c9 14 22 20 37 20 11 0 21-4 30-12" stroke-width="3.5"/>
+    <path d="M141 236c18-12 35-28 50-32 15-5 27 4 43 15 18 13 33 20 51 15 18-5 33-21 46-38l25-35c4-5 12-1 9 5l-21 38 29-32c5-5 12 0 7 5l-29 38 25-20c6-5 12 3 5 7l-41 31c-17 13-33 22-54 25-21 3-37-6-55-15-18-9-34-12-53-4l-32 14" stroke-width="3.5"/>
+    <path d="M279 295c24 0 43-4 61-15l43-27c6-4 12 4 5 8l-41 27c-20 13-39 19-69 20" stroke-width="3.5"/>
+    <path d="m153 263 54-34 38 21 20 9 20-4 28-19 28-26" stroke-width="3.5"/>
+  </g>
+  <g fill="#7B8768">
+    <circle cx="246" cy="136" r="7"/><circle cx="309" cy="139" r="8"/>
+    <circle cx="244" cy="173" r="7"/><circle cx="304" cy="195" r="7"/>
+    <circle cx="207" cy="229" r="7"/><circle cx="152" cy="263" r="7"/>
+    <circle cx="293" cy="259" r="7"/><circle cx="374" cy="165" r="7"/>
+    <circle cx="411" cy="177" r="5"/><circle cx="403" cy="231" r="5"/>
+  </g>
+  <text x="267.5" y="370" text-anchor="middle" fill="#172321" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="800" letter-spacing="2">CASEPULSE</text>
+  <text x="267.5" y="402" text-anchor="middle" fill="#778365" font-family="Arial, Helvetica, sans-serif" font-size="17" font-weight="700" letter-spacing="6">REGULATORY INTELLIGENCE</text>
+</svg>

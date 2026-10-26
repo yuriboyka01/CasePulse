@@ -4,8 +4,9 @@ import Link from 'next/link';
 import { useState, type FormEvent } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, LoaderCircle } from 'lucide-react';
 import { AuthControls } from './AuthControls';
+import { BrandMark } from '@/components/common/BrandMark';
 
 export function LoginForm({ isOidcConfigured, isDemoMode }: { isOidcConfigured: boolean; isDemoMode: boolean }) {
   const router = useRouter();
@@ -37,7 +38,7 @@ export function LoginForm({ isOidcConfigured, isDemoMode }: { isOidcConfigured: 
   return (
     <div className="w-full max-w-[440px]">
       <Link href="/" className="inline-flex items-center gap-3" aria-label="CASEPULSE home">
-        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#4A5535] text-white shadow-sm"><ShieldCheck className="h-5 w-5" aria-hidden="true" /></span>
+        <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm"><BrandMark className="h-10 w-10" /></span>
         <span><span className="block text-sm font-bold tracking-[0.08em] text-[#252923]">CASEPULSE</span><span className="block text-[9px] uppercase tracking-[0.18em] text-[#77796F]">Regulatory intelligence</span></span>
       </Link>
 

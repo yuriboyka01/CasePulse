@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 220" fill="none">
+  <title>CASEPULSE shield and intelligence hand</title>
+  <g stroke="#172321" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150 8 208 29v55c0 43-26 68-58 84-32-16-58-41-58-84V29l58-21Z" stroke-width="8"/>
+    <path d="M111 52c10-4 19 1 27 12l11 11 14-10c8-6 17-8 28-6" stroke-width="4"/>
+    <path d="M110 94h18l7-12 8 26 9-39 8 31 8-14 8 8h20" stroke-width="4"/>
+    <path d="M108 102c10 15 25 22 42 22 12 0 23-4 33-13" stroke-width="4"/>
+    <path d="M9 160c20-13 38-30 54-35 16-5 30 4 47 17 19 14 36 22 56 17 20-5 36-23 50-42l28-39c4-6 13-1 10 5l-23 42 32-35c6-6 13 0 8 6l-32 42 28-22c7-5 13 3 6 8l-45 34c-19 14-36 24-59 27-23 3-41-7-61-17-20-10-38-13-59-4l-36 16" stroke-width="4"/>
+    <path d="M150 196c26 0 47-5 67-17l47-29c7-4 13 5 6 9l-45 29c-22 14-43 21-75 22" stroke-width="4"/>
+    <path d="M36 176 91 143l42 23 22 10 22-4 31-21 31-29" stroke-width="4"/>
+  </g>
+  <g fill="#7B8768" stroke="#7B8768">
+    <circle cx="112" cy="52" r="7"/><circle cx="180" cy="58" r="8"/>
+    <circle cx="109" cy="99" r="7"/><circle cx="174" cy="121" r="7"/>
+    <circle cx="75" cy="141" r="7"/><circle cx="21" cy="172" r="7"/>
+    <circle cx="161" cy="163" r="7"/><circle cx="241" cy="77" r="7"/>
+    <circle cx="278" cy="90" r="5"/><circle cx="270" cy="145" r="5"/>
+  </g>
+</svg>
